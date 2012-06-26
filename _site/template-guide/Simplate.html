@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/stylesheet.css" media="screen"/>
+    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/shCore.css"/>
+    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/shThemeDefault.css"/>
+
+    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/print.css" media="print"/>
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Argos Mobile by Sage</title>
+</head>
+
+<body>
+<div id="container">
+    <div class="inner">
+
+<header class="clearfix">
+    <div class="grid-2">
+        <h1>Argos Template Guide</h1>
+
+        <h2>Kickstart your app</h2>
+    </div>
+    <div class="grid-2">
+        <section class="downloads clearfix">
+            <a href="https://github.com/Sage/argos-template/zipball/master" class="download-zip button"><span>Download .zip</span></a>
+            <a href="https://github.com/Sage/argos-template" class="view-on-github button"><span>View on GitHub</span></a>
+        </section>
+    </div>
+</header>
+
+<section id="main_content" role="main">
+    <p>Simplate is powerful javascript templating function that greatly expands upon the printf concept. With a normal string substitution you define a format string with <code>$0</code> or <code>{0}</code> and pass in your arguments to get placed in the same order – first argument to 0, second argument to 1 and so on. Simplate takes this and says &quot;Hey, this is javascript, everything is an object&quot; and works upon passing in an object and scope and allowing you to use the properties in a normal manner.</p>
+
+<p>But wait – there’s more! What if you want to run a little javascript here or there like a conditional statement or quick loop? You can do that too! And Simplates within Simplates within Simplates? Indeed, to your heart’s content.</p>
+
+<h3>Define:</h3>
+
+<pre class="brush: js">
+var myTemplate = new Simplate( [ 'string', 'string', 'string'] );
+</pre>
+The array will be joined automatically, these makes multi lined templates easy for humans to parse.
+
+###Apply:
+<pre class="brush: js">
+var content = myTemplate.apply(myObject, scope);
+</pre>
+
+<h3>Formatting Options:</h3>
+
+<pre class="brush: js">
+`{%=   %}` – Evaluates contents and returns the result directly.
+`{%:   %}` – Evaluates contents and returns the result as HTML encoded.
+`{%!   %}` – Expects the contents to return a Simplate which is then applied with the same arguments as the current Simplate.
+`{%$   %}` – Same as `{%= %}` but is performed with a silent try/catch granting safe execution.
+`{%    %}` – Evaluates the contents as executable code
+</pre>
+
+<p>Inside all Simplate formatters the <code>$</code> object refers to the passed in object and <code>$$</code> refers to the scope. You then use normal javascript dot notation to access the properties of <code>$</code> and <code>$$</code>.</p>
+
+<p>For a concrete example we want to create a list item for each item in a feed. Each item has a <code>$key</code> property and a <code>Description</code> property.</p>
+
+<pre class="brush: js">
+var rowTemplate = new Simplate([
+    '<li data-key="{%= $.$key %}">{%: $.Description %}</li>'
+]);
+
+var feed = [
+    {$key: 1, Description: "Row 1"}, 
+    {$key: 2, Description: "Row 2"}, 
+    {$key: 3, Description: "Row 3"}
+]; // data from outside, array of objects with $key and Description
+
+var listNode = document.createElement('ul');
+for (var i = 0; i < feed.length; i++)
+{
+    var htmlString = rowTemplate.apply(feed[i], this);
+    dojo.place(listNode, htmlString, 'last'); // converts HTML string to DOM
+}
+
+// listNode may now be appended to document with all three rows
+</pre>
+
+<p>For a more in depth discussion including different ways of stating the contents please look at the demo page at github:
+<a href="https://github.com/SageScottsdalePlatform/simplate">https://github.com/SageScottsdalePlatform/simplate</a></p>
+
+</section>
+
+<footer>
+    Argos Mobile is maintained by <a href="https://github.com/Sage">Sage</a><br>
+</footer>
+</div>
+</div>
+
+<!-- Scripts -->
+<script src="http://localhost:4000/javascripts/shCore.js"></script>
+<script src="http://localhost:4000/javascripts/shBrushJScript.js"></script>
+<script src="http://localhost:4000/javascripts/shBrushCss.js"></script>
+<script src="http://localhost:4000/javascripts/shBrushCSharp.js"></script>
+<script src="http://localhost:4000/javascripts/shBrushRuby.js"></script>
+
+<script>SyntaxHighlighter.all();</script>
+</body>
+</html>
