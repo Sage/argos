@@ -17,17 +17,17 @@ Easier to locate usage, with explicit dependencies you can quickly call up what 
 ###Define
 All modules will be wrapped in a `define()` statement. For the purposes of argos-template it will always use the following skeleton:
 
-{% raw %}<pre class="brush: js">
+<pre class="brush: js">
 define( /*Path To File*/ ,
 ['Array of dependencies to require'], function(
 /*the returned object of each dependency*/
 ) {
 return {}; // the object that this module defines, to then be required in other modules
 });
-</pre>{% endraw %}
+</pre>
 
 An example:
-{% raw %}<pre class="brush: js">
+<pre class="brush: js">
 define('Sage/Platform/Mobile/Format', [
     'dojo/_base/lang',
     'dojo/string'
@@ -37,7 +37,7 @@ define('Sage/Platform/Mobile/Format', [
 ) {
     return lang.setObject('Sage.Platform.Mobile.Format', { ... });
 });
-</pre>{% endraw %}
+</pre>
 
 At first glance the paths don't quite look like paths, you can setup shortcuts to your folder structure in your `index-dev.html` file to point to libraries or setup a namespace etc. 
 
@@ -55,7 +55,7 @@ The example above used `lang.setObject()` to set a global object, however, in mo
 
 Meaning if you have this:
 
-{% raw %}<pre class="brush: js">
+<pre class="brush: js">
 define('Mobile/Template/Views/Account/List', [
     'dojo/_base/declare',
     'dojo/string',
@@ -71,7 +71,7 @@ define('Mobile/Template/Views/Account/List', [
 
         //Templates
         itemTemplate: new Simplate([
-            '<h3>{%= $.AccountName %}</h3>'
+            '<h3>\{\%= $.AccountName \%\}</h3>'
         ]),
 
         //View Properties
@@ -90,10 +90,10 @@ define('Mobile/Template/Views/Account/List', [
         }
     });
 });
-</pre>{% endraw %}
+</pre>
 
 Then when you require (as a dependency) in another module you need to use `new`, or refer to the `prototype`:
-{% raw %}<pre class="brush: js">
+<pre class="brush: js">
 define('Mobile/Template/ApplicationModule', [
     Mobile/Template/Views/Account/List
 ], function(AccountList) {
@@ -102,6 +102,6 @@ var viewInstance = new AccountList();
 var accountListTitle = AccountList.prototype.titleText;
 
 });
-</pre>{% endraw %}
+</pre>
 
 
