@@ -14,10 +14,7 @@
       <change type="DELETED" beforePath="D:\Work\argos\template-guide\pages\Views--Navigation-Exercises.md" afterPath="" />
       <change type="DELETED" beforePath="D:\Work\argos\template-guide\pages\Views--Toolbar-Exercises.md" afterPath="" />
       <change type="DELETED" beforePath="D:\Work\argos\template-guide\pages\Views.md" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/params.json" afterPath="$PROJECT_DIR$/params.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/stylesheets/stylesheet.css" afterPath="$PROJECT_DIR$/stylesheets/stylesheet.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/template-guide/index.html" afterPath="$PROJECT_DIR$/template-guide/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/_config.yml" afterPath="$PROJECT_DIR$/_config.yml" />
     </list>
     <ignored path="argos.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -57,15 +54,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="guide.html" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/_layouts/guide.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="4" column="17" selection-start="118" selection-end="118" vertical-scroll-proportion="-2.6153846">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="header.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/_includes/header.html">
           <provider selected="true" editor-type-id="text-editor">
@@ -84,10 +72,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="footer.html" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="footer.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/_includes/footer.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="19" column="7" selection-start="644" selection-end="644" vertical-scroll-proportion="0.57168144">
+            <state line="19" column="7" selection-start="644" selection-end="644" vertical-scroll-proportion="-12.423077">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="_config.yml" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/_config.yml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="2" column="0" selection-start="23" selection-end="23" vertical-scroll-proportion="0.05752961">
               <folding />
             </state>
           </provider>
@@ -152,12 +149,12 @@
         <option value="$PROJECT_DIR$/template-guide/index.html" />
         <option value="$PROJECT_DIR$/_posts/2012-06-25-SData_Configuration_and_Login_Page.md" />
         <option value="$PROJECT_DIR$/stylesheets/stylesheet.css" />
-        <option value="$PROJECT_DIR$/_config.yml" />
         <option value="$PROJECT_DIR$/_posts/2012-06-25-Simplate.md" />
         <option value="$PROJECT_DIR$/_posts/2012-06-25-Views_Toolbar_Exercises.md" />
         <option value="$PROJECT_DIR$/_posts/2012-06-25-AMD_Define_and_Declare.md" />
         <option value="$PROJECT_DIR$/_includes/header.html" />
         <option value="$PROJECT_DIR$/_includes/footer.html" />
+        <option value="$PROJECT_DIR$/_config.yml" />
       </list>
     </option>
   </component>
@@ -448,13 +445,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/_config.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="15" selection-start="171" selection-end="171" vertical-scroll-proportion="0.22077923">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/stylesheets/stylesheet.css">
       <provider selected="true" editor-type-id="text-editor">
         <state line="167" column="0" selection-start="4488" selection-end="4488" vertical-scroll-proportion="0.0">
@@ -499,7 +489,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/_includes/footer.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="7" selection-start="644" selection-end="644" vertical-scroll-proportion="0.57168144">
+        <state line="19" column="7" selection-start="644" selection-end="644" vertical-scroll-proportion="-12.423077">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/_config.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="0" selection-start="23" selection-end="23" vertical-scroll-proportion="0.05752961">
           <folding />
         </state>
       </provider>
