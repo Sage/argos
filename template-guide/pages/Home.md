@@ -1,0 +1,1 @@
+Welcome to the argos-template wiki!
