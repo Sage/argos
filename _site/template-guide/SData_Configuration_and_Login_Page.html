@@ -3,11 +3,11 @@
 <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/stylesheet.css" media="screen"/>
-    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/shCore.css"/>
-    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/shThemeDefault.css"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/shCore.css"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/shThemeDefault.css"/>
 
-    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/print.css" media="print"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/print.css" media="print"/>
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -51,6 +51,7 @@
 <li>Inspect the returned Class -- the connection we defined has been converted to a <code>Sage.SData.Client.SDataService</code> from the <a href="https://github.com/Sage/SDataJavaScriptClientLib/blob/master/src/SDataService.js">SDataJavascriptClientLib</a></li>
 </ol>
 
+
 <h3>Result</h3>
 
 <p>All Views will be using the connection using the same call above and then use the other SDataJavascriptClientLib request types for getting and posting.</p>
@@ -63,274 +64,268 @@
 
 <ol>
 <li>In <code>argos-template/src/Views</code> create a new file named <code>Login.js</code></li>
-<li>Define the module and inherit the base Edit View</li>
-</ol>
+<li><p>Define the module and inherit the base Edit View</p>
 
 <p><pre class="brush: js">
-define(&#39;Mobile/SalesLogix/Views/Login&#39;, [
-    &#39;dojo/_base/declare&#39;,
-    &#39;Sage/Platform/Mobile/Edit&#39;
+define('Mobile/SalesLogix/Views/Login', [
+ 'dojo/_base/declare',
+ 'Sage/Platform/Mobile/Edit'
 ], function(
-    declare,
-    Edit
+ declare,
+ Edit
 ) {
-    return declare(&#39;Mobile.SalesLogix.Views.Login&#39;, [Edit], {
-    });
+ return declare('Mobile.SalesLogix.Views.Login', [Edit], {
+ });
 });
-   </pre></p>
+</pre></p></li>
+<li><p>Add a button element to the <code>widgetTemplate</code>, while normally we would add a toolbar item for actions like this a Login page doesn't look quite right without a big ol' Login button.</p>
 
-<ol>
-<li>Add a button element to the <code>widgetTemplate</code>, while normally we would add a toolbar item for actions like this a Login page doesn&#39;t look quite right without a big ol&#39; Login button.</li>
-</ol>
+<p><pre class="brush: js"></p>
 
-<p><pre class="brush: js">
-        widgetTemplate: new Simplate([
-            &#39;<div id="{%= $.id %}" title="{%: $.titleText %}" class="panel {%= $.cls %}" hideBackButton="true">&#39;,
-            &#39;<div class="panel-content" data-dojo-attach-point="contentNode"></div>&#39;,
-            &#39;<button class="button actionButton" data-action="authenticate"><span>{%: $.logOnText %}</span></button>&#39;,
-            &#39;</div>&#39;
-        ]),
-   </pre></p>
+<pre><code> widgetTemplate: new Simplate([
+     '&lt;div id="{%= $.id %}" title="{%: $.titleText %}" class="panel {%= $.cls %}" hideBackButton="true"&gt;',
+     '&lt;div class="panel-content" data-dojo-attach-point="contentNode"&gt;&lt;/div&gt;',
+     '&lt;button class="button actionButton" data-action="authenticate"&gt;&lt;span&gt;{%: $.logOnText %}&lt;/span&gt;&lt;/button&gt;',
+     '&lt;/div&gt;'
+ ]),
+</code></pre>
 
-<ol>
+<p></pre></p></li>
 <li><p>Pointers:</p>
 
 <ul>
 <li>Use of variables for text strings. This is so localization modules can override the values, no hard-coded strings should be displayed to the user.</li>
-<li><code>hideBackButton=&quot;true&quot;</code> on a View you can add this attr to the main div to remove the back button.</li>
+<li><code>hideBackButton="true"</code> on a View you can add this attr to the main div to remove the back button.</li>
 <li><code>&lt;button&gt;</code> elements have fuzzy touch areas on phones increasing usability</li>
-<li><code>data-action=&quot;function&quot;</code> place this attribute on any element to have it respond to <code>onclick</code> events. The corresponding function name will then be fired in that views&#39; context.</li>
-</ul></li>
-<li><p>Add the localizable text variables:</p></li>
-</ol>
+<li><code>data-action="function"</code> place this attribute on any element to have it respond to <code>onclick</code> events. The corresponding function name will then be fired in that views' context.</li>
+</ul>
+</li>
+<li><p>Add the localizable text variables:</p>
 
-<p><pre class="brush: js">
-        logOnText: &#39;Log On&#39;,
-        titleText: &#39;My App&#39;,
-   </pre></p>
+<p><pre class="brush: js"></p>
 
-<ol>
-<li>Add the view properties id to login and busy to false. The busy flag is for Edit views and is tied to their <code>enable()</code> and <code>disable()</code> functions for controlling user interactions.</li>
-</ol>
-
-<p><pre class="brush: js">
-        id: &#39;login&#39;,
-        busy: false,
-   </pre></p>
-
-<ol>
-<li>Empty the toolbars, no need for any buttons</li>
-</ol>
-
-<p><pre class="brush: js">
-        createToolLayout: function() {
-            return this.tools || (this.tools = {
-                bbar: false,
-                tbar: false
-            });
-        },
-   </pre></p>
-
-<ol>
-<li>Create the layout with our login fields</li>
-</ol>
-
-<p><pre class="brush: js">
-        createLayout: function() {
-            return this.layout || (this.layout = [
-                {
-                    name: &#39;username&#39;,
-                    label: this.userText,
-                    type: &#39;text&#39;
-                },
-                {
-                    name: &#39;password&#39;,
-                    label: this.passText,
-                    type: &#39;text&#39;,
-                    inputType: &#39;password&#39;
-                }
-            ]);
-        },
-   </pre></p>
-
-<ol>
-<li>Add the <code>authenticate</code> handler for the button:</li>
-</ol>
-
-<p><pre class="brush: js">
-        authenticate: function () {
-            if (this.busy) return;</p>
-
-<pre><code>        var credentials = this.getValues(),
-            username = credentials &amp;&amp; credentials.username;
-
-        if (username &amp;&amp; /\w+/.test(username))
-            this.validateCredentials(credentials);
-    },
+<pre><code> logOnText: 'Log On',
+ titleText: 'My App',
 </code></pre>
 
-<p></pre></p>
+<p></pre></p></li>
+<li><p>Add the view properties id to login and busy to false. The busy flag is for Edit views and is tied to their <code>enable()</code> and <code>disable()</code> functions for controlling user interactions.</p>
 
-<ol>
+<p><pre class="brush: js"></p>
+
+<pre><code> id: 'login',
+ busy: false,
+</code></pre>
+
+<p></pre></p></li>
+<li><p>Empty the toolbars, no need for any buttons</p>
+
+<p><pre class="brush: js"></p>
+
+<pre><code> createToolLayout: function() {
+     return this.tools || (this.tools = {
+         bbar: false,
+         tbar: false
+     });
+ },
+</code></pre>
+
+<p></pre></p></li>
+<li><p>Create the layout with our login fields</p>
+
+<p><pre class="brush: js"></p>
+
+<pre><code> createLayout: function() {
+     return this.layout || (this.layout = [
+         {
+             name: 'username',
+             label: this.userText,
+             type: 'text'
+         },
+         {
+             name: 'password',
+             label: this.passText,
+             type: 'text',
+             inputType: 'password'
+         }
+     ]);
+ },
+</code></pre>
+
+<p></pre></p></li>
+<li><p>Add the <code>authenticate</code> handler for the button:</p>
+
+<p><pre class="brush: js"></p>
+
+<pre><code> authenticate: function () {
+     if (this.busy) return;
+
+     var credentials = this.getValues(),
+         username = credentials &amp;&amp; credentials.username;
+
+     if (username &amp;&amp; /\w+/.test(username))
+         this.validateCredentials(credentials);
+ },
+</code></pre>
+
+<p></pre></p></li>
 <li><p>Feel free to expand the username/password check before firing a request, the above makes sure we have a name that is not just spaces.</p></li>
-<li><p>Add the <code>validateCredentials</code> function</p></li>
-</ol>
+<li><p>Add the <code>validateCredentials</code> function</p>
 
-<p><pre class="brush: js">
-        validateCredentials: function (credentials) {
-            this.disable();
-            App.authenticateUser(credentials, {
-                success: function(result) {
-                    this.enable();
-                    App.navigateToInitialView();
-                },
-                failure: function(result) {
-                    this.enable();
-                    if (result.response.status == 403)
-                        alert(this.invalidUserText);
-                    else
-                        alert(this.serverProblemText);
-                },
-                scope: this
-            });
-        }
-   </pre></p>
+<p><pre class="brush: js"></p>
 
-<ol>
-<li><p>What the above does is disable the view (so no interactions) and pass along to the Application level authenticate user (we will add this soon), which is a wrapper for a SData request and as such it takes the normal SData request callback options.</p></li>
-<li><p>Before we leave <code>Login.js</code> lets go back and add the rest of the localizable strings for our fields and messages</p></li>
-</ol>
-
-<p><pre class="brush: js">
-        logOnText: &#39;Log On&#39;,
-        passText: &#39;password&#39;,
-        titleText: &#39;My App&#39;,
-        userText: &#39;user name&#39;,
-        invalidUserText: &#39;The user name or password is invalid.&#39;,
-        serverProblemText: &#39;A problem occured on the server.&#39;,
-   </pre></p>
-
-<ol>
-<li>Now go into <code>src/Application.js</code> and let&#39;s add the <code>authenticateUser(credentials, options)</code> function.</li>
-</ol>
-
-<p><pre class="brush: js">
-        authenticateUser: function(credentials, options) {
-            var service = this.getService()
-                .setUserName(credentials.username)
-                .setPassword(credentials.password || &#39;&#39;);</p>
-
-<pre><code>        var request = new Sage.SData.Client.SDataServiceOperationRequest(service)
-            .setContractName(&#39;system&#39;)
-            .setOperationName(&#39;getCurrentUser&#39;);
-
-        request.execute({}, {
-            success: lang.hitch(this, this.onAuthenticateUserSuccess, credentials, options.success, options.scope),
-            failure: lang.hitch(this, this.onAuthenticateUserFailure, options.failure, options.scope),
-            aborted: lang.hitch(this, this.onAuthenticateUserFailure, options.failure, options.scope)
-        });
-    },
+<pre><code> validateCredentials: function (credentials) {
+     this.disable();
+     App.authenticateUser(credentials, {
+         success: function(result) {
+             this.enable();
+             App.navigateToInitialView();
+         },
+         failure: function(result) {
+             this.enable();
+             if (result.response.status == 403)
+                 alert(this.invalidUserText);
+             else
+                 alert(this.serverProblemText);
+         },
+         scope: this
+     });
+ }
 </code></pre>
 
-<p></pre></p>
+<p></pre></p></li>
+<li><p>What the above does is disable the view (so no interactions) and pass along to the Application level authenticate user (we will add this soon), which is a wrapper for a SData request and as such it takes the normal SData request callback options.</p></li>
+<li><p>Before we leave <code>Login.js</code> lets go back and add the rest of the localizable strings for our fields and messages</p>
 
-<ol>
-<li>The key point here is that it is creating a <code>Sage.SData.Client.SDataServiceOperationRequest</code> and in the case of SalesLogix SData using the <code>system</code> contract and the <code>getCurrentUser</code> operation which ends up looking like:</li>
-</ol>
+<p><pre class="brush: js"></p>
+
+<pre><code> logOnText: 'Log On',
+ passText: 'password',
+ titleText: 'My App',
+ userText: 'user name',
+ invalidUserText: 'The user name or password is invalid.',
+ serverProblemText: 'A problem occured on the server.',
+</code></pre>
+
+<p></pre></p></li>
+<li><p>Now go into <code>src/Application.js</code> and let's add the <code>authenticateUser(credentials, options)</code> function.</p>
+
+<p><pre class="brush: js"></p>
+
+<pre><code> authenticateUser: function(credentials, options) {
+     var service = this.getService()
+         .setUserName(credentials.username)
+         .setPassword(credentials.password || '');
+
+     var request = new Sage.SData.Client.SDataServiceOperationRequest(service)
+         .setContractName('system')
+         .setOperationName('getCurrentUser');
+
+     request.execute({}, {
+         success: lang.hitch(this, this.onAuthenticateUserSuccess, credentials, options.success, options.scope),
+         failure: lang.hitch(this, this.onAuthenticateUserFailure, options.failure, options.scope),
+         aborted: lang.hitch(this, this.onAuthenticateUserFailure, options.failure, options.scope)
+     });
+ },
+</code></pre>
+
+<p></pre></p></li>
+<li><p>The key point here is that it is creating a <code>Sage.SData.Client.SDataServiceOperationRequest</code> and in the case of SalesLogix SData using the <code>system</code> contract and the <code>getCurrentUser</code> operation which ends up looking like:</p>
 
 <p><pre class="brush: js">
 http://localhost/sdata/slx/system/-/$service/getCurrentUser?format=json
-   </pre></p>
+</pre></p>
 
-<p>It is also important to note that the <code>getService()</code> calls returns the <em>instance</em> of the service meaning any changes will affect all future use of the service. Here was are setting the username and password meaning all future calls with this service will use this credential.</p>
+<p>It is also important to note that the <code>getService()</code> calls returns the <em>instance</em> of the service meaning any changes will affect all future use of the service. Here was are setting the username and password meaning all future calls with this service will use this credential.</p></li>
+<li><p>To process the returned response we have the <code>onAuthenticateUserSuccess</code> function which is passed the <code>credentials</code>, <code>options.success</code> callback and <code>options.scope</code>. It's last parameter will be the SData result as <code>dojo.hitch</code> prepends the argument list.</p>
 
-<ol>
-<li>To process the returned response we have the <code>onAuthenticateUserSuccess</code> function which is passed the <code>credentials</code>, <code>options.success</code> callback and <code>options.scope</code>. It&#39;s last parameter will be the SData result as <code>dojo.hitch</code> prepends the argument list.</li>
-</ol>
+<p><pre class="brush: js"></p>
 
-<p><pre class="brush: js">
-        onAuthenticateUserSuccess: function(credentials, callback, scope, result) {
-            var user = {
-                &#39;$key&#39;: lang.trim(result[&#39;response&#39;][&#39;userId&#39;]),
-                &#39;$descriptor&#39;: result[&#39;response&#39;][&#39;prettyName&#39;],
-                &#39;UserName&#39;: result[&#39;response&#39;][&#39;userName&#39;]
-            };</p>
+<pre><code> onAuthenticateUserSuccess: function(credentials, callback, scope, result) {
+     var user = {
+         '$key': lang.trim(result['response']['userId']),
+         '$descriptor': result['response']['prettyName'],
+         'UserName': result['response']['userName']
+     };
 
-<pre><code>        this.context[&#39;user&#39; ] = user;
-        this.context[&#39;roles&#39;] = result[&#39;response&#39;][&#39;roles&#39;];
-        this.context[&#39;securedActions&#39;] = result[&#39;response&#39;][&#39;securedActions&#39;];
+     this.context['user' ] = user;
+     this.context['roles'] = result['response']['roles'];
+     this.context['securedActions'] = result['response']['securedActions'];
 
-        if (this.context[&#39;securedActions&#39;])
-        {
-            array.forEach(this.context[&#39;securedActions&#39;], function(item) {
-                this[item] = true;
-            }, (this.context[&#39;userSecurity&#39;] = {}));
-        }
+     if (this.context['securedActions'])
+     {
+         array.forEach(this.context['securedActions'], function(item) {
+             this[item] = true;
+         }, (this.context['userSecurity'] = {}));
+     }
 
-        if (callback)
-            callback.call(scope || this, {user: user});
-    },
+     if (callback)
+         callback.call(scope || this, {user: user});
+ },
 </code></pre>
 
-<p></pre></p>
-
-<ol>
-<li><p>That&#39;s a lot of code but it really breaks down to three parts:</p>
+<p></pre></p></li>
+<li><p>That's a lot of code but it really breaks down to three parts:</p>
 
 <ol>
 <li>Parse the response to get the Users details and store that information into the App.context object</li>
 <li>Flatten the securedActions array into an object for quicker lookups</li>
-<li>Call the callback, which passes control back over to <code>Login.js</code>, where it gets <code>enable()</code>ed and calls <code>App.navigateToInitialView()</code>.</li>
-</ol></li>
-</ol>
+<li><p>Call the callback, which passes control back over to <code>Login.js</code>, where it gets <code>enable()</code>ed and calls <code>App.navigateToInitialView()</code>.</p>
 
-<pre><code>  * Implementation of parsing the user details and security will differ on your SData provider.
+<ul>
+<li>Implementation of parsing the user details and security will differ on your SData provider.</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><p>When authentication fails we want to remove the user/pass from the service instance just to be on the safe side:</p>
+
+<p><pre class="brush: js"></p>
+
+<pre><code> onAuthenticateUserFailure: function(callback, scope, response) {
+     var service = this.getService();
+     if (service)
+         service
+             .setUserName(false)
+             .setPassword(false);
+
+     if (callback)
+         callback.call(scope || this, {response: response});
+ },
 </code></pre>
 
-<ol>
-<li>When authentication fails we want to remove the user/pass from the service instance just to be on the safe side:</li>
-</ol>
-
-<p><pre class="brush: js">
-        onAuthenticateUserFailure: function(callback, scope, response) {
-            var service = this.getService();
-            if (service)
-                service
-                    .setUserName(false)
-                    .setPassword(false);</p>
-
-<pre><code>        if (callback)
-            callback.call(scope || this, {response: response});
-    },
-</code></pre>
-
-<p></pre></p>
-
-<ol>
+<p></pre></p></li>
 <li><p>In which the callback will alert the user with an error message as defined in <code>Login.js</code>.</p></li>
 <li><p>Before we go and test we need to make sure that the login page is the first one shown instead of the home page.</p></li>
 <li><p>Still in <code>Application.js</code> at the very bottom create the function <code>navigateToLoginView</code> and have it show our login view:
-<pre class="brush: js">
-    navigateToLoginView: function() {
-        var view = this.getView(&#39;login&#39;);
-        if (view)
-            view.show();
-    }
-</pre></p></li>
+<pre class="brush: js"></p>
+
+<pre><code> navigateToLoginView: function() {
+     var view = this.getView('login');
+     if (view)
+         view.show();
+ }
+</code></pre>
+
+<p></pre></p></li>
 <li><p>Scroll up to the <code>run()</code> function and change the navigate to home to navigate to login:
-<pre class="brush: js">
-    run: function() {
-        this.inherited(arguments);
-        this.navigateToLoginView();
-    },
-</pre></p></li>
-<li><p>Save and run your app, logging in with a valid user in your database (example: &quot;lee&quot; no pass).</p></li>
+<pre class="brush: js"></p>
+
+<pre><code> run: function() {
+     this.inherited(arguments);
+     this.navigateToLoginView();
+ },
+</code></pre>
+
+<p></pre></p></li>
+<li><p>Save and run your app, logging in with a valid user in your database (example: "lee" no pass).</p></li>
 <li><p>To verify, after logging in type in the console: <code>App.context.user</code> and make sure you see the returned information.</p></li>
 </ol>
 
+
 <h3>Result</h3>
 
-<p>You now have a working authentication system with login page. This could be further expanded with a remember me (storing credentials), or any other hooks you need for getting the initial user information. From here all the List, Detail and Edit views are &quot;live&quot; meaning you can set their view properties to point to various SData endpoints.</p>
+<p>You now have a working authentication system with login page. This could be further expanded with a remember me (storing credentials), or any other hooks you need for getting the initial user information. From here all the List, Detail and Edit views are "live" meaning you can set their view properties to point to various SData endpoints.</p>
 
 </section>
 
@@ -341,12 +336,15 @@ http://localhost/sdata/slx/system/-/$service/getCurrentUser?format=json
 </div>
 
 <!-- Scripts -->
-<script src="http://localhost:4000/javascripts/shCore.js"></script>
-<script src="http://localhost:4000/javascripts/shBrushJScript.js"></script>
-<script src="http://localhost:4000/javascripts/shBrushCss.js"></script>
-<script src="http://localhost:4000/javascripts/shBrushCSharp.js"></script>
-<script src="http://localhost:4000/javascripts/shBrushRuby.js"></script>
+<script src="/javascripts/shCore.js"></script>
+<script src="/javascripts/shBrushJScript.js"></script>
+<script src="/javascripts/shBrushCss.js"></script>
+<script src="/javascripts/shBrushXml.js"></script>
+<script src="/javascripts/shBrushCSharp.js"></script>
+<script src="/javascripts/shBrushRuby.js"></script>
 
-<script>SyntaxHighlighter.all();</script>
+<script>
+    SyntaxHighlighter.all();
+</script>
 </body>
 </html>

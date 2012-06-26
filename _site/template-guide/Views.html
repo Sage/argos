@@ -3,11 +3,11 @@
 <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/stylesheet.css" media="screen"/>
-    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/shCore.css"/>
-    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/shThemeDefault.css"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/shCore.css"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/shThemeDefault.css"/>
 
-    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/print.css" media="print"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/print.css" media="print"/>
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -37,7 +37,7 @@
 
 <h2>View</h2>
 
-<p>Every view derives from the base View class which includes the following components:   </p>
+<p>Every view derives from the base View class which includes the following components:</p>
 
 <ul>
 <li>Toolbar setup, and custom Toolbar items</li>
@@ -47,6 +47,7 @@
 <li>Basic Refresh logic</li>
 <li>Unique Id property</li>
 </ul>
+
 
 <p>While the list seems short you get a fully functioning transition system with navigation history and context, any number of customizable toolbars with toolbar items, base markup and id setup, and a mechanism for refreshing the view when required.</p>
 
@@ -63,6 +64,7 @@ domNode: HTMLNode, // all views are Dijits and domNode refers to the topmost con
 tools: {} // toolbars and their item definitions
 </pre>
 
+
 <h3>Functions</h3>
 
 <pre class="brush: js">
@@ -74,6 +76,7 @@ refresh(); // Called during transition if refreshRequired is true
 show(options, transitionOptions); // called to transition to this view, options is set to views option property and transitionOptions is passed to the transition manager
 </pre>
 
+
 </section>
 
 <footer>
@@ -83,12 +86,15 @@ show(options, transitionOptions); // called to transition to this view, options 
 </div>
 
 <!-- Scripts -->
-<script src="http://localhost:4000/javascripts/shCore.js"></script>
-<script src="http://localhost:4000/javascripts/shBrushJScript.js"></script>
-<script src="http://localhost:4000/javascripts/shBrushCss.js"></script>
-<script src="http://localhost:4000/javascripts/shBrushCSharp.js"></script>
-<script src="http://localhost:4000/javascripts/shBrushRuby.js"></script>
+<script src="/javascripts/shCore.js"></script>
+<script src="/javascripts/shBrushJScript.js"></script>
+<script src="/javascripts/shBrushCss.js"></script>
+<script src="/javascripts/shBrushXml.js"></script>
+<script src="/javascripts/shBrushCSharp.js"></script>
+<script src="/javascripts/shBrushRuby.js"></script>
 
-<script>SyntaxHighlighter.all();</script>
+<script>
+    SyntaxHighlighter.all();
+</script>
 </body>
 </html>

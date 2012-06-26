@@ -3,11 +3,11 @@
 <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/stylesheet.css" media="screen"/>
-    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/shCore.css"/>
-    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/shThemeDefault.css"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/shCore.css"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/shThemeDefault.css"/>
 
-    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/print.css" media="print"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/print.css" media="print"/>
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -33,9 +33,9 @@
 </header>
 
 <section id="main_content" role="main">
-    <p>As mentioned in the View overview all Views have an <code>id</code> property. Knowing the <code>id</code> enables you to get a references to that View, and therefore it&#39;s <code>show()</code> function for navigation.</p>
+    <p>As mentioned in the View overview all Views have an <code>id</code> property. Knowing the <code>id</code> enables you to get a references to that View, and therefore it's <code>show()</code> function for navigation.</p>
 
-<p>For all the exercises the id&#39;s of the views in argos-template are: <code>account_list</code>, <code>account_detail</code> and <code>account_edit</code>.</p>
+<p>For all the exercises the id's of the views in argos-template are: <code>account_list</code>, <code>account_detail</code> and <code>account_edit</code>.</p>
 
 <h2>Exercise 1: Transition</h2>
 
@@ -45,8 +45,9 @@
 
 <ol>
 <li>Open <code>index-dev.html</code> and then open your javascript console panel (see <a href="https://github.com/Sage/argos-template/wiki/Browser-Setup">Browser Setup</a> for help).</li>
-<li>Type in <code>App.getView(&#39;account_list&#39;).show()</code> and press enter.</li>
+<li>Type in <code>App.getView('account_list').show()</code> and press enter.</li>
 </ol>
+
 
 <h3>Result</h3>
 
@@ -54,17 +55,18 @@
 
 <h2>Exercise 2: Navigation Options</h2>
 
-<p>Navigation Options, or sometimes called View Options, is the object passed into the <code>show()</code> call that get stored into the views <code>options</code> property. Many Views have custom navigation options that they respond to and they will be covered under their respective help pages, for now let&#39;s try out passing <code>key</code> to a Detail View.</p>
+<p>Navigation Options, or sometimes called View Options, is the object passed into the <code>show()</code> call that get stored into the views <code>options</code> property. Many Views have custom navigation options that they respond to and they will be covered under their respective help pages, for now let's try out passing <code>key</code> to a Detail View.</p>
 
 <h3>Work it!</h3>
 
 <ol>
 <li>Go back to the Home Screen, via refresh or pressing the Home button.</li>
-<li>Back in the javascript console type: <code>App.getView(&#39;account_detail&#39;).show({key: &#39;001&#39;})</code> and press enter.</li>
+<li>Back in the javascript console type: <code>App.getView('account_detail').show({key: '001'})</code> and press enter.</li>
 <li>You are shown the Template Inc Detail entry. Press Back or Home.</li>
-<li>Now type in: <code>App.getView(&#39;account_detail&#39;).show({key: &#39;002&#39;})</code> and press enter.</li>
+<li>Now type in: <code>App.getView('account_detail').show({key: '002'})</code> and press enter.</li>
 <li>You are shown the Boilerplate Co Detail entry.</li>
 </ol>
+
 
 <h2>Results</h2>
 
@@ -72,39 +74,44 @@
 
 <h2>Exercise 3: Inspecting Existing Code</h2>
 
-<p>We&#39;ve used the commands in the console window, but let&#39;s take a peek at the existing logic in Home.js and MainToolbar.js for their uses of the same command.</p>
+<p>We've used the commands in the console window, but let's take a peek at the existing logic in Home.js and MainToolbar.js for their uses of the same command.</p>
 
 <h3>Work it!</h3>
 
 <ol>
-<li>Open <code>Home.js</code> and find the <code>createLayout</code> function, ignore the top half and look for the for loop and the line where it&#39;s adding an object:
-<pre class="brush: js">
+<li>Open <code>Home.js</code> and find the <code>createLayout</code> function, ignore the top half and look for the for loop and the line where it's adding an object:
+ <pre class="brush: js">
 visible.children.push({ ... });
-</pre></li>
-<li>This line is adding each row and it&#39;s definition is very similar to tool items mentioned in the previous section. This structure will be a common recurring theme.</li>
+ </pre></li>
+<li>This line is adding each row and it's definition is very similar to tool items mentioned in the previous section. This structure will be a common recurring theme.</li>
 <li>Note that the <code>action</code> property is set to <code>navigateToView</code> and <code>view</code> is set to the Views <code>id</code> property (see where this is going?) - scroll up to the <code>navigateToView</code> function.</li>
 <li>NavigateToView is being passed <code>params</code> which has the <code>view</code> property pointing back to the views <code>id</code>. The rest of the code is the exact same command used in Exercise 1.</li>
 </ol>
 
-<p>You may have used the Home button to return back to the main page, let&#39;s look at that next.</p>
+
+<p>You may have used the Home button to return back to the main page, let's look at that next.</p>
 
 <ol>
 <li>Open <code>MailToolbar.js</code> and find where it is defining the <code>tools</code> variable in the <code>showTools</code> function:
-<pre class="brush: js">
+ <pre class="brush: js">
 tools = (tools || []).concat([ ... ]);
-</pre></li>
+ </pre></li>
 <li>This line is appending the <code>back</code> and <code>home</code> tool items to every view</li>
-<li>Look at the <code>home</code> tool item definition at the <code>fn</code> property it&#39;s set directly to <code>navigateToHomeView</code></li>
+<li>Look at the <code>home</code> tool item definition at the <code>fn</code> property it's set directly to <code>navigateToHomeView</code></li>
 <li>NavigateToHome View is defined near the bottom and it uses a shortcut <code>App.navigateToHomeView()</code>, which if you follow it to the definition it reads:
-<pre class="brush: js">
+ <pre class="brush: js">
 navigateToHomeView: function() {
-var view = this.getView(&#39;home&#39;);
-if (view)
-    view.show();
-},
-</pre></li>
+ var view = this.getView('home');
+ if (view)
+
+<pre><code> view.show();
+</code></pre>
+
+<p>},
+ </pre></p></li>
 <li>Which is the same code as before (as <code>this</code> is App).</li>
 </ol>
+
 
 <h3>Result</h3>
 
@@ -122,12 +129,13 @@ if (view)
 <li>Inspect the three objects within the array - it saves a lot of data about each page into the navigation history for context retrieval and navigation restoration.</li>
 <li>Back in the app, click the Home button.</li>
 <li>Run the same command in the console.</li>
-<li>Note that the history has been &quot;cleaned&quot; to only show the Home View. The management system keeps the history trimmed to only the relevant tree path to recreate the navigation state. </li>
+<li>Note that the history has been "cleaned" to only show the Home View. The management system keeps the history trimmed to only the relevant tree path to recreate the navigation state.</li>
 </ol>
+
 
 <h3>Results</h3>
 
-<p>If you think of breadcrumbs (World &gt; Politics &gt; 2012 &gt; Article#1) on a news site for example the same theory is applied to the navigation history, in order to get to Article#1 it needs the context information from each step to get back there. If you were to click World then it doesn&#39;t need to step all the way down then back up so all the history in between gets removed.</p>
+<p>If you think of breadcrumbs (World > Politics > 2012 > Article#1) on a news site for example the same theory is applied to the navigation history, in order to get to Article#1 it needs the context information from each step to get back there. If you were to click World then it doesn't need to step all the way down then back up so all the history in between gets removed.</p>
 
 </section>
 
@@ -138,12 +146,15 @@ if (view)
 </div>
 
 <!-- Scripts -->
-<script src="http://localhost:4000/javascripts/shCore.js"></script>
-<script src="http://localhost:4000/javascripts/shBrushJScript.js"></script>
-<script src="http://localhost:4000/javascripts/shBrushCss.js"></script>
-<script src="http://localhost:4000/javascripts/shBrushCSharp.js"></script>
-<script src="http://localhost:4000/javascripts/shBrushRuby.js"></script>
+<script src="/javascripts/shCore.js"></script>
+<script src="/javascripts/shBrushJScript.js"></script>
+<script src="/javascripts/shBrushCss.js"></script>
+<script src="/javascripts/shBrushXml.js"></script>
+<script src="/javascripts/shBrushCSharp.js"></script>
+<script src="/javascripts/shBrushRuby.js"></script>
 
-<script>SyntaxHighlighter.all();</script>
+<script>
+    SyntaxHighlighter.all();
+</script>
 </body>
 </html>

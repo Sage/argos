@@ -3,11 +3,11 @@
 <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/stylesheet.css" media="screen"/>
-    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/shCore.css"/>
-    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/shThemeDefault.css"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/shCore.css"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/shThemeDefault.css"/>
 
-    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/print.css" media="print"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/print.css" media="print"/>
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -39,14 +39,16 @@
 
 <h2>Folder Structure</h2>
 
-<p>For development the easiest folder setup is:
+<p>For development the easiest folder setup is:</p>
+
 <pre class="brush: js">
 \mobile
     \argos-sdk
     \products
         \app1
         \app2
-</pre></p>
+</pre>
+
 
 <h3>Work it!</h3>
 
@@ -54,6 +56,7 @@
 <li><p>Create a folder called <code>mobile</code> and within that, create a folder called <code>argos-sdk</code> and a folder called <code>products</code>.</p></li>
 <li><p>You should now have <code>\mobile</code>, <code>\mobile\argos-sdk</code> and <code>\mobile\products</code>.</p></li>
 </ol>
+
 
 <h2>SDK Download</h2>
 
@@ -63,10 +66,11 @@
 <h3>Work it!</h3>
 
 <ol>
-<li><p>Open the link and click <code>Download as zip</code> for the &quot;dev lastest&quot; or select one of the pre-built downloads for a specific versioned release.</p></li>
+<li><p>Open the link and click <code>Download as zip</code> for the "dev lastest" or select one of the pre-built downloads for a specific versioned release.</p></li>
 <li><p>Unzip the zipped folder – ignore the name of the zip file as github may append a hash.</p></li>
 <li><p>Place all the contents into our fresh <code>\mobile\argos-sdk</code> folder.</p></li>
 </ol>
+
 
 <h2>Template Download</h2>
 
@@ -80,6 +84,7 @@
 <li><p>Follow the download link and click <code>Download as zip</code>; and</p></li>
 <li><p>Unzip the zipped folder and place its contents within <code>\mobile\products\argos-template</code>.</p></li>
 </ol>
+
 
 <h2>Finished</h2>
 
@@ -100,12 +105,15 @@
 </div>
 
 <!-- Scripts -->
-<script src="http://localhost:4000/javascripts/shCore.js"></script>
-<script src="http://localhost:4000/javascripts/shBrushJScript.js"></script>
-<script src="http://localhost:4000/javascripts/shBrushCss.js"></script>
-<script src="http://localhost:4000/javascripts/shBrushCSharp.js"></script>
-<script src="http://localhost:4000/javascripts/shBrushRuby.js"></script>
+<script src="/javascripts/shCore.js"></script>
+<script src="/javascripts/shBrushJScript.js"></script>
+<script src="/javascripts/shBrushCss.js"></script>
+<script src="/javascripts/shBrushXml.js"></script>
+<script src="/javascripts/shBrushCSharp.js"></script>
+<script src="/javascripts/shBrushRuby.js"></script>
 
-<script>SyntaxHighlighter.all();</script>
+<script>
+    SyntaxHighlighter.all();
+</script>
 </body>
 </html>

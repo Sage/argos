@@ -3,11 +3,11 @@
 <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/stylesheet.css" media="screen"/>
-    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/shCore.css"/>
-    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/shThemeDefault.css"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/shCore.css"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/shThemeDefault.css"/>
 
-    <link rel="stylesheet" type="text/css" href="http://localhost:4000/stylesheets/print.css" media="print"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/print.css" media="print"/>
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -33,7 +33,7 @@
 </header>
 
 <section id="main_content" role="main">
-    <p>Simplate is powerful javascript templating function that greatly expands upon the printf concept. With a normal string substitution you define a format string with <code>$0</code> or <code>{0}</code> and pass in your arguments to get placed in the same order – first argument to 0, second argument to 1 and so on. Simplate takes this and says &quot;Hey, this is javascript, everything is an object&quot; and works upon passing in an object and scope and allowing you to use the properties in a normal manner.</p>
+    <p>Simplate is powerful javascript templating function that greatly expands upon the printf concept. With a normal string substitution you define a format string with <code>$0</code> or <code>{0}</code> and pass in your arguments to get placed in the same order – first argument to 0, second argument to 1 and so on. Simplate takes this and says "Hey, this is javascript, everything is an object" and works upon passing in an object and scope and allowing you to use the properties in a normal manner.</p>
 
 <p>But wait – there’s more! What if you want to run a little javascript here or there like a conditional statement or quick loop? You can do that too! And Simplates within Simplates within Simplates? Indeed, to your heart’s content.</p>
 
@@ -42,12 +42,16 @@
 <pre class="brush: js">
 var myTemplate = new Simplate( [ 'string', 'string', 'string'] );
 </pre>
-The array will be joined automatically, these makes multi lined templates easy for humans to parse.
 
-###Apply:
+
+<p>The array will be joined automatically, these makes multi lined templates easy for humans to parse.</p>
+
+<h3>Apply:</h3>
+
 <pre class="brush: js">
 var content = myTemplate.apply(myObject, scope);
 </pre>
+
 
 <h3>Formatting Options:</h3>
 
@@ -58,6 +62,7 @@ var content = myTemplate.apply(myObject, scope);
 `{%$   %}` – Same as `{%= %}` but is performed with a silent try/catch granting safe execution.
 `{%    %}` – Evaluates the contents as executable code
 </pre>
+
 
 <p>Inside all Simplate formatters the <code>$</code> object refers to the passed in object and <code>$$</code> refers to the scope. You then use normal javascript dot notation to access the properties of <code>$</code> and <code>$$</code>.</p>
 
@@ -84,6 +89,7 @@ for (var i = 0; i < feed.length; i++)
 // listNode may now be appended to document with all three rows
 </pre>
 
+
 <p>For a more in depth discussion including different ways of stating the contents please look at the demo page at github:
 <a href="https://github.com/SageScottsdalePlatform/simplate">https://github.com/SageScottsdalePlatform/simplate</a></p>
 
@@ -96,12 +102,15 @@ for (var i = 0; i < feed.length; i++)
 </div>
 
 <!-- Scripts -->
-<script src="http://localhost:4000/javascripts/shCore.js"></script>
-<script src="http://localhost:4000/javascripts/shBrushJScript.js"></script>
-<script src="http://localhost:4000/javascripts/shBrushCss.js"></script>
-<script src="http://localhost:4000/javascripts/shBrushCSharp.js"></script>
-<script src="http://localhost:4000/javascripts/shBrushRuby.js"></script>
+<script src="/javascripts/shCore.js"></script>
+<script src="/javascripts/shBrushJScript.js"></script>
+<script src="/javascripts/shBrushCss.js"></script>
+<script src="/javascripts/shBrushXml.js"></script>
+<script src="/javascripts/shBrushCSharp.js"></script>
+<script src="/javascripts/shBrushRuby.js"></script>
 
-<script>SyntaxHighlighter.all();</script>
+<script>
+    SyntaxHighlighter.all();
+</script>
 </body>
 </html>

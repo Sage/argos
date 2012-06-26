@@ -1,8 +1,4 @@
 safe: true
-auto: false
-
 future: true
-lsi: false
-pygments: false
-markdown: redcarpet
+markdown: rdiscount
 permalink: none
