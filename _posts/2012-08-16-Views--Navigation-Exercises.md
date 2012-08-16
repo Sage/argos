@@ -36,9 +36,9 @@ We've used the commands in the console window, but let's take a peek at the exis
 
 ###Work it!
 1. Open `products\argos-template\src\Views\Home.js` in a text editor and find the `createLayout` function, ignore the top half and look for the for loop and the line where it's adding an object:
-    <pre class="brush: js">
+<pre class="brush: js">
 visible.children.push({ ... });
-    </pre>
+</pre>
 1. This line is adding each row and it's definition is very similar to tool items mentioned in the previous section. This structure will be a common recurring theme.
 1. Note that the `action` property is set to `navigateToView` and `view` is set to the Views `id` property (see where this is going?) - scroll up to the `navigateToView` function.
 1. NavigateToView is being passed `params` which has the `view` property pointing back to the views `id`. The rest of the code is the exact same command used in Exercise 1.
@@ -46,19 +46,19 @@ visible.children.push({ ... });
 You may have used the Home button to return back to the main page, let's look at that next.
 
 1. Open `MailToolbar.js` and find where it is defining the `tools` variable in the `showTools` function:
-    <pre class="brush: js">
+<pre class="brush: js">
 tools = (tools || []).concat([ ... ]);
-    </pre>
+</pre>
 1. This line is appending the `back` and `home` tool items to every view
 1. Look at the `home` tool item definition at the `fn` property it's set directly to `navigateToHomeView`
 1. NavigateToHome View is defined near the bottom and it uses a shortcut `App.navigateToHomeView()`, which if you follow it to the definition it reads:
-    <pre class="brush: js">
+<pre class="brush: js">
 navigateToHomeView: function() {
     var view = this.getView('home');
     if (view)
         view.show();
 },
-    </pre>
+</pre>
 1. Which is the same code as before (as `this` is App).
 
 ###Result

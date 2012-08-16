@@ -13,14 +13,16 @@ All Views by default have a Title bar defined and the text shown is controlled w
 1. All Views are within the folder: `\mobile\products\argos-template\src\Views`. Open the `Home.js` View for editing.
 1. Find the `titleText` property and change it to read `Hello World!`:
 
-    <pre class="brush: js">
+<pre class="brush: js">
 //Localization
 titleText: 'Hello World!',
-    </pre>
+</pre>
 
 1. Save and refresh your browser.
 
 ###Result
+![Hello World Title](http://sage.github.com/argos/images/template-guide/toolbar-hello.png)
+
 Upon refreshing you should the title text at the top change to Hello World!, this property provides the most basic way of setting the title.
 
 ##Exercise 2: Adding a Toolbar Item
@@ -32,7 +34,7 @@ It's not much of a toolbar without a toolbar item!
 1. The key `tbar` refers to the title bar and is explicitly setting it to have no items, but let's add a new object in that array
 1. Give that object the following properties: id, icon, title and action. Set to `myButton`, `content/images/icons/add_24.png`, `Hello` and `onHello` respectfully:
 
-    <pre class="brush: js">
+<pre class="brush: js">
 createToolLayout: function() {
     return this.tools || (this.tools = {
         tbar: [{
@@ -43,19 +45,21 @@ createToolLayout: function() {
         }]
     });
 },
-    </pre>
+</pre>
 
 1. Add a new function named `onHello` and have it show an alert box with a message:
 
-    <pre class="brush: js">
+<pre class="brush: js">
 onHello: function() {
     alert('Hello Dave!');
 },
-    </pre>
+</pre>
 
 1. Save and reload your app
 
 ###Result
+![Adding Toolbar Item](http://sage.github.com/argos/images/template-guide/toolbar-button.png)
+
 You should now have a big green plus sign on the right hand side of your Titlebar, and on click it should run the `onHello` function. To go a bit deeper into each property:
 
 <pre class="brush: js">
@@ -73,7 +77,7 @@ As noted in Exercise 2, the new item automatically went to the right side -- wha
 ###Work it!
 1. Go back to your custom button and add a new property key `side` and set it to `left`:
 
-    <pre class="brush: js">
+<pre class="brush: js">
 tbar: [{
    id: 'myButton',
    icon: 'content/images/icons/add_24.png',
@@ -81,7 +85,7 @@ tbar: [{
    action: 'onHello',
    side: 'left'
 }]
-    </pre>
+</pre>
 
 1. Save and reload
 
@@ -95,7 +99,7 @@ Since the Titlebar only supports icon-only items out the box you may wish to pas
 
 1. In `Home.js` add a new property to the view itself called `textOnlyToolTemplate` and set it as:
 
-    <pre class="brush: js">
+<pre class="brush: js">
 textOnlyToolTemplate: new Simplate([
     '<button class="button toolButton toolButton-\{\%= $.side || "right" \%\} \{\%= ($$.enabled) ? "" : "toolButton-disabled" \%\} \{\%= $.cls \%\}"',
             'data-action="invokeTool" data-tool="\{\%= $.id \%\}"',
@@ -103,12 +107,12 @@ textOnlyToolTemplate: new Simplate([
         '<span>\{\%: $.text \%\}</span>',
     '</button>'
 ]),
-    </pre>
+</pre>
 
 1. Then add the `template` property to your custom tool item and set it to `this.textOnlyToolTemplate`
 1. Also add the `text` property and set it to `Click`:
 
-    <pre class="brush: js">
+<pre class="brush: js">
 tbar: [{
    id: 'myButton',
    icon: 'content/images/icons/add_24.png',
@@ -118,7 +122,7 @@ tbar: [{
    template: this.textOnlyToolTemplate,
    text: 'Click'
 }]
-    </pre>
+</pre>
 
 1. Save and reload.
 
@@ -134,10 +138,10 @@ First we will change the copyright text:
 1. Open `argos-template/src/Views/FooterToolbar.js` and find the property `copyrightText`.
 1. Change it to read `Free for every citizen of humankind`
 
-    <pre class="brush: js">
+<pre class="brush: js">
 // Localization
 copyrightText: 'Free for every citizen of humankind',
-    </pre>
+</pre>
 
 1. Save and reload
 
@@ -150,18 +154,18 @@ The footer tool items, however, are customized just like the Title bar items are
 1. Open `Home.js` and go to the `createToolLayout` function
 1. Set a new key to the `this.tools` object named `fbar` and set it to an empty array:
 
-    <pre class="brush: js">
+<pre class="brush: js">
 return this.tools || (this.tools = {
     tbar: [/*snipped*/],
     fbar: []
 });
-    </pre>
+</pre>
 
 1. Cut your tool item out of the `tbar` array into the `fbar` array
 1. Delete the `template` and `text` properties
 1. Change the `side` property to `right`
 
-    <pre class="brush: js">
+<pre class="brush: js">
 return this.tools || (this.tools = {
     tbar: [],
     fbar: [{
@@ -172,7 +176,7 @@ return this.tools || (this.tools = {
         side: 'right'
     }]
 });
-    </pre>
+</pre>
 
 1. Save and reload
 

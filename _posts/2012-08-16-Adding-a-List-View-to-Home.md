@@ -21,5 +21,8 @@ With a [List view defined](Create-a-Simple-List-View.html) lets add a link to it
 2\. Save and open `argos-template/index-dev.html`.
 
 ###Results
+
+![List on Home View](http://sage.github.com/argos/images/template-guide/list-home.png)
+
 If you are following this from Creating a Simple List View your application now has a working Home page with a link to Accounts. Clicking that row will take you to your Account List view where it will automatically construct an SData request, parse and present the results using `itemTemplate` and use a simple paging mechanism.
 
