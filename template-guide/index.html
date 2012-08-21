@@ -4,84 +4,51 @@ layout: guide
 <p>This Guide will use the base app "argos-template" to show how Argos works, connects to data, contructs views, and adds new components.</p>
 
 <h4>Table of Contents</h4>
-<ul id="toc">
-<li><a href="Setup.html">Setting Up Your Environment</a>
 
-<ul>
-<li><a href="Browser-Setup.html">Browser Setup</a></li>
-</ul>
-</li>
-<li><a href="Intro.html">Overview</a></li>
-<li><a href="Configuring-SData-Connection.html">Configuring SData Connection</a></li>
-<li><a href="Create-a-Simple-List-View.html">Create a Simple List View</a>
+<table class="toc">
+<tr><td><a href="Guide-Intro.html">Intro</a></td></tr>
+<tr><td><a href="Guide-Overview.html">Overview</a></td></tr>
+<tr><td><a href="Guide-Configuring-SData-Connection.html">Configuring SData Connection</a></td></tr>
+<tr><td><a href="Guide-Create-a-Simple-List-View.html">Create a List View</a></td></tr>
+<tr><td class="indent-first"><a href="Guide-Adding-a-List-View-to-Home.html">Add a List to the Home Page</a></td></tr>
+<tr><td><a href="Guide-Create-a-Simple-Detail-View.html">Create a Detail View</a></td></tr>
+<tr><td class="indent-first"><a href="Guide-Detail-Layout-Renderer-Template.html">Detail Layouts</a></td></tr>
+<tr><td><a href="Guide-Create-a-Simple-Edit-View.html">Create an Edit View</a></td></tr>
+<tr><td class="indent-first"><a href="Guide-Edit-View-Layouts.html">Edit Layouts</a></td></tr>
+</table>
 
-<ul>
-<li><a href="Adding-a-List-View-to-Home.html">Add a List View to the Home Page</a></li>
-</ul>
-</li>
-<li><a href="Create-a-Simple-Detail-View.html">Create a Simple Detail View</a>
 
-<ul>
-<li><a href="Wire-List-to-Detail.html">Wiring List to Detail</a></li>
-</ul>
-</li>
-<li><a href="Create-a-Simple-Edit-View.html">Create a Simple Edit View</a>
+<p>You may download the <a href="http://sage.github.com/argos/downloads/argos-template_guide-complete.zip">completed source code</a> (with the Guide applied).</p>
 
-<ul>
-<li><a href="Wire-Detail-to-Edit.html">Wiring Detail to Edit</a></li>
-<li><a href="Wire-List-to-Edit.html">Wiring List to Edit</a></li>
-</ul>
-</li>
-<li><p><a href="Detail-Layout-Properties.html">Detail Layout Properties</a></p>
+<h4>Going Beyond the Guide</h4>
 
-<ul>
-<li><a href="Provider.html">Provider</a></li>
-<li><a href="Value.html">Value</a></li>
-<li><a href="onCreate.html">onCreate</a></li>
-<li><a href="Renderer.html">Renderer</a></li>
-<li><a href="DetailTemplate.html">Template</a></li>
-<li><a href="DetailEncode.html">Encode</a></li>
-<li><a href="DetailCls.html">Cls</a></li>
-<li><a href="DetailUse.html">Use</a></li>
-</ul>
-</li>
-<li><p><a href="Edit-View-Layouts.html">Edit View Layouts</a></p>
+<p>While the Guide provides a great introductory course into getting started the Argos framework provides so much more. The following articles address advanced topics that may arise as your application grows.</p>
 
-<ul>
-<li><a href="_Field.html">_Field</a></li>
-<li><a href="Boolean-Field.html">Boolean Field</a></li>
-<li><a href="Date-Field.html">Date Field</a></li>
-<li><a href="Decimal-Field.html">Decimal Field</a></li>
-<li><a href="Duration-Field.html">Duration Field</a></li>
-<li><a href="Editor-Field.html">Editor Field</a></li>
-<li><a href="Hidden-Field.html">Hidden Field</a></li>
-<li><a href="Lookup-Field.html">Lookup Field</a></li>
-<li><a href="Phone-Field.html">Phone Field</a></li>
-<li><a href="Select-Field.html">Select Field</a></li>
-<li><a href="Signature-Field.html">Signature Field</a></li>
-<li><a href="Text-Field.html">Text Field</a></li>
-<li><a href="Text-Area-Field.html">Text Area Field</a></li>
-</ul>
-</li>
-<li><p><a href="How-Edit-Validation-Works.html">How Edit Validation Works</a></p></li>
-<li><a href="How-List-Search-Works.html">How List Search Works</a></li>
-<li><a href="Views--Toolbar-Exercises.html">Adding Toolbar Items</a></li>
-<li><a href="Defining-Hashtags.html">Defining Hashtags</a></li>
-<li><a href="Defining-List-Actions.html">Defining List Actions</a></li>
-<li><a href="Defining-Quick-Actions.html">Defining Quick Actions</a></li>
-<li><a href="Defining-Related-Views.html">Defining Related Views</a></li>
-<li><a href="Creating-a-Grouped-List.html">Creating a Grouped List</a></li>
-<li><a href="Creating-a-Login-Page-Using-Basic-Auth.html">Create a Login Page with Basic Auth</a></li>
-<li><a href="How-to-Localize-Strings-and-Formats.html">How to Localize Strings and Formats</a></li>
+<table class="toc">
+<tr><td><a href="Views--Navigation-Exercises.html">Navigation</a></td></tr>
+<tr><td><a href="Views--Toolbar-Exercises.html">Toolbars</a></td></tr>
+<tr><td><a href="How-List-Search-Works.html">List Search</a></td></tr>
+<tr><td><a href="Defining-Hashtags.html">List Hashtags</a></td></tr>
+<tr><td><a href="Defining-List-Actions.html">List Actions</a></td></tr>
+<tr><td><a href="Creating-a-Grouped-List.html">Grouped List</a></td></tr>
+<tr><td><a href="Defining-Quick-Actions.html">Detail Quick Actions</a></td></tr>
+<tr><td><a href="Defining-Related-Views.html">Detail Related Views</a></td></tr>
+<tr><td><a href="How-Edit-Validation-Works.html">Edit Validation</a></td></tr>
+<tr><td><a href="Creating-a-Login-Page-Using-Basic-Auth.html">Login Page</a></td></tr>
+<tr><td><a href="How-to-Localize-Strings-and-Formats.html">Localization</a></td></tr>
+</table>
 
-<ul>
-<li><h4>Appendix:</h4></li>
-<li><a href="Simplate.html">Simplate</a></li>
-<li><a href="AMD---Define-and-Declare.html">AMD</a></li>
-<li><a href="Views--Navigation-Exercises.html">Navigation History</a></li>
-<li><a href="List-Data-Life-Cycle.html">List Data Life Cycle</a></li>
-<li><a href="Detail-Data-Life-Cycle.html">Detail Data Life Cycle</a></li>
-<li><a href="Edit-as-Insert-Data-Life-Cycle.html">Edit as Insert Data Life Cycle</a></li>
-<li><a href="Edit-as-Update-Data-Life-Cycle.html">Edit as Update Data Life Cycle</a></li>
-</ul>
-</ul>
+
+<h4>Appendix</h4>
+
+<p>These topics are general topics that apply to many areas of Argos and are more for information purposes rather than practical examples.</p>
+
+<table class="toc">
+<tr><td><a href="AMD---Define-and-Declare.html">AMD</a></td></tr>
+<tr><td><a href="Simplate.html">Simplates</a></td></tr>
+<tr><td><a href="Views--Navigation-Exercises.html">Navigation History</a></td></tr>
+<tr><td><a href="List-Data-Life-Cycle.html">List Life Cycle</a></td></tr>
+<tr><td><a href="Detail-Data-Life-Cycle.html">Detail Life Cycle</a></td></tr>
+<tr><td><a href="Edit-as-Insert-Data-Life-Cycle.html">Edit as Insert Life Cycle</a></td></tr>
+<tr><td><a href="Edit-as-Update-Data-Life-Cycle.html">Edit as Update Life Cycle</a></td></tr>
+</table>

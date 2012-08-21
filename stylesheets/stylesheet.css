@@ -84,6 +84,17 @@ header h2 {
   line-height: 1.3;
 }
 
+code {
+    font-size: 12px;
+    font-family: Consolas, "Liberation Mono", Courier, monospace;
+    margin: 0 2px;
+    padding: 0px 5px;
+    white-space: nowrap;
+    border: 1px solid #EAEAEA;
+    background-color: #F8F8F8;
+    border-radius: 3px;
+}
+
 #container {
   background: transparent url(../images/highlight-bg.jpg) 50% 0 no-repeat;
   min-height: 595px;
@@ -388,4 +399,24 @@ footer a:hover {
 #features p
 {
     font-size: 85%;
+}
+
+
+.toc tr
+{
+    border: none;
+}
+
+.toc td
+{
+    text-align: left;
+}
+
+.indent-first
+{
+    text-indent: 1em;
+}
+.indent-second
+{
+    text-indent: 1.5em;
 }
