@@ -28,9 +28,9 @@ The Argos framework is meant to serve in an environment of multiple on-going app
 
 3\. All applications will be a new folder within `products`.
 
-4\. Download the SDK and extract the zip into the `argos-`sdk` folder: [https://github.com/Sage/argos-sdk/downloads](https://github.com/Sage/argos-sdk/downloads) 
+4\. Download the 2.0 SDK and extract the zip into the `argos-`sdk` folder: [Zip from Github](https://github.com/Sage/argos-sdk/zipball/2.0) 
 
-5\. A bare-bones app that this guide will use as a kickstarter has been created as Argos-Template. Download it from here: [https://github.com/Sage/argos-template/downloads](https://github.com/Sage/argos-template/downloads)
+5\. A bare-bones app that this guide will use as a kickstarter has been created as Argos-Template. Download it from here: [Downloads at Github](https://github.com/Sage/argos-template/downloads)
 
 6\. Create a new folder under `products` named `argos-template` and place the extracted contents there.
 
