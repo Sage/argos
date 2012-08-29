@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='Sage-Platform-Mobile-Views-Signature'>/**
+</span> *
+ */
+define('Sage/Platform/Mobile/Views/Signature', [
+    'dojo/_base/declare',
+    'dojo/_base/json',
+    'dojo/query',
+    'dojo/dom-geometry',
+    'dojo/window',
+    'Sage/Platform/Mobile/Format',
+    'Sage/Platform/Mobile/View'
+], function(
+    declare,
+    json,
+    query,
+    domGeom,
+    win,
+    format,
+    View
+) {
+
+    return declare('Sage.Platform.Mobile.Views.Signature', [View], {
+<span id='Sage-Platform-Mobile-Views-Signature-property-titleText'>        // Localization
+</span>        titleText: 'Signature',
+<span id='Sage-Platform-Mobile-Views-Signature-property-clearCanvasText'>        clearCanvasText: 'Erase',
+</span><span id='Sage-Platform-Mobile-Views-Signature-property-undoText'>        undoText: 'Undo',
+</span>
+<span id='Sage-Platform-Mobile-Views-Signature-property-widgetTemplate'>        //Templates
+</span>        widgetTemplate: new Simplate([
+            '&lt;div id=&quot;{%= $.id %}&quot; title=&quot;{%: $.titleText %}&quot; class=&quot;panel {%= $.cls %}&quot;&gt;',
+                '{%! $.canvasTemplate %}',
+                '&lt;div class=&quot;buttons&quot;&gt;',
+                    '&lt;button class=&quot;button&quot; data-action=&quot;_undo&quot;&gt;&lt;span&gt;{%: $.undoText %}&lt;/span&gt;&lt;/button&gt;',
+                    '&lt;button class=&quot;button&quot; data-action=&quot;clearValue&quot;&gt;&lt;span&gt;{%: $.clearCanvasText %}&lt;/span&gt;&lt;/button&gt;',
+                '&lt;/div&gt;',
+            '&lt;div&gt;'
+        ]),
+<span id='Sage-Platform-Mobile-Views-Signature-property-canvasTemplate'>        canvasTemplate: new Simplate([
+</span>            '&lt;canvas data-dojo-attach-point=&quot;signatureNode&quot; width=&quot;{%: $.canvasNodeWidth %}&quot; height=&quot;{%: $.canvasNodeHeight %}&quot; data-dojo-attach-event=&quot;onmousedown:_penDown,onmousemove:_penMove,onmouseup:_penUp,ontouchstart:_penDown,ontouchmove:_penMove,ontouchend:_penUp&quot;&gt;&lt;/canvas&gt;'
+        ]),
+<span id='Sage-Platform-Mobile-Views-Signature-property-signatureNode'>        signatureNode: null,
+</span>
+<span id='Sage-Platform-Mobile-Views-Signature-property-id'>        //View Properties
+</span>        id: 'signature_edit',
+<span id='Sage-Platform-Mobile-Views-Signature-property-expose'>        expose: false,
+</span><span id='Sage-Platform-Mobile-Views-Signature-property-signature'>        signature: [],
+</span><span id='Sage-Platform-Mobile-Views-Signature-property-trace'>        trace: [],
+</span><span id='Sage-Platform-Mobile-Views-Signature-property-lastpos'>        lastpos: {x:-1, y:-1},
+</span><span id='Sage-Platform-Mobile-Views-Signature-property-config'>        config: {
+</span>            scale: 1,
+            lineWidth: 3,
+            penColor: 'blue',
+            drawColor: 'red'
+        },
+<span id='Sage-Platform-Mobile-Views-Signature-property-isPenDown'>        isPenDown: false,
+</span><span id='Sage-Platform-Mobile-Views-Signature-property-context'>        context: null,
+</span><span id='Sage-Platform-Mobile-Views-Signature-property-buffer'>        buffer: [],
+</span><span id='Sage-Platform-Mobile-Views-Signature-property-canvasNodeHeight'><span id='Sage-Platform-Mobile-Views-Signature-property-canvasNodeWidth'>        canvasNodeWidth: 360, // starting default size
+</span></span><span id='Sage-Platform-Mobile-Views-Signature-method-show'>        canvasNodeHeight: 120, // adjusted on show()
+</span>
+        show: function(options) {
+            this.inherited(arguments);
+
+            if (options &amp;&amp; options.lineWidth) { this.config.lineWidth = options.lineWidth; }
+            if (options &amp;&amp; options.penColor)  { this.config.penColor  = options.penColor;  }
+            if (options &amp;&amp; options.drawColor) { this.config.drawColor = options.drawColor; }
+            this.signature = (options &amp;&amp; options.signature) ? options.signature : [];
+
+            this._sizeCanvas();
+            this.context = this.signatureNode.getContext('2d');
+
+            this.subscribe('/app/resize', this.onResize);
+
+            this.redraw(this.signature, this.signatureNode, this.config);
+        },
+<span id='Sage-Platform-Mobile-Views-Signature-method-getValues'>        getValues: function() {
+</span>            return json.toJson(this.optimizeSignature());
+        },
+<span id='Sage-Platform-Mobile-Views-Signature-method-setValue'>        setValue: function(val, initial) {
+</span>            this.signature = val ? json.fromJson(val) : [];
+            this.redraw(this.signature, this.signatureNode, this.config);
+        },
+<span id='Sage-Platform-Mobile-Views-Signature-method-clearValue'>        clearValue: function() {
+</span>            this.buffer = this.signature;
+            this.setValue('', true);
+        },
+<span id='Sage-Platform-Mobile-Views-Signature-method-_getCoords'>        // _getCoords returns pointer pixel coordinates [x,y] relative to canvas object
+</span>        _getCoords: function (e) {
+            var offset = domGeom.position(this.signatureNode, false);
+            return e.touches
+                ? [
+                    e.touches[0].pageX - offset.x,
+                    e.touches[0].pageY - offset.y
+                  ]
+                : [
+                    e.clientX - offset.x,
+                    e.clientY - offset.y
+                  ]
+                ;
+        },
+<span id='Sage-Platform-Mobile-Views-Signature-method-_penDown'>        _penDown: function (e) {
+</span>            this.isPenDown = true;
+            this.lastpos = this._getCoords(e);
+            this.context.lineWidth = this.config.lineWidth;
+            this.context.strokeStyle = this.config.drawColor;
+            e.preventDefault();
+        },
+<span id='Sage-Platform-Mobile-Views-Signature-method-_penMove'>        _penMove: function (e) {
+</span>            if (!this.isPenDown) { return; }
+            this.pos = this._getCoords(e);
+            e.preventDefault();
+            this.context.beginPath();
+            this.context.moveTo(this.lastpos[0], this.lastpos[1]);
+            this.context.lineTo(this.pos[0], this.pos[1]);
+            this.context.closePath();
+            this.context.stroke();
+            e.preventDefault();
+            this.lastpos = this.pos;
+            this.trace.push(this.pos);
+        },
+<span id='Sage-Platform-Mobile-Views-Signature-method-_penUp'>        _penUp: function (e) {
+</span>            e.preventDefault();
+            this.isPenDown = false;
+            if (this.trace.length)
+                this.signature.push(this.trace);
+
+            this.trace = [];
+            this.context.strokeStyle = this.config.penColor;
+            this.redraw(this.signature, this.signatureNode, this.config);
+        },
+<span id='Sage-Platform-Mobile-Views-Signature-method-_undo'>        _undo: function () {
+</span>            if (this.signature.length)
+            {
+                this.buffer = this.signature.pop();
+                if (!this.signature.length)
+                    this.buffer = [this.buffer];
+
+            } else if (this.buffer.length)
+            {
+                this.signature = this.buffer;
+            }
+            this.redraw(this.signature, this.signatureNode, this.config);
+        },
+<span id='Sage-Platform-Mobile-Views-Signature-method-_sizeCanvas'>        _sizeCanvas: function () {
+</span>            this.canvasNodeWidth  = Math.floor(win.getBox().w * 0.92);
+
+            this.canvasNodeHeight = Math.min(
+                Math.floor(this.canvasNodeWidth * 0.5),
+                win.getBox().h - query('.toolbar')[0].offsetHeight - query('.footer-toolbar')[0].offsetHeight
+            );
+
+            this.signatureNode.width  = this.canvasNodeWidth;
+            this.signatureNode.height = this.canvasNodeHeight;
+        },
+<span id='Sage-Platform-Mobile-Views-Signature-method-onResize'>        onResize: function (e) {
+</span>            var newScale,
+                oldWidth  = this.canvasNodeWidth,
+                oldHeight = this.canvasNodeHeight;
+            this._sizeCanvas();
+
+            newScale = Math.min(
+                this.canvasNodeWidth  / oldWidth,
+                this.canvasNodeHeight / oldHeight
+            );
+
+            this.signature = this.rescale(newScale);
+            this.redraw(this.signature, this.signatureNode, this.config);
+        },
+<span id='Sage-Platform-Mobile-Views-Signature-method-redraw'>        redraw: function (vector, canvas, options) {
+</span>            format.canvasDraw(vector, canvas, options);
+        },
+<span id='Sage-Platform-Mobile-Views-Signature-method-rescale'>        rescale: function (scale) {
+</span>            var rescaled = [];
+            for (var i = 0; i &lt; this.signature.length; i++)
+            {
+                rescaled.push([]);
+                for (var j = 0; j &lt; this.signature[i].length; j++)
+                {
+                    rescaled[i].push([
+                        this.signature[i][j][0] * scale,
+                        this.signature[i][j][1] * scale
+                    ])
+                }
+            }
+            return rescaled;
+        },
+<span id='Sage-Platform-Mobile-Views-Signature-method-optimizeSignature'>        optimizeSignature: function() {
+</span>            var optimized = [];
+
+            for (var i = 0; i &lt; this.signature.length; i++)
+                optimized.push(this.optimize(this.signature[i]))
+
+            return optimized;
+        },
+<span id='Sage-Platform-Mobile-Views-Signature-method-optimize'>        optimize: function(vector) {
+</span>            if (vector.length &lt; 2) return vector;
+
+            var result = [],
+                minA = 0.95,
+                maxL = 15.0, // 15.0, 10.0 works well
+                rootP = vector[0],
+                lastP = vector[1],
+                rootV = [lastP[0] - rootP[0], lastP[1] - rootP[1]],
+                rootL = Math.sqrt(rootV[0]*rootV[0] + rootV[1]*rootV[1]),
+                currentP,
+                currentV,
+                currentL,
+                dotProduct;
+
+            for (var i = 2; i &lt; vector.length; i++)
+            {
+                currentP = vector[i];
+                currentV = [currentP[0] - rootP[0], currentP[1] - rootP[1]];
+                currentL = Math.sqrt(currentV[0]*currentV[0] + currentV[1]*currentV[1]);
+                dotProduct = (rootV[0]*currentV[0] + rootV[1]*currentV[1]) / (rootL*currentL);
+
+                if (dotProduct &lt; minA || currentL &gt; maxL)
+                {
+                    result.push(rootP);
+
+                    rootP = lastP;
+                    lastP = currentP;
+                    rootV = [lastP[0] - rootP[0], lastP[1] - rootP[1]];
+                    rootL = Math.sqrt(rootV[0]*rootV[0] + rootV[1]*rootV[1]);
+                }
+                else
+                {
+                    lastP = currentP;
+                }
+
+            }
+
+            result.push(lastP);
+
+            return result;
+        }
+    });
+});</pre>
+</body>
+</html>

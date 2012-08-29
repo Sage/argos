@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+define('Sage/Platform/Mobile/Fields/SignatureField', [
+    'dojo/_base/declare',
+    'dojo/_base/json',
+    'dojo/dom-attr',
+    'Sage/Platform/Mobile/Format',
+    'Sage/Platform/Mobile/Fields/EditorField',
+    'Sage/Platform/Mobile/FieldManager'
+], function(
+    declare,
+    json,
+    domAttr,
+    format,
+    EditorField,
+    FieldManager
+) {
+
+<span id='Sage-Platform-Mobile-Fields-SignatureField'>    /**
+</span>     *
+     */
+    var control = declare('Sage.Platform.Mobile.Fields.SignatureField', [EditorField], {
+<span id='Sage-Platform-Mobile-Fields-SignatureField-property-emptyText'>        // Localization
+</span>        emptyText: '',
+<span id='Sage-Platform-Mobile-Fields-SignatureField-property-titleText'>        titleText: 'Signature',
+</span><span id='Sage-Platform-Mobile-Fields-SignatureField-property-signatureLabelText'>        signatureLabelText: 'signature',
+</span><span id='Sage-Platform-Mobile-Fields-SignatureField-property-signatureText'>        signatureText: '...',
+</span>
+<span id='Sage-Platform-Mobile-Fields-SignatureField-property-signature'>        signature: [],
+</span><span id='Sage-Platform-Mobile-Fields-SignatureField-property-config'>        config: {
+</span>            scale: 1,
+            lineWidth: 1,
+            penColor: 'blue',
+            width: 180,
+            height: 50
+        },
+<span id='Sage-Platform-Mobile-Fields-SignatureField-property-context'>        context: null,
+</span><span id='Sage-Platform-Mobile-Fields-SignatureField-property-widgetTemplate'>        /**
+</span>         * @property {Simplate}
+         * Simplate that defines the fields HTML Markup
+         *
+         * * `$` =&gt; Field instance
+         * * `$$` =&gt; Owner View instance
+         *
+         */
+        widgetTemplate: new Simplate([
+            '&lt;label for=&quot;{%= $.name %}&quot;&gt;{%: $.label %}&lt;/label&gt;',
+            '&lt;button class=&quot;button simpleSubHeaderButton&quot; aria-label=&quot;{%: $.signatureLabelText %}&quot;&gt;&lt;span aria-hidden=&quot;true&quot;&gt;{%: $.signatureText %}&lt;/span&gt;&lt;/button&gt;',
+            '&lt;img data-dojo-attach-point=&quot;signatureNode&quot; src=&quot;&quot; width=&quot;{%: $.config.width %}&quot; height=&quot;{%: $.config.height %}&quot; alt=&quot;&quot; /&gt;',
+            '&lt;input data-dojo-attach-point=&quot;inputNode&quot; type=&quot;hidden&quot;&gt;'
+        ]),
+
+<span id='Sage-Platform-Mobile-Fields-SignatureField-method-createNavigationOptions'>        createNavigationOptions: function() {
+</span>            var options = this.inherited(arguments);
+
+            options.signature = this.signature;
+
+            return options;
+        },
+<span id='Sage-Platform-Mobile-Fields-SignatureField-method-getValuesFromView'>        getValuesFromView: function() {
+</span>            var view = App.getPrimaryActiveView();
+            if (view)
+            {
+                var value = view.getValues();
+                this.currentValue = this.validationValue = value;
+                this.setValue(this.currentValue, false);
+            }
+        },
+<span id='Sage-Platform-Mobile-Fields-SignatureField-method-setValue'>        setValue: function (val, initial) {
+</span>            if (initial) this.originalValue = val;
+
+            domAttr.set(this.inputNode, 'value', val || '');
+
+            try
+            {
+                this.signature = json.fromJson(val);
+            }
+            catch(e)
+            {
+                this.signature = [];
+            }
+
+            if (!this.signature || Array != this.signature.constructor)
+                this.signature = [];
+
+            this.signatureNode.src = format.imageFromVector(this.signature, this.config, false);
+        },
+<span id='Sage-Platform-Mobile-Fields-SignatureField-method-clearValue'>        clearValue: function() {
+</span>            this.setValue('', true);
+        },
+<span id='Sage-Platform-Mobile-Fields-SignatureField-method-formatValue'>        formatValue: function(val) {
+</span>            return val;
+        }
+    });
+
+    return FieldManager.register('signature', control);
+});
+</pre>
+</body>
+</html>

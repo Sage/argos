@@ -1,47 +1,151 @@
----
-layout: default
----
-<section id="main_content">
-    <p>Take Mobile HTML5 Apps to the next level with Argos - a full featured mobile application framework that enables seamless integration with external data and handles all the under the cover details letting you focus on the end application.</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Argos</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="fragment" content="!">
 
-    <div id="features" class="clearfix">
-        <div class="grid-3"><h4>Compatibility</h4><p>Works in all HTML5 compatible browsers both Mobile and Desktop</p></div>
-        <div class="grid-3"><h4>History</h4><p>Navigation history and context system that drives the state and URL; enabling users to pick up where they left off</p></div>
-        <div class="grid-3"><h4>AMD</h4><p>Every file is a module and loaded asynchronously to provide clear code structure and faster load time</p></div>
-        <div class="grid-3"><h4>Dojo</h4><p>Built upon the base Dojo classes, any piece of Dojo may be optionally pulled in and used</p></div>
-        <div class="grid-3"><h4>Dijit</h4><p>All View modules are Dijits meaning all the standard dojo dijit methods and properties apply</p></div>
-        <div class="grid-3"><h4>Simplate</h4><p>Every bit a markup is driven using the powerful-but-simple Simplate templating engine</p></div>
-        <div class="grid-3"><h4>Transitions</h4><p>Optimized transitions for clear depth navigation and a fluid user experience</p></div>
-    </div>
+  <link rel="shortcut icon" type="image/ico" href="favicon.ico" />
+  <link rel="stylesheet" href="resources/css/app.css" type="text/css" />
+  <link rel="stylesheet" href="resources/prettify/prettify.css" type="text/css" />
 
+  <script type="text/javascript" src="extjs/ext-all.js"></script>
+  <script type="text/javascript" src="data.js"></script>
+  <script type="text/javascript" src="app.js"></script>
+  <script type="text/javascript" src="resources/prettify/prettify.js"></script>
 
-    <h3>Documentation</h3>
-    <p><a href="template-guide/index.html">Argos-Template Guide</a>: Kickstart your application development with a skeleton template and guide.</p>
+  
 
-    <p><a href="upgrade/Upgrading12to20.html">Upgrading 1.2 to 2.0</a>: For Apps built with version 1.2 see this helpful fact sheet to upgrade to 2.0.</p>
+</head>
+<body id="ext-body">
 
+  <div id="loading"><span class="title"></span><span class="logo"></span></div>
 
-    <h3>Issues</h3>
-    <p>Report and follow issues on the <a href="">Github Tracker</a></p>
-
-    <h3></h3>
-
-</section>
-
-<hr>
-
-<section id="product-content">
-    <h2>Products Using Argos</h2>
-
-    <div id="products" class="clearfix">
-        <div class="grid-3">
-            <h4><a href="http://na.sage.com/sage-saleslogix/solutions/mobile" target="_blank">Sage SalesLogix Mobile</a></h4>
-            <img class="product-img" src="images/slxmobile.jpg">
-            <p>SalesLogix Mobile delivers rich CRM functionality across multiple mobile platforms via a customizable, browser-based application that is easy to deploy and manage. Sage SalesLogix Mobile provides robust capabilities to the users who are on the road the most – your sales people. They can access and edit all account and contact information as well as keep track of their schedule and activities, and is available at no extra charge to Sage SalesLogix customers.</p>
+  <div id="header-content">Argos</div>
+  
+          <div id='categories-content' style='display:none'>
+            <div class='section'>
+<h1>Argos SDK</h1>
+<div class='left-column'>
+<h3>Base</h3>
+<div class='links'>
+<a href="#!/api/Sage.Platform.Mobile.Application" rel="Sage.Platform.Mobile.Application" class="docClass">Sage.Platform.Mobile.Application</a>
+<a href="#!/api/Sage.Platform.Mobile.ApplicationModule" rel="Sage.Platform.Mobile.ApplicationModule" class="docClass">Sage.Platform.Mobile.ApplicationModule</a>
+<a href="#!/api/Sage.Platform.Mobile.Calendar" rel="Sage.Platform.Mobile.Calendar" class="docClass">Sage.Platform.Mobile.Calendar</a>
+<a href="#!/api/Sage.Platform.Mobile.ErrorManager" rel="Sage.Platform.Mobile.ErrorManager" class="docClass">Sage.Platform.Mobile.ErrorManager</a>
+<a href="#!/api/Sage.Platform.Mobile.Format" rel="Sage.Platform.Mobile.Format" class="docClass">Sage.Platform.Mobile.Format</a>
+<a href="#!/api/Sage.Platform.Mobile.MainToolbar" rel="Sage.Platform.Mobile.MainToolbar" class="docClass">Sage.Platform.Mobile.MainToolbar</a>
+<a href="#!/api/Sage.Platform.Mobile.PersistentStorage" rel="Sage.Platform.Mobile.PersistentStorage" class="docClass">Sage.Platform.Mobile.PersistentStorage</a>
+<a href="#!/api/Sage.Platform.Mobile.SearchWidget" rel="Sage.Platform.Mobile.SearchWidget" class="docClass">Sage.Platform.Mobile.SearchWidget</a>
+<a href="#!/api/Sage.Platform.Mobile.SelectionModel" rel="Sage.Platform.Mobile.SelectionModel" class="docClass">Sage.Platform.Mobile.SelectionModel</a>
+<a href="#!/api/Sage.Platform.Mobile.Toolbar" rel="Sage.Platform.Mobile.Toolbar" class="docClass">Sage.Platform.Mobile.Toolbar</a>
+<a href="#!/api/Sage.Platform.Mobile.Utility" rel="Sage.Platform.Mobile.Utility" class="docClass">Sage.Platform.Mobile.Utility</a>
+</div>
+<h3>Views</h3>
+<div class='links'>
+<a href="#!/api/Sage.Platform.Mobile.View" rel="Sage.Platform.Mobile.View" class="docClass">Sage.Platform.Mobile.View</a>
+<a href="#!/api/Sage.Platform.Mobile.List" rel="Sage.Platform.Mobile.List" class="docClass">Sage.Platform.Mobile.List</a>
+<a href="#!/api/Sage.Platform.Mobile.GroupedList" rel="Sage.Platform.Mobile.GroupedList" class="docClass">Sage.Platform.Mobile.GroupedList</a>
+<a href="#!/api/Sage.Platform.Mobile.Detail" rel="Sage.Platform.Mobile.Detail" class="docClass">Sage.Platform.Mobile.Detail</a>
+<a href="#!/api/Sage.Platform.Mobile.Edit" rel="Sage.Platform.Mobile.Edit" class="docClass">Sage.Platform.Mobile.Edit</a>
+<a href="#!/api/Sage.Platform.Mobile.Views.Signature" rel="Sage.Platform.Mobile.Views.Signature" class="docClass">Sage.Platform.Mobile.Views.Signature</a>
+</div>
+</div>
+<div class='middle-column'>
+<h3>Fields</h3>
+<div class='links'>
+<a href="#!/api/Sage.Platform.Mobile.FieldManager" rel="Sage.Platform.Mobile.FieldManager" class="docClass">Sage.Platform.Mobile.FieldManager</a>
+<a href="#!/api/Sage.Platform.Mobile.Fields.BooleanField" rel="Sage.Platform.Mobile.Fields.BooleanField" class="docClass">Sage.Platform.Mobile.Fields.BooleanField</a>
+<a href="#!/api/Sage.Platform.Mobile.Fields.DateField" rel="Sage.Platform.Mobile.Fields.DateField" class="docClass">Sage.Platform.Mobile.Fields.DateField</a>
+<a href="#!/api/Sage.Platform.Mobile.Fields.DecimalField" rel="Sage.Platform.Mobile.Fields.DecimalField" class="docClass">Sage.Platform.Mobile.Fields.DecimalField</a>
+<a href="#!/api/Sage.Platform.Mobile.Fields.DurationField" rel="Sage.Platform.Mobile.Fields.DurationField" class="docClass">Sage.Platform.Mobile.Fields.DurationField</a>
+<a href="#!/api/Sage.Platform.Mobile.Fields.EditorField" rel="Sage.Platform.Mobile.Fields.EditorField" class="docClass">Sage.Platform.Mobile.Fields.EditorField</a>
+<a href="#!/api/Sage.Platform.Mobile.Fields.HiddenField" rel="Sage.Platform.Mobile.Fields.HiddenField" class="docClass">Sage.Platform.Mobile.Fields.HiddenField</a>
+<a href="#!/api/Sage.Platform.Mobile.Fields.LookupField" rel="Sage.Platform.Mobile.Fields.LookupField" class="docClass">Sage.Platform.Mobile.Fields.LookupField</a>
+<a href="#!/api/Sage.Platform.Mobile.Fields.NoteField" rel="Sage.Platform.Mobile.Fields.NoteField" class="docClass">Sage.Platform.Mobile.Fields.NoteField</a>
+<a href="#!/api/Sage.Platform.Mobile.Fields.PhoneField" rel="Sage.Platform.Mobile.Fields.PhoneField" class="docClass">Sage.Platform.Mobile.Fields.PhoneField</a>
+<a href="#!/api/Sage.Platform.Mobile.Fields.SelectField" rel="Sage.Platform.Mobile.Fields.SelectField" class="docClass">Sage.Platform.Mobile.Fields.SelectField</a>
+<a href="#!/api/Sage.Platform.Mobile.Fields.SignatureField" rel="Sage.Platform.Mobile.Fields.SignatureField" class="docClass">Sage.Platform.Mobile.Fields.SignatureField</a>
+<a href="#!/api/Sage.Platform.Mobile.Fields.TextAreaField" rel="Sage.Platform.Mobile.Fields.TextAreaField" class="docClass">Sage.Platform.Mobile.Fields.TextAreaField</a>
+<a href="#!/api/Sage.Platform.Mobile.Fields.TextField" rel="Sage.Platform.Mobile.Fields.TextField" class="docClass">Sage.Platform.Mobile.Fields.TextField</a>
+<a href="#!/api/Sage.Platform.Mobile.Fields._Field" rel="Sage.Platform.Mobile.Fields._Field" class="docClass">Sage.Platform.Mobile.Fields._Field</a>
+</div>
+</div>
+<div class='right-column'>
+<h3>Mixins</h3>
+<div class='links'>
+<a href="#!/api/Sage.Platform.Mobile._ActionMixin" rel="Sage.Platform.Mobile._ActionMixin" class="docClass">Sage.Platform.Mobile._ActionMixin</a>
+<a href="#!/api/Sage.Platform.Mobile._CustomizationMixin" rel="Sage.Platform.Mobile._CustomizationMixin" class="docClass">Sage.Platform.Mobile._CustomizationMixin</a>
+<a href="#!/api/Sage.Platform.Mobile._ServiceMixin" rel="Sage.Platform.Mobile._ServiceMixin" class="docClass">Sage.Platform.Mobile._ServiceMixin</a>
+<a href="#!/api/Sage.Platform.Mobile._Templated" rel="Sage.Platform.Mobile._Templated" class="docClass">Sage.Platform.Mobile._Templated</a>
+</div>
+</div>
+<div style='clear:both'></div>
+</div>
+<div class='section'>
+<h1>Libraries</h1>
+<div class='left-column'>
+<h3>Simplate</h3>
+<div class='links'>
+<a href="#!/api/Simplate" rel="Simplate" class="docClass">Simplate</a>
+</div>
+</div>
+<div class='middle-column'>
+</div>
+<div class='right-column'>
+</div>
+<div style='clear:both'></div>
+</div>
         </div>
-        <div class="grid-3">
+
+          <div id='guides-content' style='display:none'>
+            <h3>Getting Started</h3>
+<ul>
+<li><a href='#!/guide/v2_template_guide'>Argos-Template Guide</a></li>
+<li><a href='#!/guide/v2_overview'>File Overview</a></li>
+</ul>
+<h3>Creation</h3>
+<ul>
+<li><a href='#!/guide/v2_beyond_the_guide_creating_a_grouped_list'>Grouped List</a></li>
+<li><a href='#!/guide/v2_beyond_the_guide_creating_a_login_basic_auth'>Login Page with Basic Auth</a></li>
+</ul>
+<h3>View Enhancements</h3>
+<ul>
+<li><a href='#!/guide/v2_beyond_the_guide_defining_hashtags'>Search Hashtags</a></li>
+<li><a href='#!/guide/v2_beyond_the_guide_defining_list_actions'>List Actions</a></li>
+<li><a href='#!/guide/v2_beyond_the_guide_defining_quick_actions'>Detail Actions</a></li>
+<li><a href='#!/guide/v2_beyond_the_guide_defining_related_views'>Related Views</a></li>
+</ul>
+<h3>Localizaton</h3>
+<ul>
+<li><a href='#!/guide/v2_beyond_the_guide_localization'>Export and Import Locales</a></li>
+</ul>
+<h3>Educational</h3>
+<ul>
+<li><a href='#!/guide/v2_beyond_the_guide_edit_validation'>Edit Validation</a></li>
+<li><a href='#!/guide/v2_beyond_the_guide_list_search'>Searching</a></li>
+<li><a href='#!/guide/v2_beyond_the_guide_navigation'>Navigation</a></li>
+<li><a href='#!/guide/v2_beyond_the_guide_toolbars'>Toolbars</a></li>
+<li><a href='#!/guide/upgrading_v12_to_v20'>Upgrading 1.2 to 2.0</a></li>
+</ul>
+<h3>Appendix</h3>
+<ul>
+<li><a href='#!/guide/v2_appendix_amd'>AMD - Define and Declare</a></li>
+<li><a href='#!/guide/v2_appendix_browser_setup'>Browser Setup</a></li>
+<li><a href='#!/guide/v2_appendix_list_data_life_cycle'>List Life Cycle</a></li>
+<li><a href='#!/guide/v2_appendix_detail_data_life_cycle'>Detail Life Cycle</a></li>
+<li><a href='#!/guide/v2_appendix_edit_as_insert_data_life_cycle'>Edit as Insert Life Cycle</a></li>
+<li><a href='#!/guide/v2_appendix_edit_as_update_data_life_cycle'>Edit as Update Life Cycle</a></li>
+<li><a href='#!/guide/v2_appendix_wire_detail_to_edit'>Wiring Detail to Edit</a></li>
+<li><a href='#!/guide/v2_appendix_wire_list_to_edit'>Wiring List to Edit</a></li>
+<li><a href='#!/guide/v2_appendix_wire_list_to_detail'>Wiring List to Detail</a></li>
+</ul>
         </div>
-    </div>
 
+  <div id='footer-content' style='display: none'>Argos is maintained by Sage</div>
 
-</section>
+  
+
+</body>
+</html>

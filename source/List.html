@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='Sage-Platform-Mobile-List'>/**
+</span> * A base list view.
+ * @extends View
+ * @alternateClassName List
+ */
+define('Sage/Platform/Mobile/List', [
+    'dojo/_base/declare',
+    'dojo/_base/lang',
+    'dojo/_base/array',
+    'dojo/query',
+    'dojo/dom-attr',
+    'dojo/dom-class',
+    'dojo/dom-construct',
+    'dojo/dom-geometry',
+    'dojo/dom',
+    'dojo/string',
+    'dojo/window',
+    'Sage/Platform/Mobile/ErrorManager',
+    'Sage/Platform/Mobile/View',
+    'Sage/Platform/Mobile/SearchWidget'
+], function(
+    declare,
+    lang,
+    array,
+    query,
+    domAttr,
+    domClass,
+    domConstruct,
+    domGeom,
+    dom,
+    string,
+    win,
+    ErrorManager,
+    View,
+    SearchWidget
+) {
+
+<span id='Sage-Platform-Mobile-SelectionModel'>    /**
+</span>     * SelectionModel provides a simple in-memory store for data that fires events
+     * when a item is selected (added) or deselected (removed)
+     * @alternateClassName SelectionModel
+     */
+    var SelectionModel = declare('Sage.Platform.Mobile.SelectionModel', null, {
+<span id='Sage-Platform-Mobile-SelectionModel-property-count'>        /**
+</span>         * @property {Number}
+         * Number of selections
+         */
+        count: 0,
+<span id='Sage-Platform-Mobile-SelectionModel-property-selections'>        /**
+</span>         * @property {Object}
+         * Collection of selections where the key is the selections key
+         */
+        selections: null,
+<span id='Sage-Platform-Mobile-SelectionModel-property-clearAsDeselect'>        /**
+</span>         * @property {Boolean}
+         * Flag that determines how to clear:
+         *
+         * True: Deselect is called on every item, firing onDeselect for each and firing onClear at the end
+         *
+         * False: Collection is immediately wiped and only onClear is fired
+         *
+         */
+        clearAsDeselect: true,
+<span id='Sage-Platform-Mobile-SelectionModel-property-_fireEvents'>        /**
+</span>         * @property {Boolean}
+         * Flag that control the firing of action events: onSelect, onDeselect, onClear
+         */
+        _fireEvents: true,
+<span id='Sage-Platform-Mobile-SelectionModel-method-constructor'>        constructor: function(options) {
+</span>            this.selections = {};
+            
+            lang.mixin(this, options);
+        },
+<span id='Sage-Platform-Mobile-SelectionModel-method-suspendEvents'>        /**
+</span>         * Prevents the firing of action events: onSelect, onDeselect, onClear
+         */
+        suspendEvents: function() {
+            this._fireEvents = false;
+        },
+<span id='Sage-Platform-Mobile-SelectionModel-method-resumeEvents'>        /**
+</span>         * Enables the firing of action events:  onSelect, onDeselect, onClear
+         */
+        resumeEvents: function() {
+            this._fireEvents = true;
+        },
+<span id='Sage-Platform-Mobile-SelectionModel-method-onSelect'>        /**
+</span>         * Event that happens when an item is selected/added.
+         * @param {String} key Unique identifier string
+         * @param {Object} data The item stored
+         * @param tag
+         * @param self
+         * @template
+         */
+        onSelect: function(key, data, tag, self) {
+        },
+<span id='Sage-Platform-Mobile-SelectionModel-method-onDeselect'>        /**
+</span>         * Event that happens when an item is deselected/removed.
+         * @param {String} key Unique identifier string
+         * @param {Object} data The item removed
+         * @param tag
+         * @param self
+         * @template
+         */
+        onDeselect: function(key, data, tag, self) {
+        },
+<span id='Sage-Platform-Mobile-SelectionModel-method-onClear'>        /**
+</span>         * Event that happens when the store is cleared
+         * @param self
+         */
+        onClear: function(self) {
+        },
+<span id='Sage-Platform-Mobile-SelectionModel-method-select'>        /**
+</span>         * Adds an item to the `selections` if it is not already stored.
+         * @param {String} key Unique identifier string
+         * @param {Object} data The item being selected
+         * @param tag
+         */
+        select: function(key, data, tag) {
+            if (!this.selections.hasOwnProperty(key))
+            {
+                this.selections[key] = {data: data, tag: tag};
+                this.count++;
+                if (this._fireEvents) this.onSelect(key, data, tag, this);
+            }
+        },
+<span id='Sage-Platform-Mobile-SelectionModel-method-toggle'>        /**
+</span>         * Adds an item to the `selections` if it is not already stored, if it is
+         * stored, then it deselects (removes) the item.
+         * @param {String} key Unique identifier string
+         * @param {Object} data The item being selected
+         * @param tag
+         */
+        toggle: function(key, data, tag) {
+            if (this.isSelected(key))
+                this.deselect(key);
+            else
+                this.select(key, data, tag);
+        },
+<span id='Sage-Platform-Mobile-SelectionModel-method-deselect'>        /**
+</span>         * Removes an item from the store
+         * @param {String} key Unique identifier string that was given when the item was added
+         */
+        deselect: function(key) {
+            if (this.selections.hasOwnProperty(key))
+            {
+                var selection = this.selections[key];
+
+                delete this.selections[key];
+                this.count--;
+
+                if (this._fireEvents)
+                    this.onDeselect(key, selection.data, selection.tag, this);
+            }
+        },
+<span id='Sage-Platform-Mobile-SelectionModel-method-clear'>        /**
+</span>         * Removes all items from the store
+         */
+        clear: function() {
+            if (this.clearAsDeselect)
+            {
+                for (var key in this.selections) this.deselect(key);
+            }
+            else
+            {
+                this.selections = {};
+                this.count = 0;
+            }
+
+            if (this._fireEvents) this.onClear(this);
+        },
+<span id='Sage-Platform-Mobile-SelectionModel-method-isSelected'>        /**
+</span>         * Determines if the given key is in the selections collection.
+         * @param {String} key Unique identifier string that was given when the item was added
+         * @return {Boolean} True if the item is in the store.
+         */
+        isSelected: function(key) {
+            return !!this.selections[key];
+        },
+<span id='Sage-Platform-Mobile-SelectionModel-method-getSelectionCount'>        /**
+</span>         * Returns the number of items in the store
+         * @return {Number} Current count of items
+         */
+        getSelectionCount: function() {
+            return this.count;
+        },
+<span id='Sage-Platform-Mobile-SelectionModel-method-getSelections'>        /**
+</span>         * Returns all items in the store
+         * @return {Object} The entire selection collection
+         */
+        getSelections: function() {
+            return this.selections;
+        },
+<span id='Sage-Platform-Mobile-SelectionModel-method-getSelectedKeys'>        /**
+</span>         * Returns a list of unique identifier keys used in the selection collection
+         * @return {String[]} All keys in the store
+         */
+        getSelectedKeys: function() {
+            var keys = [];
+            for (var key in this.selections)
+                if (this.selections.hasOwnProperty(key))
+                    keys.push(key);
+            return keys;
+        }
+    });
+
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel'>    /**
+</span>     * The ConfigurableSelectionModel adds the logic to the SelectionModel to only have one item selected at a time via the `singleSelection` flag.
+     * @alternateClassName ConfigurableSelectionModel
+     * @extends SelectionModel
+     */
+    var ConfigurableSelectionModel = declare('Sage.Platform.Mobile.ConfigurableSelectionModel', [SelectionModel], {
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-singleSelection'>        /**
+</span>         * @property {Boolean}
+         * Flag that controls if only one item is selectable at a time. Meaning if this is true
+         * then when a selection is made it first {@link SelectionModel#clear clears} the store.
+         */
+        singleSelection: false,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-method-useSingleSelection'>        /**
+</span>         * This function is called in Lists {@link List#beforeTransitionTo beforeTransitionTo} and
+         * it is always passed the Lists navigation options `singleSelect`.
+         *
+         * It then sets the flag `singleSelection` to the value if the passed value.
+         *
+         * @param {Boolean} val The state that `singleSelection` should be in.
+         */
+        useSingleSelection: function(val) {
+            if (this.singleSelection != !!val) //false != undefined = true, false != !!undefined = false
+            {
+                this.singleSelection = val;
+            }
+        },
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-method-select'>        /**
+</span>         * Extends the base {@link SelectionModel#select select} by first clearing out the entire
+         * store if `singleSelection` is true and there are items already in the store.
+         * @param {String} key Unique identifier string
+         * @param {Object} data The item being selected
+         * @param tag
+         */
+        select: function(key, data, tag) {
+            if (this.singleSelection)
+            {
+                if (!this.isSelected(key) || (this.count &gt;= 1)) this.clear();
+            }
+
+            this.inherited(arguments);
+        }
+    });
+
+    return declare('Sage.Platform.Mobile.List', [View], {
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-attributeMap'>        /**
+</span>         * @property {Object}
+         * Creates a setter map to html nodes, namely:
+         *
+         * * listContent =&gt; contentNode's innerHTML
+         * * remainingContent =&gt; remainingContentNode's innerHTML
+         *
+         */
+        attributeMap: {
+            listContent: {node: 'contentNode', type: 'innerHTML'},
+            remainingContent: {node: 'remainingContentNode', type: 'innerHTML'}
+        },
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-widgetTemplate'>        /**
+</span>         * @property {Simplate}
+         * The template used to render the view's main DOM element when the view is initialized.
+         * This template includes {@link #searchTemplate} and {@link #moreTemplate}.
+         */
+        widgetTemplate: new Simplate([
+            '&lt;div id=&quot;{%= $.id %}&quot; title=&quot;{%= $.titleText %}&quot; class=&quot;list {%= $.cls %}&quot; {% if ($.resourceKind) { %}data-resource-kind=&quot;{%= $.resourceKind %}&quot;{% } %}&gt;',
+            '&lt;div data-dojo-attach-point=&quot;searchNode&quot;&gt;&lt;/div&gt;',
+            '&lt;a href=&quot;#&quot; class=&quot;android-6059-fix&quot;&gt;fix for android issue #6059&lt;/a&gt;',                
+            '{%! $.emptySelectionTemplate %}',
+            '&lt;ul class=&quot;list-content&quot; data-dojo-attach-point=&quot;contentNode&quot;&gt;&lt;/ul&gt;',
+            '{%! $.moreTemplate %}',
+            '{%! $.listActionTemplate %}',
+            '&lt;/div&gt;'
+        ]),
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-loadingTemplate'>        /**
+</span>         * @property {Simplate}
+         * The template used to render the loading message when the view is requesting more data.
+         *
+         * The default template uses the following properties:
+         *
+         *      name                description
+         *      ----------------------------------------------------------------
+         *      loadingText         The text to display while loading.
+         */
+        loadingTemplate: new Simplate([
+            '&lt;li class=&quot;list-loading-indicator&quot;&gt;&lt;div&gt;{%= $.loadingText %}&lt;/div&gt;&lt;/li&gt;'
+        ]),
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-moreTemplate'>        /**
+</span>         * @property {Simplate}
+         * The template used to render the pager at the bottom of the view.  This template is not directly rendered, but is
+         * included in {@link #viewTemplate}.
+         *
+         * The default template uses the following properties:
+         *
+         *      name                description
+         *      ----------------------------------------------------------------
+         *      moreText            The text to display on the more button.
+         *
+         * The default template exposes the following actions:
+         *
+         * * more
+         */
+        moreTemplate: new Simplate([
+            '&lt;div class=&quot;list-more&quot; data-dojo-attach-point=&quot;moreNode&quot;&gt;',
+            '&lt;div class=&quot;list-remaining&quot;&gt;&lt;span data-dojo-attach-point=&quot;remainingContentNode&quot;&gt;&lt;/span&gt;&lt;/div&gt;',
+            '&lt;button class=&quot;button&quot; data-action=&quot;more&quot;&gt;',
+            '&lt;span&gt;{%= $.moreText %}&lt;/span&gt;',
+            '&lt;/button&gt;',
+            '&lt;/div&gt;'
+        ]),
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-emptySelectionTemplate'>        /**
+</span>         * @property {Simplate}
+         * Template used on lookups to have empty Selection option.
+         * This template is not directly rendered but included in {@link #viewTemplate}.
+         *
+         * The default template uses the following properties:
+         *
+         *      name                description
+         *      ----------------------------------------------------------------
+         *      emptySelectionText  The text to display on the empty Selection button.
+         *
+         * The default template exposes the following actions:
+         *
+         * * emptySelection
+         */
+        emptySelectionTemplate: new Simplate([
+            '&lt;div class=&quot;list-empty-opt&quot; data-dojo-attach-point=&quot;emptySelectionNode&quot;&gt;',
+            '&lt;button class=&quot;button&quot; data-action=&quot;emptySelection&quot;&gt;',
+            '&lt;span&gt;{%= $.emptySelectionText %}&lt;/span&gt;',
+            '&lt;/button&gt;',
+            '&lt;/div&gt;'
+        ]),
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-rowTemplate'>        /**
+</span>         * @property {Simplate}
+         * The template used to render a row in the view.  This template includes {@link #itemTemplate}.
+         */
+        rowTemplate: new Simplate([
+            '&lt;li data-action=&quot;activateEntry&quot; data-key=&quot;{%= $.$key %}&quot; data-descriptor=&quot;{%: $.$descriptor %}&quot;&gt;',
+                '&lt;button data-action=&quot;selectEntry&quot; class=&quot;list-item-selector button&quot;&gt;',
+                    '&lt;img src=&quot;{%= $$.icon || $$.selectIcon %}&quot; class=&quot;icon&quot; /&gt;',
+                '&lt;/button&gt;',
+                '&lt;div class=&quot;list-item-content&quot;&gt;{%! $$.itemTemplate %}&lt;/div&gt;',
+            '&lt;/li&gt;'
+        ]),
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-itemTemplate'>        /**
+</span>         * @property {Simplate}
+         * The template used to render the content of a row.  This template is not directly rendered, but is
+         * included in {@link #rowTemplate}.
+         *
+         * This property should be overridden in the derived class.
+         * @template
+         */
+        itemTemplate: new Simplate([
+            '&lt;h3&gt;{%: $.$descriptor %}&lt;/h3&gt;',
+            '&lt;h4&gt;{%: $.$key %}&lt;/h4&gt;'
+        ]),
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-noDataTemplate'>        /**
+</span>         * @property {Simplate}
+         * The template used to render a message if there is no data available.
+         * The default template uses the following properties:
+         *
+         *      name                description
+         *      ----------------------------------------------------------------
+         *      noDataText          The text to display if there is no data.
+         */
+        noDataTemplate: new Simplate([
+            '&lt;li class=&quot;no-data&quot;&gt;',
+            '&lt;h3&gt;{%= $.noDataText %}&lt;/h3&gt;',
+            '&lt;/li&gt;'
+        ]),
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-listActionTemplate'>        /**
+</span>         * @property {Simplate}
+         * The template used to render the single list action row.
+         */
+        listActionTemplate: new Simplate([
+            '&lt;li data-dojo-attach-point=&quot;actionsNode&quot; class=&quot;actions-row&quot;&gt;&lt;/li&gt;'
+        ]),
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-listActionItemTemplate'>        /**
+</span>         * @property {Simplate}
+         * The template used to render a list action item.
+         * The default template uses the following properties:
+         *
+         *      name                description
+         *      ----------------------------------------------------------------
+         *      actionIndex         The correlating index number of the action collection
+         *      title               Text used for ARIA-labeling
+         *      icon                Relative path to the icon to use
+         *      id                  Unique name of action, also used for alt image text
+         *      label               Text added below the icon
+         */
+        listActionItemTemplate: new Simplate([
+            '&lt;button data-action=&quot;invokeActionItem&quot; data-id=&quot;{%= $.actionIndex %}&quot; aria-label=&quot;{%: $.title || $.id %}&quot;&gt;',
+                '&lt;img src=&quot;{%= $.icon %}&quot; alt=&quot;{%= $.id %}&quot; /&gt;',
+                '&lt;label&gt;{%: $.label %}&lt;/label&gt;',
+            '&lt;/button&gt;'
+        ]),
+
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-contentNode'>        /**
+</span>         * @property {HTMLElement}
+         * Attach point for the main view content
+         */
+        contentNode: null,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-remainingContentNode'>        /**
+</span>         * @property {HTMLElement}
+         * Attach point for the remaining items content
+         */
+        remainingContentNode: null,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-searchNode'>        /**
+</span>         * @property {HTMLElement}
+         * Attach point for the search widget
+         */
+        searchNode: null,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-emptySelectionNode'>        /**
+</span>         * @property {HTMLElement}
+         * Attach point for the empty, or no selection, container
+         */
+        emptySelectionNode: null,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-remainingNode'>        /**
+</span>         * @property {HTMLElement}
+         * Attach point for the remaining items container
+         */
+        remainingNode: null,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-moreNode'>        /**
+</span>         * @property {HTMLElement}
+         * Attach point for the request more items container
+         */
+        moreNode: null,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-actionsNode'>        /**
+</span>         * @property {HTMLElement}
+         * Attach point for the list actions container
+         */
+        actionsNode: null,
+
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-cfg-id'>        /**
+</span>         * @cfg {String} id
+         * The id for the view, and it's main DOM element.
+         */
+        id: 'generic_list',
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-cfg-resourceKind'>        /**
+</span>         * @cfg {String}
+         * The SData resource kind the view is responsible for.  This will be used as the default resource kind
+         * for all SData requests.
+         */
+        resourceKind: '',
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-querySelect'>        /**
+</span>         * @property {String[]}
+         * A list of fields to be selected in an SData request.
+         */
+        querySelect: null,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-queryInclude'>        /**
+</span>         * @property {String[]}
+         * A list of child properties to be included in an SData request.
+         */
+        queryInclude: null,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-queryOrderBy'>        /**
+</span>         * @property {String}
+         * The default order by expression for an SData request.
+         */
+        queryOrderBy: null,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-queryWhere'>        /**
+</span>         * @property {String/Function}
+         * The default where expression for an SData request.
+         */
+        queryWhere: null,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-resourceProperty'>        /**
+</span>         * @property {String/Function}
+         * The default resource property for an SData request.
+         */
+        resourceProperty: null,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-resourcePredicate'>        /**
+</span>         * @property {String/Function}
+         * The default resource predicate for an SData request.
+         */
+        resourcePredicate: null,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-pageSize'>        /**
+</span>         * @property {Number}
+         * The number of items to request per SData payload.
+         */
+        pageSize: 20,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-enableSearch'>        /**
+</span>         * @property {Boolean}
+         * Controls the addition of a search widget.
+         */
+        enableSearch: true,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-enableActions'>        /**
+</span>         * @property {Boolean}
+         * Flag that determines if the list actions panel should be in use.
+         */
+        enableActions: false,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-hideSearch'>        /**
+</span>         * @property {Boolean}
+         * Controls the visibility of the search widget.
+         */
+        hideSearch: false,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-allowSelection'>        /**
+</span>         * @property {Boolean}
+         * True to allow selections via the SelectionModel in the view.
+         */
+        allowSelection: false,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-autoClearSelection'>        /**
+</span>         * @property {Boolean}
+         * True to clear the selection model when the view is shown.
+         */
+        autoClearSelection: true,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-detailView'>        /**
+</span>         * @property {String/View}
+         * The id of the detail view, or view instance, to show when a row is clicked.
+         */
+        detailView: null,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-editView'>        /**
+</span>         * The view to show, either an id or an instance, if there is no {@link #insertView} specified, when
+         * the {@link #navigateToInsertView} action is invoked.
+         * @type {?(String|Sage.Platform.Mobile.View)}
+         */
+        editView: null,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-insertView'>        /**
+</span>         * The view to show, either an id or an instance, when the {@link #navigateToInsertView} action is invoked.
+         * @type {?(String|Sage.Platform.Mobile.View)}
+         */
+        insertView: null,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-contextView'>        /**
+</span>         * The view to show, either an id or an instance, when the {@link #navigateToContextView} action is invoked.
+         * @type {?(String|Sage.Platform.Mobile.View)}
+         */
+        contextView: false,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-hashTagQueries'>        /**
+</span>         * A dictionary of hash tag search queries.  The key is the hash tag, without the symbol, and the value is
+         * either a query string, or a function that returns a query string.
+         * @type {?Object}
+         */
+        hashTagQueries: null,
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-moreText'>        /**
+</span>         * The text displayed in the more button.
+         * @type {String}
+         */
+        moreText: 'Retrieve More Records',
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-emptySelectionText'>        /**
+</span>         * The text displayed in the emptySelection button.
+         * @type {String}
+         */
+        emptySelectionText: 'None',
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-titleText'>        /**
+</span>         * The text displayed as the default title.
+         * @type {String}
+         */
+        titleText: 'List',
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-remainingText'>        /**
+</span>         * The format string for the text displayed for the remaining record count.  This is used in a {@link String#format} call.
+         * @type {String}
+         */
+        remainingText: '${0} records remaining',
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-cancelText'>        /**
+</span>         * The text displayed on the cancel button.
+         * @type {String}
+         * @deprecated
+         */
+        cancelText: 'Cancel',
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-insertText'>        /**
+</span>         * The text displayed on the insert button.
+         * @type {String}
+         * @deprecated
+         */
+        insertText: 'New',
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-noDataText'>        /**
+</span>         * The text displayed when no records are available.
+         * @type {String}
+         */
+        noDataText: 'no records',
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-loadingText'>        /**
+</span>         * The text displayed when data is being requested.
+         * @type {String}
+         */
+        loadingText: 'loading...',
+<span id='Sage-Platform-Mobile-ConfigurableSelectionModel-property-requestErrorText'>        /**
+</span>         * The text displayed when a data request fails.
+         * @type {String}
+         */
+        requestErrorText: 'A server error occurred while requesting data.',
+<span id='Sage-Platform-Mobile-List-property-customizationSet'>        customizationSet: 'list',
+</span><span id='Sage-Platform-Mobile-List-property-selectIcon'>        selectIcon: 'content/images/icons/OK_24.png',
+</span><span id='Sage-Platform-Mobile-List-property-searchWidget'>        searchWidget: null,
+</span><span id='Sage-Platform-Mobile-List-property-searchWidgetClass'>        searchWidgetClass: SearchWidget,
+</span><span id='Sage-Platform-Mobile-List-property-_selectionModel'>        _selectionModel: null,
+</span><span id='Sage-Platform-Mobile-List-property-_selectionConnects'>        _selectionConnects: null,
+</span><span id='Sage-Platform-Mobile-List-method-_setSelectionModelAttr'>        _setSelectionModelAttr: function(selectionModel) {
+</span>            if (this._selectionConnects)
+                array.forEach(this._selectionConnects, this.disconnect, this);
+
+            this._selectionModel = selectionModel;
+            this._selectionConnects = [];
+
+            if (this._selectionModel)
+            {
+                this._selectionConnects.push(
+                    this.connect(this._selectionModel, 'onSelect', this._onSelectionModelSelect),
+                    this.connect(this._selectionModel, 'onDeselect', this._onSelectionModelDeselect),
+                    this.connect(this._selectionModel, 'onClear', this._onSelectionModelClear)
+                );
+            }
+        },
+<span id='Sage-Platform-Mobile-List-method-_getSelectionModelAttr'>        _getSelectionModelAttr: function() {
+</span>            return this._selectionModel;
+        },
+<span id='Sage-Platform-Mobile-List-method-postCreate'>        postCreate: function() {
+</span>            this.inherited(arguments);
+
+            if (this._selectionModel == null)
+                this.set('selectionModel', new ConfigurableSelectionModel());
+
+            this.subscribe('/app/refresh', this._onRefresh);
+
+            if (this.enableSearch)
+            {
+                var searchWidgetCtor = lang.isString(this.searchWidgetClass)
+                    ? lang.getObject(this.searchWidgetClass, false)
+                    : this.searchWidgetClass;
+
+                this.searchWidget = this.searchWidget || new searchWidgetCtor({
+                    'class': 'list-search',
+                    'owner': this,
+                    'onSearchExpression': lang.hitch(this, this._onSearchExpression)
+                });
+                this.searchWidget.placeAt(this.searchNode, 'replace');
+            }
+            else
+            {
+                this.searchWidget = null;
+            }
+
+            domClass.toggle(this.domNode, 'list-hide-search', this.hideSearch);
+
+            this.clear();
+        },
+<span id='Sage-Platform-Mobile-List-method-startup'>        startup: function() {
+</span>            this.inherited(arguments);
+
+            if (this.searchWidget)
+                this.searchWidget.configure({
+                    'hashTagQueries': this._createCustomizedLayout(this.createHashTagQueryLayout(), 'hashTagQueries'),
+                    'formatSearchQuery': lang.hitch(this, this.formatSearchQuery)
+                });
+
+            this.createActions(this._createCustomizedLayout(this.createActionLayout(), 'actions'));
+        },
+<span id='Sage-Platform-Mobile-List-method-destroy'>        destroy: function() {
+</span>			if (this.searchWidget)
+            {
+				if(!this.searchWidget._destroyed)
+                    this.searchWidget.destroyRecursive();
+
+				delete this.searchWidget;
+			}
+            
+			this.inherited(arguments);
+		},
+<span id='Sage-Platform-Mobile-List-method-createToolLayout'>        createToolLayout: function() {
+</span>            return this.tools || (this.tools = {
+                'tbar': [{
+                    id: 'new',
+                    action: 'navigateToInsertView',
+                    security: App.getViewSecurity(this.insertView, 'insert')
+                }]
+            });
+        },
+<span id='Sage-Platform-Mobile-List-method-createActionLayout'>        createActionLayout: function() {
+</span>            return this.actions || {};
+        },
+<span id='Sage-Platform-Mobile-List-method-createActions'>        createActions: function(actions) {
+</span>            for (var i = 0; i &lt; actions.length; i++)
+            {
+                var action = actions[i],
+                    options = {
+                        actionIndex: i,
+                        hasAccess: (action.security &amp;&amp; App.hasAccessTo(this.expandExpression(action.security))) || true
+                    },
+                    actionTemplate = action.template || this.listActionItemTemplate;
+
+                lang.mixin(action, options);
+
+                domConstruct.place(actionTemplate.apply(action, action.id), this.actionsNode, 'last');
+            }
+
+            this.actions = actions;
+        },
+<span id='Sage-Platform-Mobile-List-method-invokeActionItem'>        invokeActionItem: function(parameters, evt, node) {
+</span>            var index = parameters['id'],
+                action = this.actions[index],
+                selectedItems = this.get('selectionModel').getSelections(),
+                selection = null;
+
+            if (!action.isEnabled) return;
+
+            for (var key in selectedItems)
+            {
+                selection = selectedItems[key];
+                break;
+            }
+
+            if (action['fn'])
+                action['fn'].call(action['scope'] || this, action, selection);
+            else
+                if (action['action'])
+                    if (this.hasAction(action['action']))
+                        this.invokeAction(action['action'], action, selection);
+        },
+<span id='Sage-Platform-Mobile-List-method-checkActionState'>        checkActionState: function() {
+</span>            var selectedItems = this.get('selectionModel').getSelections(),
+                selection = null;
+
+            for (var key in selectedItems)
+            {
+                selection = selectedItems[key];
+                break;
+            }
+
+            for (var i = 0; i &lt; this.actions.length; i++)
+            {
+                var action = this.actions[i];
+
+                action.isEnabled = (typeof action['enabled'] === 'undefined')
+                    ? true
+                    : this.expandExpression(action['enabled'], action, selection);
+
+                if (!action.hasAccess)
+                    action.isEnabled = false;
+
+                domClass.toggle(this.actionsNode.childNodes[i], 'toolButton-disabled', !action.isEnabled);
+            }
+
+        },
+<span id='Sage-Platform-Mobile-List-method-showActionPanel'>        showActionPanel: function(rowNode) {
+</span>            this.checkActionState();
+
+            domClass.add(rowNode, 'list-action-selected');
+            domConstruct.place(this.actionsNode, rowNode, 'after');
+
+            if (this.actionsNode.offsetTop + this.actionsNode.clientHeight + 48 &gt; document.documentElement.clientHeight)
+                this.actionsNode.scrollIntoView(false);
+        },
+<span id='Sage-Platform-Mobile-List-method-setSource'>        setSource: function(source) {
+</span>            lang.mixin(source, {
+                resourceKind: this.resourceKind
+            });
+
+            this.options.source = source;
+        },
+<span id='Sage-Platform-Mobile-List-method-hideActionPanel'>        hideActionPanel: function(rowNode) {
+</span>            domClass.remove(rowNode, 'list-action-selected');
+        },
+<span id='Sage-Platform-Mobile-List-method-isNavigationDisabled'>        isNavigationDisabled: function() {
+</span>            return ((this.options &amp;&amp; this.options.selectionOnly) || (this.selectionOnly));
+        },
+<span id='Sage-Platform-Mobile-List-method-isSelectionDisabled'>        isSelectionDisabled: function() {
+</span>            return !((this.options &amp;&amp; this.options.selectionOnly) || this.enableActions || this.allowSelection);
+        },        
+<span id='Sage-Platform-Mobile-List-method-_onSelectionModelSelect'>        _onSelectionModelSelect: function(key, data, tag) {
+</span>            var node = dom.byId(tag) || query('li[data-key=&quot;'+key+'&quot;]', this.contentNode)[0];
+            if (!node) return;
+
+            if (this.enableActions)
+            {
+                this.showActionPanel(node);
+                return;
+            }
+
+            domClass.add(node, 'list-item-selected');
+        },
+<span id='Sage-Platform-Mobile-List-method-_onSelectionModelDeselect'>        _onSelectionModelDeselect: function(key, data, tag) {
+</span>            var node = dom.byId(tag) || query('li[data-key=&quot;'+key+'&quot;]', this.contentNode)[0];
+            if (!node) return;
+
+            if (this.enableActions)
+            {
+                this.hideActionPanel(node);
+                return;
+            }
+
+            domClass.remove(node, 'list-item-selected');
+        },
+<span id='Sage-Platform-Mobile-List-method-_onSelectionModelClear'>        _onSelectionModelClear: function() {
+</span>        },
+<span id='Sage-Platform-Mobile-List-method-_loadPreviousSelections'>        _loadPreviousSelections: function() {
+</span>            var previousSelections = this.options &amp;&amp; this.options.previousSelections;
+            if (previousSelections)
+            {
+                for (var i = 0; i &lt; previousSelections.length; i++)
+                {
+                    var row = query((string.substitute('[data-key=&quot;${0}&quot;], [data-descriptor=&quot;${0}&quot;]', [previousSelections[i]])), this.contentNode)[0];
+
+                    if (row)
+                        this.activateEntry({
+                            key: previousSelections[i],
+                            descriptor: previousSelections[i],
+                            $source: row
+                        });
+                }
+            }
+        },
+<span id='Sage-Platform-Mobile-List-method-_onRefresh'>        _onRefresh: function(options) {
+</span>            if (this.resourceKind &amp;&amp; options.resourceKind === this.resourceKind)
+            {
+                this.refreshRequired = true;
+            }
+        },
+<span id='Sage-Platform-Mobile-List-method-selectEntry'>        selectEntry: function(params, evt, node) {
+</span>            var row = query(node).closest('[data-key]')[0],
+                key = row ? row.getAttribute('data-key') : false;
+
+            if (this._selectionModel &amp;&amp; key)
+                this._selectionModel.toggle(key, this.entries[key], row);
+
+            if (this.options.singleSelect &amp;&amp; this.options.singleSelectAction &amp;&amp; !this.enableActions)
+                this.invokeSingleSelectAction();
+        },
+<span id='Sage-Platform-Mobile-List-method-activateEntry'>        activateEntry: function(params) {
+</span>            if (params.key)
+            {
+                if (this._selectionModel &amp;&amp; this.isNavigationDisabled())
+                {
+                    this._selectionModel.toggle(params.key, this.entries[params.key] || params.descriptor, params.$source);
+                    if (this.options.singleSelect &amp;&amp; this.options.singleSelectAction)
+                        this.invokeSingleSelectAction();
+                }
+                else
+                {
+                    this.navigateToDetailView(params.key, params.descriptor);
+                }
+            }
+        },
+<span id='Sage-Platform-Mobile-List-method-invokeSingleSelectAction'>        invokeSingleSelectAction: function() {
+</span>            if (App.bars['tbar'])
+                App.bars['tbar'].invokeTool({tool: this.options.singleSelectAction});
+
+            if (this.autoClearSelection)
+                this._selectionModel.clear();
+        },
+<span id='Sage-Platform-Mobile-List-method-formatRelatedQuery'>        formatRelatedQuery: function(entry, fmt, property) {
+</span>            return string.substitute(fmt, [lang.getObject(property || '$key', false, entry)]);
+        },
+<span id='Sage-Platform-Mobile-List-method-formatSearchQuery'>        formatSearchQuery: function(searchQuery) {
+</span>            /// &lt;summary&gt;
+            ///     Called to transform a textual query into an SData query compatible search expression.
+            /// &lt;/summary&gt;
+            /// &lt;returns type=&quot;String&quot;&gt;An SData query compatible search expression.&lt;/returns&gt;
+            return false;
+        },
+<span id='Sage-Platform-Mobile-List-method-escapeSearchQuery'>        escapeSearchQuery: function(searchQuery) {
+</span>            return (searchQuery || '').replace(/&quot;/g, '&quot;&quot;');
+        },
+<span id='Sage-Platform-Mobile-List-method-_onSearchExpression'>        _onSearchExpression: function(expression) {
+</span>
+            this.clear(false);
+            this.queryText = '';
+            this.query = expression;
+
+            this.requestData();
+        },
+<span id='Sage-Platform-Mobile-List-method-configureSearch'>        configureSearch: function() {
+</span>            this.query = this.options &amp;&amp; this.options.query || null;
+            if (this.searchWidget)
+                this.searchWidget.configure({
+                    'context': this.getContext()
+                });
+        },
+<span id='Sage-Platform-Mobile-List-method-createRequest'>        createRequest:function(o) {
+</span>            /// &lt;summary&gt;
+            ///     Creates SDataResourceCollectionRequest instance and sets a number of known properties.
+            /// &lt;/summary&gt;
+            /// &lt;returns type=&quot;Sage.SData.Client.SDataResourceCollectionRequest&quot;&gt;An SDataResourceCollectionRequest instance.&lt;returns&gt;
+
+            // todo: should we cache the request? the only thing that needs to change on subsequent requests is the paging.
+
+            var where = [],
+                options = this.options,
+                pageSize = this.pageSize,
+                startIndex = this.feed &amp;&amp; this.feed['$startIndex'] &gt; 0 &amp;&amp; this.feed['$itemsPerPage'] &gt; 0
+                    ? this.feed['$startIndex'] + this.feed['$itemsPerPage']
+                    : 1;
+
+            var request = new Sage.SData.Client.SDataResourceCollectionRequest(this.getService())
+                .setCount(pageSize)
+                .setStartIndex(startIndex);
+
+            var contractName = this.expandExpression((options &amp;&amp; options.contractName) || this.contractName);
+            if (contractName)
+                request.setContractName(contractName);
+
+            var resourceKindExpr = this.expandExpression((options &amp;&amp; options.resourceKind) || this.resourceKind);
+            if (resourceKindExpr)
+                request.setResourceKind(resourceKindExpr);
+
+            var resourcePropertyExpr = this.expandExpression((options &amp;&amp; options.resourceProperty) || this.resourceProperty);
+            if (resourcePropertyExpr)
+                request
+                    .getUri()
+                    .setPathSegment(Sage.SData.Client.SDataUri.ResourcePropertyIndex, resourcePropertyExpr);
+
+            var resourcePredicateExpr = this.expandExpression((options &amp;&amp; options.resourcePredicate) || this.resourcePredicate);
+            if (resourcePredicateExpr)
+                request
+                    .getUri()
+                    .setCollectionPredicate(resourcePredicateExpr);
+
+            var querySelectExpr = this.expandExpression((options &amp;&amp; options.select) || this.querySelect);
+            if (querySelectExpr)
+                request.setQueryArg(Sage.SData.Client.SDataUri.QueryArgNames.Select, querySelectExpr.join(','));
+
+            var queryIncludeExpr = this.expandExpression(this.queryInclude);
+            if (queryIncludeExpr)
+                request.setQueryArg(Sage.SData.Client.SDataUri.QueryArgNames.Include, queryIncludeExpr.join(','));
+
+            var queryOrderByExpr = this.expandExpression((options &amp;&amp; options.orderBy) || this.queryOrderBy);
+            if (queryOrderByExpr)
+                request.setQueryArg(Sage.SData.Client.SDataUri.QueryArgNames.OrderBy, queryOrderByExpr);
+
+            var queryWhereExpr = this.expandExpression((options &amp;&amp; options.where) || this.queryWhere);
+            if (queryWhereExpr)
+                where.push(queryWhereExpr);
+
+            if (this.query)
+                where.push(this.query);
+
+
+            if (where.length &gt; 0)
+                request.setQueryArg(Sage.SData.Client.SDataUri.QueryArgNames.Where, where.join(' and '));
+
+            return request;
+        },
+<span id='Sage-Platform-Mobile-List-method-navigateToRelatedView'>        navigateToRelatedView:  function(action, selection, viewId, whereQueryFmt) {
+</span>            var view = App.getView(viewId),
+                options = {
+                    where: string.substitute(whereQueryFmt, [selection.data['$key']])
+                };
+
+            if (view &amp;&amp; options)
+                view.show(options);
+        },
+<span id='Sage-Platform-Mobile-List-method-navigateToDetailView'>        navigateToDetailView: function(key, descriptor) {
+</span>            /// &lt;summary&gt;
+            ///     Navigates to the requested detail view.
+            /// &lt;/summary&gt;
+            var view = App.getView(this.detailView);
+            if (view)
+                view.show({
+                    descriptor: descriptor,
+                    key: key
+                });
+        },
+<span id='Sage-Platform-Mobile-List-method-navigateToEditView'>        navigateToEditView: function(action, selection) {
+</span>            var view = App.getView(this.editView || this.insertView);
+            if (view)
+            {
+                view.show({
+                    key: selection.data['$key']
+                });
+            }
+        },
+<span id='Sage-Platform-Mobile-List-method-navigateToInsertView'>        navigateToInsertView: function(el) {
+</span>            var view = App.getView(this.insertView || this.editView);
+            if (view)
+            {
+                view.show({
+                    returnTo: this.id,
+                    insert: true
+                });
+            }
+        },
+<span id='Sage-Platform-Mobile-List-method-processFeed'>        processFeed: function(feed) {
+</span>            /// &lt;summary&gt;
+            ///     Processes the feed result from the SData request and renders out the resource feed entries.
+            /// &lt;/summary&gt;
+            /// &lt;param name=&quot;feed&quot; type=&quot;Object&quot;&gt;The feed object.&lt;/param&gt;
+            if (!this.feed) this.set('listContent', '');
+
+            this.feed = feed;
+            if (this.feed['$totalResults'] === 0)
+            {
+                this.set('listContent', this.noDataTemplate.apply(this));                
+            }
+            else if (feed['$resources'])
+            {
+                var o = [];
+
+                for (var i = 0; i &lt; feed['$resources'].length; i++)
+                {
+                    var entry = feed['$resources'][i];
+
+                    entry['$descriptor'] = entry['$descriptor'] || feed['$descriptor'];
+
+                    this.entries[entry.$key] = entry;
+
+                    o.push(this.rowTemplate.apply(entry, this));
+                }
+
+                if (o.length &gt; 0)
+                    domConstruct.place(o.join(''), this.contentNode, 'last');
+            }
+
+            // todo: add more robust handling when $totalResults does not exist, i.e., hide element completely
+            if (typeof this.feed['$totalResults'] !== 'undefined')
+            {
+                var remaining = this.feed['$totalResults'] - (this.feed['$startIndex'] + this.feed['$itemsPerPage'] - 1);
+                this.set('remainingContent', string.substitute(this.remainingText, [remaining]));
+            }
+
+            domClass.toggle(this.domNode, 'list-has-more', this.hasMoreData());
+
+            if (this.options.allowEmptySelection)
+                domClass.add(this.domNode, 'list-has-empty-opt');
+
+            this._loadPreviousSelections();
+        },
+<span id='Sage-Platform-Mobile-List-method-hasMoreData'>        hasMoreData: function() {
+</span>            /// &lt;summary&gt;
+            ///     Deterimines if there is more data to be shown by inspecting the last feed result.
+            /// &lt;/summary&gt;
+            /// &lt;returns type=&quot;Boolean&quot;&gt;True if the feed has more data; False otherwise.&lt;/returns&gt;
+            if (this.feed['$startIndex'] &gt; 0 &amp;&amp; this.feed['$itemsPerPage'] &gt; 0 &amp;&amp; this.feed['$totalResults'] &gt;= 0)
+            {
+                var start = this.feed['$startIndex'];
+                var count = this.feed['$itemsPerPage'];
+                var total = this.feed['$totalResults'];
+
+                return (start + count &lt;= total);
+            }
+            else
+            {
+                return true; // no way to determine, always assume more data
+            }
+        },
+<span id='Sage-Platform-Mobile-List-method-onRequestDataFailure'>        onRequestDataFailure: function(response, o) {
+</span>            /// &lt;summary&gt;
+            ///     Called when an error occurs while request data from the SData endpoint.
+            /// &lt;/summary&gt;
+            /// &lt;param name=&quot;response&quot; type=&quot;Object&quot;&gt;The response object.&lt;/param&gt;
+            /// &lt;param name=&quot;o&quot; type=&quot;Object&quot;&gt;The options that were passed to Ext when creating the Ajax request.&lt;/param&gt;
+            alert(string.substitute(this.requestErrorText, [response, o]));
+            ErrorManager.addError(response, o, this.options, 'failure');
+            domClass.remove(this.domNode, 'list-loading');
+        },
+<span id='Sage-Platform-Mobile-List-method-onRequestDataAborted'>        onRequestDataAborted: function(response, o) {
+</span>            this.options = false; // force a refresh
+            ErrorManager.addError(response, o, this.options, 'aborted');
+
+            domClass.remove(this.domNode, 'list-loading');
+        },
+<span id='Sage-Platform-Mobile-List-method-onRequestDataSuccess'>        onRequestDataSuccess: function(feed) {
+</span>            this.processFeed(feed);
+
+            domClass.remove(this.domNode, 'list-loading');
+        },
+<span id='Sage-Platform-Mobile-List-method-requestData'>        requestData: function() {
+</span>            /// &lt;summary&gt;
+            ///     Initiates the SData request.
+            /// &lt;/summary&gt;
+
+            domClass.add(this.domNode, 'list-loading');
+
+            var request = this.createRequest();
+            request.read({
+                success: this.onRequestDataSuccess,
+                failure: this.onRequestDataFailure,
+                aborted: this.onRequestDataAborted,
+                scope: this
+            });
+        },
+<span id='Sage-Platform-Mobile-List-method-more'>        more: function() {
+</span>            /// &lt;summary&gt;
+            ///     Called when the more button is clicked.
+            /// &lt;/summary&gt;
+            this.requestData();
+        },
+<span id='Sage-Platform-Mobile-List-method-emptySelection'>        emptySelection: function() {
+</span>            /// &lt;summary&gt;
+            ///     Called when the emptySelection/None button is clicked.
+            /// &lt;/summary&gt;
+            this._selectionModel.clear();
+
+            if (App.bars['tbar'])
+                App.bars['tbar'].invokeTool({tool: this.options.singleSelectAction}); // invoke action of tool
+        },
+<span id='Sage-Platform-Mobile-List-method-refreshRequiredFor'>        refreshRequiredFor: function(options) {
+</span>            if (this.options)
+            {
+                if (options)
+                {
+                    if (this.expandExpression(this.options.stateKey) != this.expandExpression(options.stateKey)) return true;
+                    if (this.expandExpression(this.options.where) != this.expandExpression(options.where)) return true;
+                    if (this.expandExpression(this.options.query) != this.expandExpression(options.query)) return true;
+                    if (this.expandExpression(this.options.resourceKind) != this.expandExpression(options.resourceKind)) return true;
+                    if (this.expandExpression(this.options.resourcePredicate) != this.expandExpression(options.resourcePredicate)) return true;
+                }
+
+                return false;
+            }
+            else
+                return this.inherited(arguments);
+        },
+<span id='Sage-Platform-Mobile-List-method-getContext'>        getContext: function() {
+</span>            return lang.mixin(this.inherited(arguments), {
+                resourceKind: this.resourceKind
+            });
+        },
+<span id='Sage-Platform-Mobile-List-method-beforeTransitionTo'>        beforeTransitionTo: function() {
+</span>            this.inherited(arguments);
+
+            domClass.toggle(this.domNode, 'list-hide-search', (this.options &amp;&amp; typeof this.options.hideSearch !== 'undefined')
+                ? this.options.hideSearch
+                : this.hideSearch);
+
+            domClass.toggle(this.domNode, 'list-show-selectors', !this.isSelectionDisabled() &amp;&amp; !this.options.singleSelect);
+
+            if (this._selectionModel &amp;&amp; !this.isSelectionDisabled())
+                this._selectionModel.useSingleSelection(this.options.singleSelect);
+
+            if (typeof this.options.enableActions !== 'undefined')
+                this.enableActions = this.options.enableActions;
+
+            domClass.toggle(this.domNode, 'list-show-actions', this.enableActions);
+            if (this.enableActions)
+            {
+                this._selectionModel.useSingleSelection(true);
+            }
+
+
+            if (this.refreshRequired)
+            {
+                this.clear();
+            }
+            else
+            {
+                // if enabled, clear any pre-existing selections
+                if (this._selectionModel &amp;&amp; this.autoClearSelection &amp;&amp; !this.enableActions)
+                    this._selectionModel.clear();
+            }
+        },
+<span id='Sage-Platform-Mobile-List-method-transitionTo'>        transitionTo: function()
+</span>        {
+            this.configureSearch();
+
+            if (this._selectionModel) this._loadPreviousSelections();
+            
+            this.inherited(arguments);
+        },
+<span id='Sage-Platform-Mobile-List-method-createHashTagQueryLayout'>        createHashTagQueryLayout: function() {
+</span>            // todo: always regenerate this layout? always regenerating allows for all existing customizations
+            // to still work, at expense of potential (rare) performance issues if many customizations are registered.
+            var layout = [];
+            for (var name in this.hashTagQueries)
+                layout.push({
+                    'key': name,
+                    'tag': (this.hashTagQueriesText &amp;&amp; this.hashTagQueriesText[name]) || name,
+                    'query': this.hashTagQueries[name]
+                });
+            return layout;
+        },
+<span id='Sage-Platform-Mobile-List-method-refresh'>        refresh: function() {
+</span>            this.requestData();
+        },
+<span id='Sage-Platform-Mobile-List-method-clear'>        clear: function(all) {
+</span>            /// &lt;summary&gt;
+            ///     Clears the view and re-applies the default content template.
+            /// &lt;/summary&gt;
+            if (this._selectionModel)
+            {
+                this._selectionModel.suspendEvents();
+                this._selectionModel.clear();
+                this._selectionModel.resumeEvents();
+            }
+
+            this.requestedFirstPage = false;
+            this.entries = {};
+            this.feed = false;
+            this.query = false; // todo: rename to searchQuery
+
+            if (all !== false &amp;&amp; this.searchWidget) this.searchWidget.clear();
+
+            domClass.remove(this.domNode, 'list-has-more');
+
+            this.set('listContent', this.loadingTemplate.apply(this));
+        }
+    });
+});
+</pre>
+</body>
+</html>

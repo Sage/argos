@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='Sage-Platform-Mobile-_ServiceMixin'>/**
+</span> *
+ * @alternateClassName _ServiceMixin
+ */
+define('Sage/Platform/Mobile/_ServiceMixin', [
+    'dojo/_base/declare'
+], function(
+    declare
+) {
+
+    return declare('Sage.Platform.Mobile._ServiceMixin', null, {
+<span id='Sage-Platform-Mobile-_ServiceMixin-property-serviceMap'>        serviceMap: null,
+</span><span id='Sage-Platform-Mobile-_ServiceMixin-method-constructor'>        constructor: function() {
+</span>            var map = this.serviceMap;
+            if (map)
+            {
+                for (var property in map)
+                {
+                    if (this[property]) continue; /* skip any that were explicitly mixed in */
+
+                    this[property] = this._resolveService(map[property]);
+                }
+            }
+        },
+<span id='Sage-Platform-Mobile-_ServiceMixin-method-_resolveService'>        _resolveService: function(specification) {
+</span>            if (specification &amp;&amp; specification.type === 'sdata')
+                return App.getService(specification.name);
+
+            return App.getService(specification);
+        }
+    });
+});</pre>
+</body>
+</html>

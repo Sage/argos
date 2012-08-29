@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='Sage-Platform-Mobile-Calendar'>/**
+</span> *
+ * @alternateClassName Calendar
+ */
+define('Sage/Platform/Mobile/Calendar', [
+    'dojo/_base/declare',
+    'dojo/string',
+    'dojo/dom-attr',
+    'dojo/dom-class',
+    'dojo/dom-construct',
+    'dojo/dom-style',
+    'Sage/Platform/Mobile/View'
+], function(
+    declare,
+    string,
+    domAttr,
+    domClass,
+    domConstruct,
+    domStyle,
+    View
+) {
+    var pad = function(n) { return n &lt; 10 ? '0' + n : n };
+    var uCase = function (str) { return str.charAt(0).toUpperCase() + str.substring(1); };
+
+    return declare('Sage.Platform.Mobile.Calendar', [View], {
+<span id='Sage-Platform-Mobile-Calendar-property-titleText'>        // Localization
+</span>        titleText: 'Calendar',
+<span id='Sage-Platform-Mobile-Calendar-property-amText'>        amText: 'AM',
+</span><span id='Sage-Platform-Mobile-Calendar-property-pmText'>        pmText: 'PM',
+</span>
+<span id='Sage-Platform-Mobile-Calendar-property-id'>        id: 'generic_calendar',
+</span><span id='Sage-Platform-Mobile-Calendar-property-contentNode'>        contentNode: null,
+</span><span id='Sage-Platform-Mobile-Calendar-property-calendarNode'>        calendarNode: null,
+</span><span id='Sage-Platform-Mobile-Calendar-property-timeNode'>        timeNode: null,
+</span><span id='Sage-Platform-Mobile-Calendar-property-meridiemNode'>        meridiemNode: null,
+</span><span id='Sage-Platform-Mobile-Calendar-property-months'>        months: Date.CultureInfo.abbreviatedMonthNames,
+</span><span id='Sage-Platform-Mobile-Calendar-property-dateFormat'>        dateFormat: Date.CultureInfo.formatPatterns.shortDate,
+</span><span id='Sage-Platform-Mobile-Calendar-property-timeFormat'>        timeFormat: Date.CultureInfo.formatPatterns.shortTime,
+</span><span id='Sage-Platform-Mobile-Calendar-property-is24hrTimeFormat'>        is24hrTimeFormat: Date.CultureInfo.formatPatterns.shortTime.match(/H\:/),
+</span><span id='Sage-Platform-Mobile-Calendar-property-date'>        date: false,
+</span><span id='Sage-Platform-Mobile-Calendar-property-showTimePicker'>        showTimePicker: false,
+</span><span id='Sage-Platform-Mobile-Calendar-property-timeless'>        timeless: false,
+</span><span id='Sage-Platform-Mobile-Calendar-property-selectorTemplate'>        selectorTemplate:  '&lt;select id=&quot;${0}-field&quot; data-dojo-attach-point=&quot;${0}Node&quot;&gt;&lt;/select&gt;',
+</span><span id='Sage-Platform-Mobile-Calendar-property-incrementTemplate'>        incrementTemplate: '&lt;button data-action=&quot;increment${0}&quot; class=&quot;button&quot;&gt;+&lt;/button&gt;',
+</span><span id='Sage-Platform-Mobile-Calendar-property-decrementTemplate'>        decrementTemplate: '&lt;button data-action=&quot;decrement${0}&quot; class=&quot;button&quot;&gt;-&lt;/button&gt;',
+</span><span id='Sage-Platform-Mobile-Calendar-property-widgetTemplate'>        widgetTemplate: new Simplate([
+</span>            '&lt;div id=&quot;{%= $.id %}&quot; title=&quot;{%: $.titleText %}&quot; class=&quot;panel {%= $.cls %}&quot;&gt;',
+                '&lt;div class=&quot;panel-content&quot; id=&quot;datetime-picker&quot;&gt;',
+                    '&lt;div class=&quot;calendar-content&quot;&gt;',
+                    '&lt;table id=&quot;datetime-picker-date&quot; data-dojo-attach-point=&quot;datePickControl&quot;&gt;',
+                        '&lt;caption&gt;&amp;nbsp;&lt;/caption&gt;',
+                        '&lt;tr class=&quot;plus&quot;&gt;',
+                            '&lt;td&gt;{%= $.localizeViewTemplate(&quot;incrementTemplate&quot;, 0) %}&lt;/td&gt;',
+                            '&lt;td&gt;{%= $.localizeViewTemplate(&quot;incrementTemplate&quot;, 1) %}&lt;/td&gt;',
+                            '&lt;td&gt;{%= $.localizeViewTemplate(&quot;incrementTemplate&quot;, 2) %}&lt;/td&gt;',
+                        '&lt;/tr&gt;',
+                        '&lt;tr class=&quot;datetime-selects&quot;&gt;',
+                            '&lt;td&gt;{%= $.localizeViewTemplate(&quot;selectorTemplate&quot;, 0) %}&lt;/td&gt;',
+                            '&lt;td&gt;{%= $.localizeViewTemplate(&quot;selectorTemplate&quot;, 1) %}&lt;/td&gt;',
+                            '&lt;td&gt;{%= $.localizeViewTemplate(&quot;selectorTemplate&quot;, 2) %}&lt;/td&gt;',
+                        '&lt;/tr&gt;',
+                        '&lt;tr class=&quot;minus&quot;&gt;',
+                            '&lt;td&gt;{%= $.localizeViewTemplate(&quot;decrementTemplate&quot;, 0) %}&lt;/td&gt;',
+                            '&lt;td&gt;{%= $.localizeViewTemplate(&quot;decrementTemplate&quot;, 1) %}&lt;/td&gt;',
+                            '&lt;td&gt;{%= $.localizeViewTemplate(&quot;decrementTemplate&quot;, 2) %}&lt;/td&gt;',
+                        '&lt;/tr&gt;',
+                    '&lt;/table&gt;',
+                    '&lt;/div&gt;',
+                    '&lt;div class=&quot;time-content&quot; data-dojo-attach-point=&quot;timeNode&quot;&gt;',
+                        '&lt;table id=&quot;datetime-picker-time&quot; data-dojo-attach-point=&quot;timePickControl&quot;&gt;',
+                            '&lt;caption&gt;&amp;nbsp;&lt;/caption&gt;',
+                            '&lt;tr class=&quot;plus&quot;&gt;',
+                                '&lt;td&gt;{%= $.localizeViewTemplate(&quot;incrementTemplate&quot;, 3) %}&lt;/td&gt;',
+                                '&lt;td&gt;{%= $.localizeViewTemplate(&quot;incrementTemplate&quot;, 4) %}&lt;/td&gt;',
+                                '&lt;td rowspan=&quot;3&quot;&gt;',
+                                    '&lt;div class=&quot;toggle toggle-vertical meridiem-field&quot; data-action=&quot;toggleMeridiem&quot; data-dojo-attach-point=&quot;meridiemNode&quot;&gt;',
+                                        '&lt;span class=&quot;thumb vertical&quot;&gt;&lt;/span&gt;',
+                                        '&lt;span class=&quot;toggleOn&quot;&gt;{%= $.amText %}&lt;/span&gt;',
+                                        '&lt;span class=&quot;toggleOff&quot;&gt;{%= $.pmText %}&lt;/span&gt;',
+                                    '&lt;/div&gt;',
+                                '&lt;/td&gt;',
+                            '&lt;/tr&gt;',
+                            '&lt;tr class=&quot;datetime-selects&quot;&gt;',
+                                '&lt;td&gt;{%= $.localizeViewTemplate(&quot;selectorTemplate&quot;, 3) %}&lt;/td&gt;',
+                                '&lt;td&gt;{%= $.localizeViewTemplate(&quot;selectorTemplate&quot;, 4) %}&lt;/td&gt;',
+                            '&lt;/tr&gt;',
+                            '&lt;tr class=&quot;minus&quot;&gt;',
+                                '&lt;td&gt;{%= $.localizeViewTemplate(&quot;decrementTemplate&quot;, 3) %}&lt;/td&gt;',
+                                '&lt;td&gt;{%= $.localizeViewTemplate(&quot;decrementTemplate&quot;, 4) %}&lt;/td&gt;',
+                            '&lt;/tr&gt;',
+                        '&lt;/table&gt;',
+                    '&lt;/div&gt;',
+                    '&lt;div style=&quot;clear:both&quot;&gt;&lt;/div&gt;',
+                '&lt;/div&gt;',
+            '&lt;/div&gt;'
+        ]),
+
+<span id='Sage-Platform-Mobile-Calendar-property-dayNode'>        dayNode: null,
+</span><span id='Sage-Platform-Mobile-Calendar-property-monthNode'>        monthNode: null,
+</span><span id='Sage-Platform-Mobile-Calendar-property-yearNode'>        yearNode: null,
+</span><span id='Sage-Platform-Mobile-Calendar-property-hourNode'>        hourNode: null,
+</span><span id='Sage-Platform-Mobile-Calendar-property-minuteNode'>        minuteNode: null,
+</span><span id='Sage-Platform-Mobile-Calendar-property-datePickControl'>        datePickControl: null,
+</span><span id='Sage-Platform-Mobile-Calendar-property-timePickControl'>        timePickControl: null,
+</span>
+<span id='Sage-Platform-Mobile-Calendar-method-daysInMonth'>        daysInMonth: function() {
+</span>            var dlo = (1==this.month) ? 28 : 30;
+            var dhi = (1==this.month) ? 29 : 31;
+            return (new Date(this.year, this.month, dlo).getMonth() == new Date(this.year, this.month, dhi).getMonth())
+                ? dhi
+                : dlo
+                ;
+        },
+<span id='Sage-Platform-Mobile-Calendar-method-init'>        init: function() {
+</span>            this.inherited(arguments);
+
+            this.connect(this.dayNode,    'onchange', this.validate);
+            this.connect(this.monthNode,  'onchange', this.validate);
+            this.connect(this.yearNode,   'onchange', this.validate);
+            this.connect(this.hourNode,   'onchange', this.validate);
+            this.connect(this.minuteNode, 'onchange', this.validate);
+        },
+
+<span id='Sage-Platform-Mobile-Calendar-method-validate'>        validate: function() {
+</span>            this.year = this.yearNode.value;
+            this.month = this.monthNode.value;
+            // adjust dayNode selector from changes to monthNode or leap/non-leap year
+            if (this.dayNode.options.length != this.daysInMonth())
+            {
+                this.populateSelector(this.dayNode, this.dayNode.selectedIndex + 1, 1, this.daysInMonth());
+            }
+
+            this.date = new Date(this.year, this.month, this.dayNode.value);
+            var isPM = this.is24hrTimeFormat ? (11 &lt; this.hourNode.value) : domAttr.get(this.meridiemNode, 'toggled') !== true,
+                hours = parseInt(this.hourNode.value, 10),
+                minutes = parseInt(this.minuteNode.value, 10);
+            hours = isPM ? (hours % 12) + 12 : (hours % 12);
+            this.date.setHours(hours);
+            this.date.setMinutes(minutes);
+
+            this.updateDatetimeCaption();
+        },
+<span id='Sage-Platform-Mobile-Calendar-method-toggleMeridiem'>        toggleMeridiem: function(params) {
+</span>            var el = params.$source,
+                toggledValue = el &amp;&amp; (domAttr.get(el, 'toggled') !== true);
+
+            if (el)
+            {
+                domClass.toggle(el, 'toggleStateOn');
+                domAttr.set(el, 'toggled', toggledValue);
+            }
+
+            this.updateDatetimeCaption();
+        },
+<span id='Sage-Platform-Mobile-Calendar-method-populateSelector'>        populateSelector: function(el, val, min, max) {
+</span>            if (val &gt; max) { val = max; }
+            el.options.length = 0;
+
+            for (var i=min; i &lt;= max; i++)
+            {
+                var opt = domConstruct.create('option', {
+                    innerHTML: (this.monthNode == el) ? uCase(this.months[i]) : pad(i),
+                    value: i,
+                    selected: (i == val)
+                });
+                el.options[el.options.length] = opt;
+            }
+        },
+<span id='Sage-Platform-Mobile-Calendar-method-localizeViewTemplate'>        localizeViewTemplate: function() {
+</span>            var whichTemplate = arguments[0],
+                formatIndex = arguments[1],
+                fields = { y:'year', M:'month', d:'day', h:'hour', H:'hour', m:'minute' };
+
+            var whichField = fields[ (3 &gt; formatIndex)
+                ? this.dateFormat.split(/[^a-z]/i)[formatIndex].charAt(0)
+                : Date.CultureInfo.formatPatterns.shortTime.split(/[^a-z]/i)[formatIndex - 3].charAt(0)
+                ];
+
+            var whichFormat = ('selectorTemplate' == whichTemplate)
+                ? whichField
+                : uCase(whichField);
+
+            return string.substitute(this[whichTemplate], [whichFormat]);
+        },
+<span id='Sage-Platform-Mobile-Calendar-method-show'>        show: function(options) {
+</span>            this.inherited(arguments);
+
+            this.titleText = options.label ? options.label : this.titleText;
+
+            this.showTimePicker = this.options &amp;&amp; this.options.showTimePicker;
+
+            this.date  = (this.options &amp;&amp; this.options.date) || new Date();
+            this.year  = this.date.getFullYear();
+            this.month = this.date.getMonth();
+
+            if ((this.options &amp;&amp; this.options.timeless) || this.timeless)
+                this.date = this.date.clone().add({minutes: this.date.getTimezoneOffset()});
+
+            var today = new Date();
+
+            this.populateSelector(this.yearNode, this.year,
+                    (this.year &lt; today.getFullYear() - 10 ? this.year : today.getFullYear() - 10), // min 10 years in past - arbitrary min
+                    (10 + today.getFullYear()) // max 10 years into future - arbitrary limit
+            );
+            this.populateSelector(this.monthNode, this.month, 0, 11);
+            this.populateSelector(this.dayNode, this.date.getDate(), 1, this.daysInMonth());
+            this.populateSelector(this.hourNode,
+                this.date.getHours() &gt; 12 &amp;&amp; !this.is24hrTimeFormat
+                    ? this.date.getHours() - 12
+                    : (this.date.getHours() || 12),
+                this.is24hrTimeFormat ? 0 : 1,
+                this.is24hrTimeFormat ? 23 : 12
+            );
+            this.populateSelector(this.minuteNode, this.date.getMinutes(), 0, 59);
+            domAttr.set(this.meridiemNode, 'toggled', this.date.getHours() &lt; 12);
+
+            this.updateDatetimeCaption();
+
+            if (this.showTimePicker) {
+                domClass.remove(this.timeNode, 'time-content-hidden');
+                // hide meridiem toggle when using 24hr time format:
+                if (this.is24hrTimeFormat) {
+                    domStyle.set(this.meridiemNode.parentNode, 'display', 'none');
+                } else if (12 &gt; this.date.getHours()) {
+                    // ensure initial toggle state reflects actual time
+                    domClass.add(this.meridiemNode, 'toggleStateOn');
+                } else {
+                    domClass.remove(this.meridiemNode, 'toggleStateOn');
+                }
+            } else {
+                domClass.add(this.timeNode, 'time-content-hidden');
+            }
+        },
+
+<span id='Sage-Platform-Mobile-Calendar-method-decrementYear'>        decrementYear: function() { this.decrement(this.yearNode); },
+</span><span id='Sage-Platform-Mobile-Calendar-method-decrementMonth'>        decrementMonth: function() { this.decrement(this.monthNode); },
+</span><span id='Sage-Platform-Mobile-Calendar-method-decrementDay'>        decrementDay: function() { this.decrement(this.dayNode); },
+</span><span id='Sage-Platform-Mobile-Calendar-method-decrementHour'>        decrementHour: function() {
+</span>            this.decrement(this.hourNode);
+            if (11 == this.hourNode.value % 12)
+            {
+                this.toggleMeridiem({$source:this.meridiemNode});
+            }
+        },
+<span id='Sage-Platform-Mobile-Calendar-method-decrementMinute'>        decrementMinute: function() { this.decrement(this.minuteNode, 15); },
+</span><span id='Sage-Platform-Mobile-Calendar-method-decrement'>        decrement: function(el, inc) { // all fields are &lt;select&gt; elements
+</span>            inc = inc || 1;
+
+            if (0 &lt;= (el.selectedIndex - inc))
+            {
+                el.selectedIndex = inc * Math.floor((el.selectedIndex -1)/ inc);
+            }
+            else
+            {
+                if (el == this.yearNode)   { return false; }
+                if (el == this.dayNode)    { this.decrementMonth(); }
+                if (el == this.monthNode)  { this.decrementYear();  }
+                if (el == this.minuteNode) { this.decrementHour();  }
+                el.selectedIndex = el.options.length - inc;
+            }
+
+            this.validate(null, el);
+        },
+
+<span id='Sage-Platform-Mobile-Calendar-method-incrementYear'>        incrementYear: function() { this.increment(this.yearNode); },
+</span><span id='Sage-Platform-Mobile-Calendar-method-incrementMonth'>        incrementMonth: function() { this.increment(this.monthNode); },
+</span><span id='Sage-Platform-Mobile-Calendar-method-incrementDay'>        incrementDay: function() { this.increment(this.dayNode); },
+</span><span id='Sage-Platform-Mobile-Calendar-method-incrementHour'>        incrementHour: function() {
+</span>            this.increment(this.hourNode);
+
+            if (this.hourNode.selectedIndex == (this.hourNode.options.length - 1))
+            {
+                this.toggleMeridiem({$source:this.meridiemNode});
+            }
+        },
+<span id='Sage-Platform-Mobile-Calendar-method-incrementMinute'>        incrementMinute: function() { this.increment(this.minuteNode, 15); },
+</span><span id='Sage-Platform-Mobile-Calendar-method-increment'>        increment: function(el, inc) {
+</span>            inc = inc || 1;
+
+            if (el.options.length &gt; (el.selectedIndex + inc))
+            {
+                el.selectedIndex += inc;
+            }
+            else
+            {
+                if (el == this.yearNode) { return false; }
+                if (el == this.dayNode) { this.incrementMonth(); }
+                if (el == this.monthNode)  { this.incrementYear(); }
+                if (el == this.minuteNode) { this.incrementHour(); }
+                el.selectedIndex = 0;
+            }
+
+            this.validate(null, el);
+        },
+<span id='Sage-Platform-Mobile-Calendar-method-updateDatetimeCaption'>        updateDatetimeCaption: function() {
+</span>            var t = this.getDateTime();
+            this.datePickControl.caption.innerHTML = t.toString('dddd'); // weekday text
+            if (this.showTimePicker)
+            {
+                this.timePickControl.caption.innerHTML = t.toString(this.timeFormat);
+            }
+        },
+<span id='Sage-Platform-Mobile-Calendar-method-getDateTime'>        getDateTime: function() {
+</span>            var result = new Date(this.date.getTime()),
+                isPM = this.is24hrTimeFormat ? (11 &lt; this.hourNode.value) : domAttr.get(this.meridiemNode, 'toggled') !== true,
+                hours = parseInt(this.hourNode.value, 10),
+                minutes = parseInt(this.minuteNode.value, 10);
+
+            hours = isPM
+                ? (hours % 12) + 12
+                : (hours % 12);
+
+            result.setHours(hours);
+            result.setMinutes(minutes);
+
+            if ((this.options &amp;&amp; this.options.timeless) || this.timeless)
+                result = result.clone().clearTime().add({minutes: -1*result.getTimezoneOffset(), seconds:5});
+
+            return result;
+        }
+    });
+});</pre>
+</body>
+</html>

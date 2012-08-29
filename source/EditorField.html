@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='Sage-Platform-Mobile-Fields-EditorField'>/**
+</span> *
+ */
+define('Sage/Platform/Mobile/Fields/EditorField', [
+    'dojo/_base/declare',
+    'dojo/_base/event',
+    'dojo/_base/lang',
+    'Sage/Platform/Mobile/Fields/_Field'
+], function(
+    declare,
+    event,
+    lang,
+    _Field
+) {
+
+    return declare('Sage.Platform.Mobile.Fields.EditorField', [_Field], {
+<span id='Sage-Platform-Mobile-Fields-EditorField-property-attributeMap'>        attributeMap: {
+</span>            inputValue: {
+                node: 'inputNode',
+                type: 'attribute',
+                attribute: 'value'
+            }
+        },
+
+<span id='Sage-Platform-Mobile-Fields-EditorField-property-widgetTemplate'>        /**
+</span>         * @property {Simplate}
+         * Simplate that defines the fields HTML Markup
+         *
+         * * `$` =&gt; Field instance
+         * * `$$` =&gt; Owner View instance
+         *
+         */
+        widgetTemplate: new Simplate([
+            '&lt;label for=&quot;{%= $.name %}&quot;&gt;{%: $.label %}&lt;/label&gt;',
+            '&lt;button class=&quot;button simpleSubHeaderButton&quot; aria-label=&quot;{%: $.lookupLabelText %}&quot;&gt;&lt;span&gt;{%: $.lookupText %}&lt;/span&gt;&lt;/button&gt;',
+            '&lt;input data-dojo-attach-point=&quot;inputNode&quot; type=&quot;text&quot; /&gt;'
+        ]),
+
+<span id='Sage-Platform-Mobile-Fields-EditorField-property-lookupLabelText'>        // Localization
+</span>        lookupLabelText: 'edit',
+<span id='Sage-Platform-Mobile-Fields-EditorField-property-lookupText'>        lookupText: '...',
+</span><span id='Sage-Platform-Mobile-Fields-EditorField-property-emptyText'>        emptyText: 'empty',
+</span><span id='Sage-Platform-Mobile-Fields-EditorField-property-completeText'>        completeText: 'Ok',
+</span>
+<span id='Sage-Platform-Mobile-Fields-EditorField-method-formatValue'>        formatValue: function(val) {
+</span>            return '';
+        },
+<span id='Sage-Platform-Mobile-Fields-EditorField-method-init'>        init: function() {
+</span>            this.inherited(arguments);
+
+            this.connect(this.containerNode, &quot;onclick&quot;, this._onClick);
+        },
+<span id='Sage-Platform-Mobile-Fields-EditorField-method-enable'>        enable: function() {
+</span>            this.inherited(arguments);
+
+            this._enableTextElement();
+        },
+<span id='Sage-Platform-Mobile-Fields-EditorField-method-_enableTextElement'>        _enableTextElement: function() {
+</span>            this.inputNode.disabled = false;
+        },
+<span id='Sage-Platform-Mobile-Fields-EditorField-method-disable'>        disable: function() {
+</span>            this.inherited(arguments);
+            
+            this._disableTextElement();
+        },
+<span id='Sage-Platform-Mobile-Fields-EditorField-method-_disableTextElement'>        _disableTextElement: function() {
+</span>            this.inputNode.disabled = true;
+        },
+<span id='Sage-Platform-Mobile-Fields-EditorField-method-createNavigationOptions'>        createNavigationOptions: function() {
+</span>            return {
+                tools: {
+                    tbar: [{
+                        id: 'complete',
+                        fn: this.complete,
+                        scope: this
+                    },{
+                        id: 'cancel',
+                        side: 'left',
+                        fn: ReUI.back,
+                        scope: ReUI
+                    }]
+                },
+                entry: this.originalValue,
+                changes: this.currentValue,
+                entityName: this.entityName || (this.owner &amp;&amp; this.owner.entityName),
+                negateHistory: true
+            };
+        },
+<span id='Sage-Platform-Mobile-Fields-EditorField-method-navigateToEditView'>        navigateToEditView: function() {
+</span>            if (this.isDisabled()) return;
+
+            var view = App.getView(this.view),
+                options = this.createNavigationOptions();
+
+            if (view &amp;&amp; options)
+            {
+                if (options.title) view.set('title', options.title);
+                view.show(options);
+            }
+        },
+<span id='Sage-Platform-Mobile-Fields-EditorField-method-_onClick'>        _onClick: function(evt) {
+</span>            event.stop(evt);
+            
+            this.navigateToEditView();
+        },
+<span id='Sage-Platform-Mobile-Fields-EditorField-method-getValuesFromView'>        getValuesFromView: function() {
+</span>            var view = App.getPrimaryActiveView(),
+                values = view &amp;&amp; view.getValues();
+
+            if (view &amp;&amp; values)
+            {
+                // todo: is this the appropriate way to handle this?  do not want $key, $name, etc., when applying values.
+                // difference is primarily &quot;as component&quot; vs. &quot;as child&quot;.
+                this.currentValue = this.applyTo ? values : view.createEntry();
+                this.validationValue = view.getValues(true); // store all editor values for validation, not only dirty values
+            }
+        },
+<span id='Sage-Platform-Mobile-Fields-EditorField-method-complete'>        complete: function() {
+</span>            var view = App.getPrimaryActiveView();
+            var success = true;
+
+            if (view instanceof Sage.Platform.Mobile.Edit)
+            {
+                view.hideValidationSummary();
+
+                if (view.validate() !== false)
+                {
+                    view.showValidationSummary();
+                    return;
+                }
+            }
+
+            this.getValuesFromView();
+
+            this.setText(this.formatValue(this.validationValue));
+
+            // todo: remove
+            if (view.isValid &amp;&amp; !view.isValid())
+                return;
+            else
+                ReUI.back();
+
+            // if the event is fired before the transition, any XMLHttpRequest created in an event handler and
+            // executing during the transition can potentially fail (status 0).  this might only be an issue with CORS
+            // requests created in this state (the pre-flight request is made, and the request ends with status 0).
+            // wrapping thing in a timeout and placing after the transition starts, mitigates this issue.
+            if (success) setTimeout(lang.hitch(this, this._onComplete), 0);
+        },
+<span id='Sage-Platform-Mobile-Fields-EditorField-method-_onComplete'>        _onComplete: function() {
+</span>            this.onChange(this.currentValue, this);
+        },
+<span id='Sage-Platform-Mobile-Fields-EditorField-method-setText'>        setText: function(text) {
+</span>            this.set('inputValue', text);
+        },
+<span id='Sage-Platform-Mobile-Fields-EditorField-method-isDirty'>        isDirty: function() {
+</span>            return this.originalValue !== this.currentValue;
+        },
+<span id='Sage-Platform-Mobile-Fields-EditorField-method-getValue'>        getValue: function() {
+</span>            return this.currentValue;
+        },
+<span id='Sage-Platform-Mobile-Fields-EditorField-method-validate'>        validate: function(value) {
+</span>            return typeof value === 'undefined'
+                ? this.inherited(arguments, [this.validationValue])
+                : this.inherited(arguments);
+        },
+<span id='Sage-Platform-Mobile-Fields-EditorField-method-setValue'>        setValue: function(val, initial)
+</span>        {            
+            if (val)
+            {
+                this.validationValue = this.currentValue = val;
+
+                if (initial) this.originalValue = this.currentValue;
+
+                this.setText(this.formatValue(val));
+            }
+            else
+            {
+                this.validationValue = this.currentValue = null;
+
+                if (initial) this.originalValue = this.currentValue;
+
+                this.setText(this.emptyText);
+            }
+        },
+<span id='Sage-Platform-Mobile-Fields-EditorField-method-clearValue'>        clearValue: function() {
+</span>            this.setValue(null, true);
+        }
+    });
+});</pre>
+</body>
+</html>

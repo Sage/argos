@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='Sage-Platform-Mobile-Format'>/**
+</span> * Format is a singleton that provides various formatting functions.
+ * @alternateClassName format
+ * @requires convert
+ * @singleton
+ */
+define('Sage/Platform/Mobile/Format', [
+    'dojo/_base/json',
+    'dojo/_base/lang',
+    'dojo/dom-construct',
+    'dojo/string',
+    'Sage/Platform/Mobile/Convert'
+], function(
+    json,
+    lang,
+    domConstruct,
+    string,
+    convert
+) {
+
+    var getVectorMaxSize = function (v) {
+        var w = 1,
+            h = 1;
+        for (var i = 0; i &lt; v.length; i++)
+        {
+            for (var j = 0; j &lt; v[i].length; j++)
+            {
+                if (w &lt; v[i][j][0]) { w = v[i][j][0]; }
+                if (h &lt; v[i][j][1]) { h = v[i][j][1]; }
+            }
+        }
+        // maybe should return bounding box? (x,y,w,h)
+        return { width: w, height: h };
+    };
+
+    function isEmpty(val) {
+        if (typeof val !== 'string') return !val;
+
+        return (val.length &lt;= 0);
+    }
+
+    function encode(val) {
+        if (typeof val !== 'string') return val;
+
+        return val
+            .replace(/&amp;/g, '&amp;amp;')
+            .replace(/&lt;/g, '&amp;lt;')
+            .replace(/&gt;/g, '&amp;gt;')
+            .replace(/&quot;/g, '&amp;quot;');
+    }
+
+    function decode(val) {
+        if (typeof val !== 'string') return val;
+
+        return val
+            .replace(/&amp;amp;/g, '&amp;')
+            .replace(/&amp;lt;/g, '&lt;')
+            .replace(/&amp;gt;/g, '&gt;')
+            .replace(/&amp;quot;/g, '&quot;');
+    }
+
+    return lang.setObject('Sage.Platform.Mobile.Format', {
+<span id='Sage-Platform-Mobile-Format-property-yesText'>        /**
+</span>         * @property {String}
+         * Text used in {@link #yesNo yesNo} formatter for true values
+         */
+        yesText: 'Yes',
+<span id='Sage-Platform-Mobile-Format-property-noText'>        /**
+</span>         * @property {String}
+         * Text used in {@link #yesNo yesNo} formatter for false values
+         */
+        noText: 'No',
+<span id='Sage-Platform-Mobile-Format-property-trueText'>        /**
+</span>         * @property {String}
+         * Text used in {@link #bool bool} formatter for true values
+         */
+        trueText: 'T',
+<span id='Sage-Platform-Mobile-Format-property-falseText'>        /**
+</span>         * @property {String}
+         * Text used in {@link #bool bool} formatter for false values
+         */
+        falseText: 'F',
+<span id='Sage-Platform-Mobile-Format-property-hoursText'>        /**
+</span>         * @property {String}
+         * Text used in {@link #timespan timespan} formatter for more than one hour
+         */
+        hoursText: 'hours',
+<span id='Sage-Platform-Mobile-Format-property-hourText'>        /**
+</span>         * @property {String}
+         * Text used in {@link #timespan timespan} formatter for exactly one hour
+         */
+        hourText: 'hour',
+<span id='Sage-Platform-Mobile-Format-property-minutesText'>        /**
+</span>         * @property {String}
+         * Text used in {@link #timespan timespan} formatter for more than one minute
+         */
+        minutesText: 'minutes',
+<span id='Sage-Platform-Mobile-Format-property-minuteText'>        /**
+</span>         * @property {String}
+         * Text used in {@link #timespan timespan} formatter for exactly one minute
+         */
+        minuteText: 'minute',
+
+<span id='Sage-Platform-Mobile-Format-method-encode'>        /**
+</span>         * Takes a String and encodes `&amp;`, `&lt;`, `&gt;`, `&quot;` to HTML entities
+         * @param {String} String to encode
+         * @return {String} Html encoded string
+         */
+        encode: encode,
+<span id='Sage-Platform-Mobile-Format-method-decode'>        /**
+</span>         * Takes a String and decodes `&amp;`, `&lt;`, `&gt;`, `&quot;` from HTML entities back to the character
+         * @param {String} String to decode
+         * @return {String} Html decoded string
+         */
+        decode: decode,
+<span id='Sage-Platform-Mobile-Format-method-isEmpty'>        /**
+</span>         * Determines if the given item is an empty string or empty arry
+         * @param {String/Array} Item to check if empty
+         * @return {Boolean} If passed item is empty
+         */
+        isEmpty: isEmpty,
+<span id='Sage-Platform-Mobile-Format-method-link'>        /**
+</span>         * Takes a url string and wraps it with an `&lt;a&gt;` element with `href=` pointing to the url.
+         * @param {String} val Url string to be wrapped
+         * @return {String} An `&lt;a&gt;` element as a string.
+         */
+        link: function(val) {
+            if (typeof val !== 'string')
+                return val;
+
+            return string.substitute('&lt;a target=&quot;_blank&quot; href=&quot;http://${0}&quot;&gt;${0}&lt;/a&gt;', [val]);
+        },
+<span id='Sage-Platform-Mobile-Format-method-mail'>        /**
+</span>         * Takes an email string and wraps it with an `&lt;a&gt;` element with `href=&quot;mailto:&quot;` pointing to the email.
+         * @param {String} val Email string to be wrapped
+         * @return {String} An `&lt;a&gt;` element as a string.
+         */
+        mail: function(val) {
+            if (typeof val !== 'string')
+                return val;
+
+            return string.substitute('&lt;a href=&quot;mailto:${0}&quot;&gt;${0}&lt;/a&gt;', [val]);
+        },
+<span id='Sage-Platform-Mobile-Format-method-trim'>        /**
+</span>         * Removes whitespace from from and end of string
+         * @param {String} val String to be trimmed
+         * @return {String} String without space on either end
+         */
+        trim: function(val) {
+            return val.replace(/^\s+|\s+$/g,'');
+        },
+<span id='Sage-Platform-Mobile-Format-method-date'>        /**
+</span>         * Takes a date and format string and returns the formatted date as a string.
+         * @param {Date/String} val Date to be converted. If string is passed it is converted to a date using {@link convert#toDateFromString Converts toDateFromString}.
+         * @param {String} fmt Format string following [datejs formatting](http://code.google.com/p/datejs/wiki/FormatSpecifiers).
+         * @param {Boolean} utc If a date should be in UTC time set this flag to true to counter-act javascripts built-in timezone applier.
+         * @return {String} Date formatted as a string.
+         */
+        date: function(val, fmt, utc) {
+            var date = val instanceof Date
+                ? val
+                : convert.isDateString(val)
+                    ? convert.toDateFromString(val)
+                    : null;
+
+            if (date)
+            {
+                if (utc) date = date.clone().add({minutes: date.getTimezoneOffset()});
+
+                return date.toString(fmt || Date.CultureInfo.formatPatterns.shortDate);
+            }
+
+            return val;
+        },
+<span id='Sage-Platform-Mobile-Format-method-fixed'>        /**
+</span>         * Takes a number and decimal place and floors the number to that place:
+         *
+         * `fixed(5.555, 0)` =&gt; `5`
+         * `fixed(5.555, 2)` =&gt; `5.55`
+         * `fixed(5.555, 5)` =&gt; `5.555`
+         *
+         * @param {Number/String} val The value will be `parseFloat` before operating.
+         * @param {Number} d Number of decimals places to keep, defaults to 2 if not provided.
+         * @return {Number} Fixed number.
+         */
+        fixed: function(val, d) {
+            if (typeof d !== 'number')
+                d = 2;
+
+            var m = Math.pow(10, d),
+                v = Math.floor(parseFloat(val) * m) / m;
+
+            return v;
+        },
+<span id='Sage-Platform-Mobile-Format-method-percent'>        /**
+</span>         * Takes a decimal number, multiplies by 100 and adds the % sign.
+         *
+         * `perecent(0.35)` =&gt; `'35%'`
+         * `percent(2)` =&gt; `'200%'`
+         *
+         * @param {Number/String} val The value will be `parseFloat` before operating.
+         * @return {String} Number as a percentage with % sign.
+         */
+        percent: function(val) {
+            var intVal = Math.floor(100 * (parseFloat(val) || 0));
+            return intVal + &quot;%&quot;;
+        },
+<span id='Sage-Platform-Mobile-Format-method-yesNo'>        /**
+</span>         * Takes a boolean value and returns the string Yes or No for true or false
+         * @param {Boolean/String} val If string it tests if the string is `true` for true, else assumes false
+         * @return {String} Yes for true, No for false.
+         */
+        yesNo: function(val) {
+            if (typeof val === 'string') val = /^true$/i.test(val);
+
+            return val ? Sage.Platform.Mobile.Format.yesText || 'Yes'
+                : Sage.Platform.Mobile.Format.noText || 'No';
+        },
+<span id='Sage-Platform-Mobile-Format-method-bool'>        /**
+</span>         * Takes a boolean value and returns the string T or F for true or false
+         * @param {Boolean/String} val If string it tests if the string is `true` for true, else assumes false
+         * @return {String} T for true, F for false.
+         */
+        bool: function(val) {
+            if (typeof val === 'string') val = /^true$/i.test(val);
+
+            return val
+                ? Sage.Platform.Mobile.Format.trueText || 'T'
+                : Sage.Platform.Mobile.Format.falseText || 'F';
+        },
+<span id='Sage-Platform-Mobile-Format-method-nl2br'>        /**
+</span>         * Takes a string and converts all new lines `\n` to HTML `&lt;br&gt;` elements.
+         * @param {String} val String with newlines
+         * @return {String} String with replaced `\n` with `&lt;br&gt;`
+         */
+        nl2br: function(val) {
+            if (typeof val !== 'string') return val;
+
+            return val.replace(/\n/g, '&lt;br /&gt;');
+        },
+<span id='Sage-Platform-Mobile-Format-method-timespan'>        /**
+</span>         * Takes a number of minutes and turns it into the string: `'n hours m minutes'`
+         * @param {Number/String} val Number of minutes, will be `parseFloat` before operations and fixed to 2 decimal places
+         * @return {String} A string representation of the minutes as `'n hours m minutes'`
+         */
+        timespan: function(val) {
+            var v = Sage.Platform.Mobile.Format.fixed(val);
+            if (isNaN(v) || !v) return '';
+
+            var hrs = Math.floor(v / 60);
+            var mins  = v % 60;
+
+            if (hrs)
+                hrs = hrs &gt; 1 ? string.substitute('${0} ${1}', [hrs, (Sage.Platform.Mobile.Format.hoursText || 'hours')])
+                              : string.substitute('${0} ${1}', [hrs, (Sage.Platform.Mobile.Format.hourText || 'hour')]);
+            if (mins)
+                mins = mins &gt; 1 ? string.substitute('${0} ${1}', [mins, (Sage.Platform.Mobile.Format.minutesText || 'minutes')])
+                                : string.substitute('${0} ${1}', [mins, (Sage.Platform.Mobile.Format.minuteText || 'minute')]);
+
+            return (hrs &amp;&amp; mins) ? hrs +&quot; &quot;+ mins
+                                 : hrs === 0 ? mins : hrs;
+        },
+<span id='Sage-Platform-Mobile-Format-method-canvasDraw'>        /**
+</span>         * Takes a 2D array of `[[x,y],[x,y]]` number coordinates and draws them onto the provided canvas
+         * The first point marks where the &quot;pen&quot; starts, each sequential point is then &quot;drawn to&quot; as if holding a
+         * pen on paper and moving the pen to the new point.
+         * @param {Number[][]} vector A series of x,y coordinates in the format of: `[[[0,0],[1,5]]`
+         * @param {HTMLElement} canvas The `&lt;canvas&gt;` element to be drawn on
+         * @param {Object} options Canvas options: scale, lineWidth and penColor.
+         */
+        canvasDraw: function (vector, canvas, options) {
+            var scale, x, y,
+                context = canvas.getContext('2d');
+
+            // Paint canvas white vs. clearing as on Android imageFromVector alpha pixels blacken
+            // context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+            context.fillStyle = 'rgb(255,255,255)';
+            context.fillRect (0, 0, context.canvas.width, context.canvas.height);
+
+            scale               = options &amp;&amp; options.scale     ? options.scale     : 1;
+            context.lineWidth   = options &amp;&amp; options.lineWidth ? options.lineWidth : 1;
+            context.strokeStyle = options &amp;&amp; options.penColor  ? options.penColor  : 'black';
+
+            for (var trace in vector) {
+                if ( 1 &lt; vector[trace].length) {
+                    context.beginPath();
+                    context.moveTo(vector[trace][0][0] * scale, vector[trace][0][1] * scale);
+                    for (var i = 1; i &lt; vector[trace].length; i++) {
+                        x = vector[trace][i][0] * scale;
+                        y = vector[trace][i][1] * scale;
+                        context.lineTo(x, y);
+                    }
+                    context.stroke();
+                }
+            }
+        },
+<span id='Sage-Platform-Mobile-Format-method-imageFromVector'>        /**
+</span>         * Returns the image data (or img element) for a series of vectors
+         * @param {Number[][]} vector A series of x,y coordinates in the format of: `[[0,0],[1,5]]`. These will be drawn sequentially as one line.
+         * @param {Object} options Canvas options: scale, lineWidth and penColor.
+         * @param {Boolean} html Flag for returning image as a data-uri or as a stringified `&lt;img&gt;` element.
+         * @return {String} The encoded data of the drawn image, optionally wrapped in `&lt;img&gt;` if html was passed as true
+         */
+        imageFromVector: function (vector, options, html) {
+            var img,
+                canvasNode = domConstruct.create('canvas');
+
+            options = options || {};
+
+            if (typeof vector == 'string' || vector instanceof String)
+                try { vector = json.fromJson(vector); } catch(e) {}
+
+            if (!(vector instanceof Array) || 0 == vector.length)
+                vector = [[]]; // blank image.
+
+            var size = getVectorMaxSize(vector);
+
+            canvasNode.width  = options.width  || size.width;
+            canvasNode.height = options.height || size.height;
+
+            options.scale = Math.min(
+                canvasNode.width  / size.width,
+                canvasNode.height / size.height
+            );
+
+            Sage.Platform.Mobile.Format.canvasDraw(vector, canvasNode, options);
+
+            img = canvasNode.toDataURL('image/png');
+            if (img.indexOf(&quot;data:image/png&quot;) != 0)
+                img = Canvas2Image.saveAsBMP(canvasNode, true).src;
+
+            return html
+                ? string.substitute(
+                    '&lt;img src=&quot;${0}&quot; width=&quot;${1}&quot; height=&quot;${2}&quot; alt=&quot;${3}&quot; /&gt;',
+                    [img, options.width, options.height, options.title || ''])
+                : img;
+        }
+    });
+});</pre>
+</body>
+</html>

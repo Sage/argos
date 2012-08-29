@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='Sage-Platform-Mobile-MainToolbar'>/**
+</span> * MainToolbar is designed to handle the top application bar with markup and logic to set
+ * a title and position toolbar items to the left or right
+ * @alternateClassName MainToolbar
+ * @extends Toolbar
+ */
+define('Sage/Platform/Mobile/MainToolbar', [
+    'dojo/_base/declare',
+    'dojo/query',
+    'dojo/dom-class',
+    'dojo/dom-construct',
+    'Sage/Platform/Mobile/Toolbar',
+    'dojo/NodeList-manipulate'
+], function(
+    declare,
+    query,
+    domClass,
+    domConstruct,
+    Toolbar
+) {
+
+    return declare('Sage.Platform.Mobile.MainToolbar', [Toolbar], {
+<span id='Sage-Platform-Mobile-MainToolbar-property-attributeMap'>        /**
+</span>         * @property {Object}
+         * Used to set the title node's innerHTML
+         */
+        attributeMap: {
+            'title': {
+                node: 'titleNode',
+                type: 'innerHTML'
+            }
+        },
+<span id='Sage-Platform-Mobile-MainToolbar-property-widgetTemplate'>        /**
+</span>         * @property {Simplate}
+         * Simplate that defines the main HTML Markup of the toolbar
+         *
+         * `$` - the toolbar instance
+         */
+        widgetTemplate: new Simplate([
+            '&lt;div class=&quot;toolbar {%= $.cls %}&quot;&gt;',            
+            '&lt;h1 id=&quot;pageTitle&quot; class=&quot;toolbar-title&quot; data-dojo-attach-point=&quot;titleNode&quot;&gt;{%= $.titleText %}&lt;/h1&gt;',
+            '&lt;/div&gt;'
+        ]),
+<span id='Sage-Platform-Mobile-MainToolbar-property-toolTemplate'>        /**
+</span>         * @property {Simplate}
+         * Simplate that defines the toolbar item HTML Markup
+         *
+         * `$` - The toolbar item object
+         * `$$` - The toolbar instance
+         */
+        toolTemplate: new Simplate([
+            '&lt;button class=&quot;button toolButton toolButton-{%= $.side || &quot;right&quot; %} {%= ($$.enabled) ? &quot;&quot; : &quot;toolButton-disabled&quot; %} {%= $.cls %}&quot;',
+                    'data-action=&quot;invokeTool&quot; data-tool=&quot;{%= $.id %}&quot;',
+                    'aria-label=&quot;{%: $.title || $.id %}&quot;&gt;',
+                '{% if ($.icon) { %}',
+                '&lt;img src=&quot;{%= $.icon %}&quot; alt=&quot;{%= $.id %}&quot; /&gt;',
+                '{% } else { %}',
+                '&lt;span&gt;&lt;/span&gt;',
+                '{% } %}',
+            '&lt;/button&gt;'
+        ]),
+<span id='Sage-Platform-Mobile-MainToolbar-property-size'>        /**
+</span>         * @property {Number}
+         * Current number of toolbar items set
+         */
+        size: 0,
+
+<span id='Sage-Platform-Mobile-MainToolbar-property-titleText'>        /**
+</span>         * Text that is placed into the toolbar titleNode
+         */
+        titleText: 'Mobile',
+
+<span id='Sage-Platform-Mobile-MainToolbar-method-clear'>        /**
+</span>         * Calls parent {@link Toolbar#clear clear} and removes all toolbar items from DOM.
+         */
+        clear: function() {
+            this.inherited(arguments);
+
+            query(&quot;&gt; [data-action], .toolButton-right&quot;, this.domNode).remove();
+        },
+<span id='Sage-Platform-Mobile-MainToolbar-method-showTools'>        /**
+</span>         * Calls parent {@link Toolbar#showTools showTools} which sets the tool collection.
+         * The collection is then looped over and added to DOM, adding the left or right styling
+         * @param {Object[]} tools Array of toolbar item definitions
+         */
+        showTools: function(tools) {
+            this.inherited(arguments);
+
+            domClass.remove(this.domNode, 'toolbar-size-' + this.size);
+            
+            if (tools)
+            {
+                var count = {left: 0, right: 0};
+
+                for (var i = 0; i &lt; tools.length; i++)
+                {
+                    count[tools[i].side || 'right'] += 1;
+                    var toolTemplate = tools[i].template || this.toolTemplate;
+
+                    domConstruct.place(toolTemplate.apply(tools[i], this.tools[tools[i].id]), this.domNode, 'last');
+                }
+
+                this.size = Math.max(count.left, count.right);
+                domClass.add(this.domNode, 'toolbar-size-' + this.size);
+            }
+        }
+    });
+});</pre>
+</body>
+</html>

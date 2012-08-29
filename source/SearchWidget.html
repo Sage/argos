@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='Sage-Platform-Mobile-SearchWidget'>/**
+</span> * Search Widget is an SData-enabled search component that {@link List List} uses by default for search.
+ *
+ * The search widget is a dijit Widget with all the Widget aspects.
+ *
+ * It supports two types of shortcuts:
+ *
+ * 1\. `#text` - The key `text` will be replaced with the matching expression. This is a &quot;hashtag&quot;.
+
+ * 2\. `#!Name eq 'John'` - The `Name eq 'John'` will be inserted directly, avoiding {@link List#formatSearchQuery formatSearchQuery}. This is a &quot;custom expression&quot;.
+ *
+ * Multiple hashtags is supported as well as hashtags with additional text that gets sent through {@link List#formatSearchQuery formatSearchQuery}.
+ *
+ * To go through a full example, take this expression:
+ * `#open #urgent Bob`
+ *
+ * `#open` is replaced with: `TicketStatus eq 1`
+ *
+ * `#urgent` is replaced with: `TicketUrgency gt 3`
+ *
+ * `Bob` is passed to `formatSearchQuery` which returns `TicketId eq (&quot;Bob&quot;) or TicketOwner like &quot;Bob&quot;
+ *
+ * The final result is &quot;anded&quot; together, resulting in this final where clause:
+ * `where=(TicketStatus eq 1) and (TicketUrgency gt 3) and (TicketId eq (&quot;Bob&quot;) or TicketOwner like &quot;Bob&quot;)
+ *
+ * See the [Defining Hash Tags guide](#!/guides/v2_beyond_the_guide_defining_hashtags) for more information and how it supports localization.
+ * @alternateClassName SearchWidget
+ * @mixins _Templated
+ */
+define('Sage/Platform/Mobile/SearchWidget', [
+    'dojo/_base/declare',
+    'dojo/_base/lang',
+    'dojo/_base/event',
+    'dojo/string',
+    'dojo/dom-class',
+    'dijit/_Widget',
+    'Sage/Platform/Mobile/_Templated'
+], function(
+    declare,
+    lang,
+    event,
+    string,
+    domClass,
+    _Widget,
+    _Templated
+) {
+    return declare('Sage.Platform.Mobile.SearchWidget', [_Widget, _Templated], {
+<span id='Sage-Platform-Mobile-SearchWidget-property-attributeMap'>        /**
+</span>         * @property {Object}
+         * Provides a setter for HTML node attributes, namely the value for search text
+         */
+        attributeMap: {
+            queryValue: { node: 'queryNode', type: 'attribute', attribute: 'value' }
+        },
+<span id='Sage-Platform-Mobile-SearchWidget-property-widgetTemplate'>        /**
+</span>         * @property {Simplate}
+         * Simple that defines the HTML Markup
+         */
+        widgetTemplate: new Simplate([
+            '&lt;div class=&quot;search-widget&quot;&gt;',
+                '&lt;input type=&quot;text&quot; name=&quot;query&quot; class=&quot;query&quot; autocorrect=&quot;off&quot; autocapitalize=&quot;off&quot; data-dojo-attach-point=&quot;queryNode&quot; data-dojo-attach-event=&quot;onfocus:_onFocus,onblur:_onBlur,onkeypress:_onKeyPress&quot; /&gt;',
+                '&lt;button class=&quot;clear-button&quot; data-dojo-attach-event=&quot;onclick: _onClearClick&quot;&gt;&lt;/button&gt;',
+                '&lt;button class=&quot;subHeaderButton searchButton&quot; data-dojo-attach-event=&quot;click: search&quot;&gt;{%= $.searchText %}&lt;/button&gt;',
+                '&lt;label data-dojo-attach-point=&quot;labelNode&quot;&gt;{%= $.searchText %}&lt;/label&gt;',
+            '&lt;/div&gt;'
+        ]),
+
+<span id='Sage-Platform-Mobile-SearchWidget-property-searchText'>        /**
+</span>         * @property {String}
+         * Text that is used when no value is in the search box - &quot;placeholder&quot; text.
+         */
+        searchText: 'Search',
+        
+<span id='Sage-Platform-Mobile-SearchWidget-property-customSearchRE'>        /**
+</span>         * @property {RegExp}
+         * The regular expression used to determine if a search query is a custom search expression.  A custom search
+         * expression is not processed, and directly passed to SData.
+         */
+        customSearchRE: /^#!/,
+<span id='Sage-Platform-Mobile-SearchWidget-property-hashTagSearchRE'>        /**
+</span>         * @type {RegExp}
+         * The regular expression used to determine if a search query is a hash tag search.
+         */
+        hashTagSearchRE: /(?:#|;|,|\.)(\w+)/g,
+<span id='Sage-Platform-Mobile-SearchWidget-property-hashTagQueries'>        /**
+</span>         * @property {Object[]}
+         * Array of hash tag definitions
+         */
+        hashTagQueries: null,
+<span id='Sage-Platform-Mobile-SearchWidget-property-queryNode'>        /**
+</span>         * Dojo attach point to the search input
+         */
+        queryNode: null,
+
+<span id='Sage-Platform-Mobile-SearchWidget-method-clear'>        /**
+</span>         * Sets search text to empty and removes active styling
+         */
+        clear: function() {
+            domClass.remove(this.domNode, 'search-active');
+            this.set('queryValue', '');
+        },
+<span id='Sage-Platform-Mobile-SearchWidget-method-search'>        /**
+</span>         * This function is invoked from the search button and it:
+         *
+         * * Gathers the inputted search text
+         * * Determines if its a custom expression, hash tag, or normal search
+         * * Calls the appropriate handler
+         * * Fires the {@link #onSearchExpression onSearchExpression} event which {@link List#_onSearchExpression listens to}.
+         */
+        search: function() {
+            var searchQuery = this.queryNode.value,
+                formattedQuery,
+                isCustomMatch = searchQuery &amp;&amp; this.customSearchRE.test(searchQuery),
+                isHashTagMatch = searchQuery &amp;&amp; this.hashTagSearchRE.test(searchQuery);
+
+            switch(true) {
+                case isCustomMatch: formattedQuery = this.customSearch(searchQuery);
+                    break;
+                case isHashTagMatch: formattedQuery = this.hashTagSearch(searchQuery);
+                    break;
+                default: formattedQuery = this.formatSearchQuery(searchQuery);
+            }
+
+            if (lang.trim(searchQuery) === '')
+                formattedQuery = null;
+
+            this.onSearchExpression(formattedQuery, this);
+        },
+<span id='Sage-Platform-Mobile-SearchWidget-method-customSearch'>        /**
+</span>         * Returns an unmodified search query which allows a user
+         * to type in their own where clause
+         * @param {String} query Value of search box
+         * @returns {String} query Unformatted query
+         */
+        customSearch: function(query) {
+            this.customSearchRE.lastIndex = 0;
+            query = query.replace(this.customSearchRE, '');
+            return query;
+        },
+<span id='Sage-Platform-Mobile-SearchWidget-method-hashTagSearch'>        /**
+</span>         * Returns the search query based on a hash selector
+         * Any hash tags in the search are replaced by predefined search statements
+         * Remaining text not preceded by a hash will receive
+         * that views normal search formatting
+         * @param {String} query Value of search box
+         * @returns {String} query Hash resolved query
+         */
+        hashTagSearch: function(query) {
+            var hashLayout = this.hashTagQueries || [],
+                hashQueries = [],
+                additionalSearch = query;
+
+            this.hashTagSearchRE.lastIndex = 0;
+
+            var match;
+            while (match = this.hashTagSearchRE.exec(query))
+            {
+                var hashTag = match[1],
+                    hashQueryExpression = null;
+
+                // todo: can optimize later if necessary
+                for (var i = 0; i &lt; hashLayout.length &amp;&amp; !hashQueryExpression; i++)
+                    if (hashLayout[i].tag == hashTag)
+                        hashQueryExpression = hashLayout[i].query;
+
+                if (!hashQueryExpression) continue;
+
+                hashQueries.push(this.expandExpression(hashQueryExpression));
+                additionalSearch = additionalSearch.replace(match[0], '');
+            }
+
+            if (hashQueries.length &lt; 1)
+                return this.formatSearchQuery(query);
+
+            query = string.substitute('(${0})', [hashQueries.join(') and (')]);
+
+            additionalSearch = additionalSearch.replace(/^\s+|\s+$/g, '');
+
+            if (additionalSearch)
+                query += string.substitute(' and (${0})', [this.formatSearchQuery(additionalSearch)]);
+
+            return query;
+        },
+<span id='Sage-Platform-Mobile-SearchWidget-method-configure'>        /**
+</span>         * Configure allows the controller List view to overwrite properties as the passed object will be mixed in.
+         * @param {Object} options Properties to be mixed into Search Widget
+         */
+        configure: function(options) {
+            // todo: for now, we simply mixin the options
+            lang.mixin(this, options);
+        },
+<span id='Sage-Platform-Mobile-SearchWidget-method-expandExpression'>        /**
+</span>         * Expands the passed expression if it is a function.
+         * @param {String/Function} expression Returns string directly, if function it is called and the result returned.
+         * @return {String} String expression.
+         */
+        expandExpression: function(expression) {
+            if (typeof expression === 'function')
+                return expression.apply(this, Array.prototype.slice.call(arguments, 1));
+            else
+                return expression;
+        },
+<span id='Sage-Platform-Mobile-SearchWidget-method-_onClearClick'>        /**
+</span>         * Clears the search input text and attempts to re-open the keyboard
+         * @param {Event} evt Click event
+         */
+        _onClearClick: function(evt){
+            event.stop(evt);
+            this.clear();
+            this.queryNode.focus();
+            this.queryNode.click();
+        },
+<span id='Sage-Platform-Mobile-SearchWidget-method-_onBlur'>        /**
+</span>         * Tests to see if the search input is empty and toggles the active styling
+         */
+        _onBlur: function() {
+            domClass.toggle(this.domNode, 'search-active', !!this.queryNode.value);
+        },
+<span id='Sage-Platform-Mobile-SearchWidget-method-_onFocus'>        /**
+</span>         * Adds the search active styling
+         */
+        _onFocus: function() {
+            domClass.add(this.domNode, 'search-active');
+        },
+<span id='Sage-Platform-Mobile-SearchWidget-method-_onKeyPress'>        /**
+</span>         * Detects the enter/return key and fires {@link #search search}
+         * @param {Event} evt Key press event
+         */
+        _onKeyPress: function(evt) {
+            if (evt.keyCode == 13 || evt.keyCode == 10)
+            {
+                event.stop(evt);
+                this.queryNode.blur();
+                this.search();
+            }
+        },
+<span id='Sage-Platform-Mobile-SearchWidget-method-onSearchExpression'>        /**
+</span>         * The event that fires when the search widget provides a search query.
+         * Listened to by the controlling {@link List#_onSearchExpression List View}
+         * @param expression
+         * @param widget
+         */
+        onSearchExpression: function(expression, widget) {
+
+        }
+    });
+});</pre>
+</body>
+</html>

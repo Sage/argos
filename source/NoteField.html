@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// todo: move to argos-saleslogix; this does not belong here.
+
+define('Sage/Platform/Mobile/Fields/NoteField', [
+    'dojo/_base/declare',
+    'Sage/Platform/Mobile/Fields/EditorField',
+    'Sage/Platform/Mobile/FieldManager'
+], function(
+    declare,
+    EditorField,
+    FieldManager
+) {
+<span id='Sage-Platform-Mobile-Fields-NoteField'>    /**
+</span>     *
+     */
+    var control = declare('Sage.Platform.Mobile.Fields.NoteField', [EditorField], {
+<span id='Sage-Platform-Mobile-Fields-NoteField-property-attributeMap'>        attributeMap: {
+</span>            noteText: {
+                node: 'inputNode',
+                type: 'innerHTML'
+            }
+        },
+<span id='Sage-Platform-Mobile-Fields-NoteField-property-widgetTemplate'>        /**
+</span>         * @property {Simplate}
+         * Simplate that defines the fields HTML Markup
+         *
+         * * `$` =&gt; Field instance
+         * * `$$` =&gt; Owner View instance
+         *
+         */
+        widgetTemplate: new Simplate([
+            '&lt;label for=&quot;{%= $.name %}&quot;&gt;{%: $.label %}&lt;/label&gt;',
+            '&lt;button class=&quot;button simpleSubHeaderButton&quot; aria-label=&quot;{%: $.lookupLabelText %}&quot;&gt;&lt;span&gt;{%: $.lookupText %}&lt;/span&gt;&lt;/button&gt;',
+            '&lt;div data-dojo-attach-point=&quot;inputNode&quot; class=&quot;note-text&quot;&gt;&lt;/div&gt;'
+        ]),
+
+<span id='Sage-Platform-Mobile-Fields-NoteField-property-emptyText'>        // Localization
+</span>        emptyText: '',
+        
+<span id='Sage-Platform-Mobile-Fields-NoteField-property-noteProperty'>        noteProperty: 'Notes',
+</span>
+<span id='Sage-Platform-Mobile-Fields-NoteField-method-_enableTextElement'>        _enableTextElement: function() {
+</span>        },
+<span id='Sage-Platform-Mobile-Fields-NoteField-method-_disableTextElement'>        _disableTextElement: function() {
+</span>        },
+<span id='Sage-Platform-Mobile-Fields-NoteField-method-createNavigationOptions'>        createNavigationOptions: function() {
+</span>            var options = this.inherited(arguments);
+            //Name does not have an entity.
+            delete options.entityName;
+
+            if (!this.noteProperty)
+            {
+                options.entry = {'Notes': options.entry};
+                options.changes = {'Notes': options.changes};
+            }
+
+            if (this.title)
+                options.title = this.title;
+
+            return options;
+        },
+<span id='Sage-Platform-Mobile-Fields-NoteField-method-formatValue'>        formatValue: function(val) {
+</span>            return this.noteProperty ? val[this.noteProperty] : val;
+        },
+<span id='Sage-Platform-Mobile-Fields-NoteField-method-getValue'>        getValue: function() {
+</span>            return this.currentValue;
+        },
+<span id='Sage-Platform-Mobile-Fields-NoteField-method-getValuesFromView'>        getValuesFromView: function() {
+</span>            this.inherited(arguments);
+
+            if (!this.noteProperty)
+            {
+                this.currentValue = this.currentValue.Notes;
+                this.validationValue = this.validationValue.Notes;
+            }
+        },
+<span id='Sage-Platform-Mobile-Fields-NoteField-method-setText'>        setText: function(text) {
+</span>            this.set('noteText', text);
+        }
+    });
+
+    return FieldManager.register('note', control);
+});</pre>
+</body>
+</html>

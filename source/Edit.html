@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='Sage-Platform-Mobile-Edit'>/**
+</span> *
+ * @alternateClassName Edit
+ */
+define('Sage/Platform/Mobile/Edit', [
+    'dojo/_base/declare',
+    'dojo/_base/lang',
+    'dojo/_base/connect',
+    'dojo/_base/array',
+    'dojo/string',
+    'dojo/dom',
+    'dojo/dom-attr',
+    'dojo/dom-class',
+    'dojo/dom-construct',
+    'dojo/query',
+    'Sage/Platform/Mobile/Convert',
+    'Sage/Platform/Mobile/Utility',
+    'Sage/Platform/Mobile/ErrorManager',
+    'Sage/Platform/Mobile/FieldManager',
+    'Sage/Platform/Mobile/View',
+
+    'dojo/NodeList-manipulate',
+    'Sage/Platform/Mobile/Fields/BooleanField',
+    'Sage/Platform/Mobile/Fields/DateField',
+    'Sage/Platform/Mobile/Fields/DecimalField',
+    'Sage/Platform/Mobile/Fields/DurationField',
+    'Sage/Platform/Mobile/Fields/HiddenField',
+    'Sage/Platform/Mobile/Fields/LookupField',
+    'Sage/Platform/Mobile/Fields/NoteField',
+    'Sage/Platform/Mobile/Fields/PhoneField',
+    'Sage/Platform/Mobile/Fields/SelectField',
+    'Sage/Platform/Mobile/Fields/SignatureField',
+    'Sage/Platform/Mobile/Fields/TextAreaField',
+    'Sage/Platform/Mobile/Fields/TextField'
+], function(
+    declare,
+    lang,
+    connect,
+    array,
+    string,
+    dom,
+    domAttr,
+    domClass,
+    domConstruct,
+    query,
+    convert,
+    utility,
+    ErrorManager,
+    FieldManager,
+    View
+) {
+
+    return declare('Sage.Platform.Mobile.Edit', [View], {
+<span id='Sage-Platform-Mobile-Edit-property-attributeMap'>        attributeMap: {
+</span>            validationContent: {
+                node: 'validationContentNode',
+                type: 'innerHTML'
+            }
+        },
+<span id='Sage-Platform-Mobile-Edit-property-widgetTemplate'>        widgetTemplate: new Simplate([
+</span>            '&lt;div id=&quot;{%= $.id %}&quot; title=&quot;{%: $.titleText %}&quot; class=&quot;edit panel {%= $.cls %}&quot; {% if ($.resourceKind) { %}data-resource-kind=&quot;{%= $.resourceKind %}&quot;{% } %}&gt;',            
+            '{%! $.loadingTemplate %}',
+            '{%! $.validationSummaryTemplate %}',
+            '&lt;div class=&quot;panel-content&quot; data-dojo-attach-point=&quot;contentNode&quot;&gt;&lt;/div&gt;',
+            '&lt;/div&gt;'
+        ]),
+<span id='Sage-Platform-Mobile-Edit-property-loadingTemplate'>        loadingTemplate: new Simplate([
+</span>            '&lt;fieldset class=&quot;panel-loading-indicator&quot;&gt;',
+            '&lt;div class=&quot;row&quot;&gt;&lt;div&gt;{%: $.loadingText %}&lt;/div&gt;&lt;/div&gt;',
+            '&lt;/fieldset&gt;'        
+        ]),
+<span id='Sage-Platform-Mobile-Edit-property-validationSummaryTemplate'>        validationSummaryTemplate: new Simplate([
+</span>            '&lt;div class=&quot;panel-validation-summary&quot;&gt;',
+            '&lt;h2&gt;{%: $.validationSummaryText %}&lt;/h2&gt;',
+            '&lt;ul data-dojo-attach-point=&quot;validationContentNode&quot;&gt;',
+            '&lt;/ul&gt;',
+            '&lt;/div&gt;'
+        ]),
+<span id='Sage-Platform-Mobile-Edit-property-validationSummaryItemTemplate'>        validationSummaryItemTemplate: new Simplate([
+</span>            '&lt;li&gt;',
+            '&lt;a href=&quot;#{%= $.name %}&quot;&gt;',
+            '&lt;h3&gt;{%: $.message %}&lt;/h3&gt;',
+            '&lt;h4&gt;{%: $$.label %}&lt;/h4&gt;',
+            '&lt;/a&gt;',
+            '&lt;/li&gt;'
+        ]),
+<span id='Sage-Platform-Mobile-Edit-property-sectionBeginTemplate'>        sectionBeginTemplate: new Simplate([
+</span>            '&lt;h2 data-action=&quot;toggleSection&quot; class=&quot;{% if ($.collapsed || $.options.collapsed) { %}collapsed{% } %}&quot;&gt;',
+            '{%: ($.title || $.options.title) %}&lt;button class=&quot;collapsed-indicator&quot; aria-label=&quot;{%: $$.toggleCollapseText %}&quot;&gt;&lt;/button&gt;',
+            '&lt;/h2&gt;',
+            '&lt;fieldset class=&quot;{%= ($.cls || $.options.cls) %}&quot;&gt;',
+            '&lt;a href=&quot;#&quot; class=&quot;android-6059-fix&quot;&gt;fix for android issue #6059&lt;/a&gt;'
+        ]),
+<span id='Sage-Platform-Mobile-Edit-property-sectionEndTemplate'>        sectionEndTemplate: new Simplate([
+</span>            '&lt;/fieldset&gt;'
+        ]),
+<span id='Sage-Platform-Mobile-Edit-property-propertyTemplate'>        propertyTemplate: new Simplate([
+</span>            '&lt;a name=&quot;{%= $.name || $.property %}&quot;&gt;&lt;/a&gt;',
+            '&lt;div class=&quot;row row-edit {%= $.cls %}&quot; data-field=&quot;{%= $.name || $.property %}&quot; data-field-type=&quot;{%= $.type %}&quot;&gt;',
+            '&lt;/div&gt;'
+        ]),
+<span id='Sage-Platform-Mobile-Edit-property-transitionEffect'>        transitionEffect: 'slide',
+</span><span id='Sage-Platform-Mobile-Edit-property-id'>        id: 'generic_edit',
+</span><span id='Sage-Platform-Mobile-Edit-property-layout'>        layout: null,
+</span><span id='Sage-Platform-Mobile-Edit-property-enableCustomizations'>        enableCustomizations: true,
+</span><span id='Sage-Platform-Mobile-Edit-property-customizationSet'>        customizationSet: 'edit',
+</span><span id='Sage-Platform-Mobile-Edit-property-expose'>        expose: false,
+</span><span id='Sage-Platform-Mobile-Edit-property-saveText'>        saveText: 'Save',
+</span><span id='Sage-Platform-Mobile-Edit-property-titleText'>        titleText: 'Edit',
+</span><span id='Sage-Platform-Mobile-Edit-property-toggleCollapseText'>        toggleCollapseText: 'toggle collapse',
+</span><span id='Sage-Platform-Mobile-Edit-property-validationSummaryText'>        validationSummaryText: 'Validation Summary',
+</span><span id='Sage-Platform-Mobile-Edit-property-detailsText'>        detailsText: 'Details',
+</span><span id='Sage-Platform-Mobile-Edit-property-loadingText'>        loadingText: 'loading...',
+</span><span id='Sage-Platform-Mobile-Edit-property-requestErrorText'>        requestErrorText: 'A server error occured while requesting data.',
+</span><span id='Sage-Platform-Mobile-Edit-property-insertSecurity'>        insertSecurity: false,
+</span><span id='Sage-Platform-Mobile-Edit-property-updateSecurity'>        updateSecurity: false,
+</span><span id='Sage-Platform-Mobile-Edit-method-constructor'>        constructor: function(o) {
+</span>            this.fields = {};
+        },
+<span id='Sage-Platform-Mobile-Edit-method-startup'>        startup: function() {
+</span>            this.inherited(arguments);
+            
+            this.processLayout(this._createCustomizedLayout(this.createLayout()));
+
+            query('div[data-field]', this.contentNode).forEach(function(node) {
+                var name = domAttr.get(node, 'data-field'),
+                    field = this.fields[name];
+                if (field)
+                    field.renderTo(node);
+            }, this);
+        },
+<span id='Sage-Platform-Mobile-Edit-method-init'>        init: function() {
+</span>            this.inherited(arguments);
+
+            for (var name in this.fields)
+                this.fields[name].init();
+        },
+<span id='Sage-Platform-Mobile-Edit-method-createToolLayout'>        createToolLayout: function() {
+</span>            return this.tools || (this.tools = {
+                'tbar': [{
+                    id: 'save',
+                    action: 'save',
+                    security: this.options &amp;&amp; this.options.insert
+                        ? this.insertSecurity
+                        : this.updateSecurity
+                },{
+                    id: 'cancel',
+                    side: 'left',
+                    fn: ReUI.back,
+                    scope: ReUI
+                }]
+            });
+        },
+<span id='Sage-Platform-Mobile-Edit-method-_onShowField'>        _onShowField: function(field) {
+</span>            domClass.remove(field.containerNode, 'row-hidden');
+        },
+<span id='Sage-Platform-Mobile-Edit-method-_onHideField'>        _onHideField: function(field) {
+</span>            domClass.add(field.containerNode, 'row-hidden');
+        },
+<span id='Sage-Platform-Mobile-Edit-method-_onEnableField'>        _onEnableField: function(field) {
+</span>            domClass.remove(field.containerNode, 'row-disabled');
+        },
+<span id='Sage-Platform-Mobile-Edit-method-_onDisableField'>        _onDisableField: function(field) {
+</span>            domClass.add(field.containerNode, 'row-disabled');
+        },
+<span id='Sage-Platform-Mobile-Edit-method-invokeAction'>        invokeAction: function(name, parameters, evt, node) {
+</span>            var fieldNode = node &amp;&amp; query(node, this.contentNode).parents('[data-field]'),
+                field = this.fields[fieldNode.length &gt; 0 &amp;&amp; domAttr.get(fieldNode[0], 'data-field')];
+
+            if (field &amp;&amp; typeof field[name] === 'function')
+                return field[name].apply(field, [parameters, evt, node]);
+
+            return this.inherited(arguments);
+        },
+<span id='Sage-Platform-Mobile-Edit-method-hasAction'>        hasAction: function(name, evt, node) {
+</span>            var fieldNode = node &amp;&amp; query(node, this.contentNode).parents('[data-field]'),
+                field = fieldNode &amp;&amp; this.fields[fieldNode.length &gt; 0 &amp;&amp; domAttr.get(fieldNode[0], 'data-field')];
+
+            if (field &amp;&amp; typeof field[name] === 'function')
+                return true;
+
+            return this.inherited(arguments);
+        },
+<span id='Sage-Platform-Mobile-Edit-method-toggleSection'>        toggleSection: function(params) {
+</span>            var node = dom.byId(params.$source);
+            if (node)
+                domClass.toggle(node, 'collapsed');
+        },
+<span id='Sage-Platform-Mobile-Edit-method-createRequest'>        createRequest: function() {
+</span>            var request = new Sage.SData.Client.SDataSingleResourceRequest(this.getService());
+
+            var key = (this.entry &amp;&amp; this.entry['$key']) || this.options.key
+            if (key)
+                request.setResourceSelector(string.substitute(&quot;'${0}'&quot;, [key]));
+
+            if (this.contractName)
+                request.setContractName(this.contractName);
+
+            if (this.resourceKind)
+                request.setResourceKind(this.resourceKind);
+
+            if (this.querySelect)
+                request.setQueryArg(Sage.SData.Client.SDataUri.QueryArgNames.Select, this.querySelect.join(','));
+
+            if (this.queryInclude)
+                request.setQueryArg(Sage.SData.Client.SDataUri.QueryArgNames.Include, this.queryInclude.join(','));
+
+            if (this.queryOrderBy)
+                request.setQueryArg(Sage.SData.Client.SDataUri.QueryArgNames.OrderBy, this.queryOrderBy);
+
+            return request;
+        },
+<span id='Sage-Platform-Mobile-Edit-method-createTemplateRequest'>        createTemplateRequest: function() {
+</span>            var request = new Sage.SData.Client.SDataTemplateResourceRequest(this.getService());
+
+            if (this.resourceKind)
+                request.setResourceKind(this.resourceKind);
+
+            if (this.querySelect)
+                request.setQueryArg(Sage.SData.Client.SDataUri.QueryArgNames.Select, this.querySelect.join(','));
+
+            if (this.queryInclude)
+                request.setQueryArg(Sage.SData.Client.SDataUri.QueryArgNames.Include, this.queryInclude.join(','));
+
+            return request;
+        },
+<span id='Sage-Platform-Mobile-Edit-method-createLayout'>        createLayout: function() {
+</span>            return this.layout || [];
+        },
+<span id='Sage-Platform-Mobile-Edit-method-processLayout'>        processLayout: function(layout)
+</span>        {
+            var rows = (layout['children'] || layout['as'] || layout),
+                options = layout['options'] || (layout['options'] = {
+                    title: this.detailsText
+                }),
+                sectionQueue = [],
+                sectionStarted = false,
+                content = [];
+            
+            for (var i = 0; i &lt; rows.length; i++)
+            {
+                var current = rows[i];
+
+                if (current['children'] || current['as'])
+                {
+                    if (sectionStarted)
+                        sectionQueue.push(current);
+                    else
+                        this.processLayout(current);
+
+                    continue;
+                }
+
+                if (!sectionStarted)
+                {
+                    sectionStarted = true;
+                    content.push(this.sectionBeginTemplate.apply(layout, this));
+                }                    
+
+                var ctor = FieldManager.get(current['type']),
+                    field = this.fields[current['name'] || current['property']] = new ctor(lang.mixin({
+                        owner: this
+                    }, current)),
+                    template = field.propertyTemplate || this.propertyTemplate;
+
+
+                this.connect(field, 'onShow', this._onShowField);
+                this.connect(field, 'onHide', this._onHideField);
+                this.connect(field, 'onEnable', this._onEnableField);
+                this.connect(field, 'onDisable', this._onDisableField);
+
+                content.push(template.apply(field, this));
+            }
+
+            content.push(this.sectionEndTemplate.apply(layout, this));
+
+            domConstruct.place(content.join(''), this.contentNode, 'last');
+
+            for (var i = 0; i &lt; sectionQueue.length; i++)
+            {
+                var current = sectionQueue[i];
+
+                this.processLayout(current);
+            }
+        },
+<span id='Sage-Platform-Mobile-Edit-method-onRequestDataFailure'>        onRequestDataFailure: function(response, o) {
+</span>            alert(string.substitute(this.requestErrorText, [response, o]));
+            ErrorManager.addError(response, o, this.options, 'failure');
+        },
+<span id='Sage-Platform-Mobile-Edit-method-onRequestDataSuccess'>        onRequestDataSuccess: function(entry) {
+</span>            this.processEntry(entry);
+
+            if (this.options.changes)
+            {
+                this.changes = this.options.changes;
+                this.setValues(this.changes);
+            }
+        },
+<span id='Sage-Platform-Mobile-Edit-method-requestData'>        requestData: function() {
+</span>            var request = this.createRequest();
+            if (request)
+                request.read({
+                    success: this.onRequestDataSuccess,
+                    failure: this.onRequestDataFailure,
+                    scope: this
+                });
+        },
+<span id='Sage-Platform-Mobile-Edit-method-onRequestTemplateFailure'>        onRequestTemplateFailure: function(response, o) {
+</span>            alert(string.substitute(this.requestErrorText, [response, o]));
+            ErrorManager.addError(response, o, this.options, 'failure');
+        },
+<span id='Sage-Platform-Mobile-Edit-method-onRequestTemplateSuccess'>        onRequestTemplateSuccess: function(entry) {
+</span>            this.processTemplateEntry(entry);
+        },
+<span id='Sage-Platform-Mobile-Edit-method-requestTemplate'>        requestTemplate: function() {
+</span>            var request = this.createTemplateRequest();
+            if (request)
+                request.read({
+                    success: this.onRequestTemplateSuccess,
+                    failure: this.onRequestTemplateFailure,
+                    scope: this
+                });
+        },
+<span id='Sage-Platform-Mobile-Edit-method-convertEntry'>        convertEntry: function(entry) {
+</span>            // todo: should we create a deep copy?
+            // todo: do a deep conversion?
+
+            for (var n in entry)
+            {
+                if (convert.isDateString(entry[n]))
+                    entry[n] = convert.toDateFromString(entry[n]);
+            }
+
+            return entry;
+        },
+<span id='Sage-Platform-Mobile-Edit-method-convertValues'>        convertValues: function(values) {
+</span>            // todo: do a deep conversion?
+
+            for (var n in values)
+            {
+                if (values[n] instanceof Date)
+                    values[n] = this.getService().isJsonEnabled()
+                        ? convert.toJsonStringFromDate(values[n])
+                        : convert.toIsoStringFromDate(values[n]);
+            }
+
+            return values;
+        },
+<span id='Sage-Platform-Mobile-Edit-method-processEntry'>        processEntry: function(entry) {
+</span>            this.entry = this.convertEntry(entry || {});
+            this.setValues(this.entry, true);
+
+            domClass.remove(this.domNode, 'panel-loading');
+        },
+<span id='Sage-Platform-Mobile-Edit-method-applyContext'>        applyContext: function(templateEntry) {
+</span>        },
+<span id='Sage-Platform-Mobile-Edit-method-applyFieldDefaults'>        applyFieldDefaults: function(){
+</span>            for (var name in this.fields)
+            {
+                var field = this.fields[name],
+                    defaultValue = field['default'];
+
+                if (typeof defaultValue === 'undefined') continue;
+
+                field.setValue(this.expandExpression(defaultValue, field));
+            }
+        },
+<span id='Sage-Platform-Mobile-Edit-method-processTemplateEntry'>        processTemplateEntry: function(templateEntry) {
+</span>            this.templateEntry = this.convertEntry(templateEntry || {});
+
+            this.setValues(this.templateEntry, true);
+            this.applyFieldDefaults();
+            this.applyContext(this.templateEntry);
+
+            // if an entry has been passed through options, apply it here, now that the template has been applied.
+            // in this case, since we are doing an insert (only time template is used), the entry is applied as modified data.
+            if (this.options.entry)
+            {
+                this.entry = this.convertEntry(this.options.entry);
+                this.setValues(this.entry);
+            }
+
+            domClass.remove(this.domNode, 'panel-loading');
+        },
+<span id='Sage-Platform-Mobile-Edit-method-clearValues'>        clearValues: function() {
+</span>            for (var name in this.fields)
+            {
+                this.fields[name].clearValue();
+            }
+        },
+<span id='Sage-Platform-Mobile-Edit-method-setValues'>        setValues: function(values, initial) {
+</span>            var noValue = {},
+                field,
+                value;
+
+            for (var name in this.fields)
+            {
+                field = this.fields[name];
+
+                // for now, explicitly hidden fields (via. the field.hide() method) are not included
+                if (field.isHidden()) continue;
+
+                if (field.applyTo !== false)
+                {
+                    value = utility.getValue(values, field.applyTo, noValue);
+                }
+                else
+                {
+                    value = utility.getValue(values, field.property || name, noValue);
+                }
+
+                // fyi: uses the fact that ({} !== {})
+                if (value !== noValue) field.setValue(value, initial);
+            }
+        },
+<span id='Sage-Platform-Mobile-Edit-method-getValues'>        getValues: function(all) {
+</span>            var o = {},
+                empty = true,
+                field,
+                value,
+                target,
+                include,
+                exclude;
+
+            for (var name in this.fields)
+            {
+                field = this.fields[name];
+                value = field.getValue();
+
+                include = this.expandExpression(field.include, value, field, this);
+                exclude = this.expandExpression(field.exclude, value, field, this);
+
+<span id='Sage-Platform-Mobile-Edit-property-'>                /**
+</span>                 * include:
+                 *   true: always include value
+                 *   false: always exclude value
+                 * exclude:
+                 *   true: always exclude value
+                 *   false: default handling
+                 */
+                if (include !== undefined &amp;&amp; !include) continue;
+                if (exclude !== undefined &amp;&amp; exclude) continue;
+
+                // for now, explicitly hidden fields (via. the field.hide() method) are not included
+                if (all || ((field.alwaysUseValue || field.isDirty() || include) &amp;&amp; !field.isHidden()))
+                {
+                    if (field.applyTo !== false)
+                    {
+                        target = utility.getValue(o, field.applyTo);
+                        lang.mixin(target, value);
+                    }
+                    else
+                    {
+                        utility.setValue(o, field.property || name, value);
+                    }
+
+                    empty = false;
+                }
+            }
+            return empty ? false : o;
+        },
+<span id='Sage-Platform-Mobile-Edit-method-validate'>        validate: function() {
+</span>            this.errors = [];
+
+            for (var name in this.fields)
+            {
+                var field = this.fields[name],
+                    result;
+
+                if (!field.isHidden() &amp;&amp; false !== (result = field.validate()))
+                {
+                    domClass.add(field.containerNode, 'row-error');
+
+                    this.errors.push({
+                        name: name,
+                        message: result
+                    });
+                }
+                else
+                {
+                    domClass.remove(field.containerNode, 'row-error');
+                }
+            }
+
+            return this.errors.length &gt; 0
+                ? this.errors
+                : false;
+        },
+<span id='Sage-Platform-Mobile-Edit-method-createEntry'>        createEntry: function() {
+</span>            var values = this.getValues();
+
+            return this.inserting
+                ? this.createEntryForInsert(values)
+                : this.createEntryForUpdate(values);
+        },
+<span id='Sage-Platform-Mobile-Edit-method-createEntryForUpdate'>        createEntryForUpdate: function(values) {
+</span>            values = this.convertValues(values);
+
+            return lang.mixin(values, {
+                '$key': this.entry['$key'],
+                '$etag': this.entry['$etag'],
+                '$name': this.entry['$name']
+            });
+        },
+<span id='Sage-Platform-Mobile-Edit-method-createEntryForInsert'>        createEntryForInsert: function(values) {
+</span>            values = this.convertValues(values);
+            
+            return lang.mixin(values, {
+                '$name': this.entityName
+            });
+        },
+<span id='Sage-Platform-Mobile-Edit-method-isFormDisabled'>        isFormDisabled: function() {
+</span>            return this.busy;
+        },
+<span id='Sage-Platform-Mobile-Edit-method-disable'>        disable: function() {
+</span>            this.busy = true;
+
+            if (App.bars.tbar)
+                App.bars.tbar.disable();
+
+            domClass.add(this.domNode, 'busy');
+        },
+<span id='Sage-Platform-Mobile-Edit-method-enable'>        enable: function() {
+</span>            this.busy = false;
+
+            if (App.bars.tbar)
+                App.bars.tbar.enable();
+
+            domClass.remove(this.domNode, 'busy');
+        },
+<span id='Sage-Platform-Mobile-Edit-method-insert'>        insert: function() {
+</span>            this.disable();
+
+            var values = this.getValues();
+            if (values)
+            {
+                var entry = this.createEntryForInsert(values);
+
+                var request = this.createRequest();
+                if (request)
+                    request.create(entry, {
+                        success: this.onInsertSuccess,
+                        failure: this.onInsertFailure,
+                        scope: this
+                    });
+            }
+            else
+            {
+                ReUI.back();
+            }
+        },
+<span id='Sage-Platform-Mobile-Edit-method-onInsertSuccess'>        onInsertSuccess: function(entry) {
+</span>            this.enable();
+
+            connect.publish('/app/refresh', [{
+                resourceKind: this.resourceKind
+            }]);
+
+            this.onInsertCompleted(entry);
+        },
+<span id='Sage-Platform-Mobile-Edit-method-onInsertFailure'>        onInsertFailure: function(response, o) {
+</span>            this.enable();
+            this.onRequestFailure(response, o);
+        },
+<span id='Sage-Platform-Mobile-Edit-method-onInsertCompleted'>        onInsertCompleted: function(entry) {
+</span>            if (this.options &amp;&amp; this.options.returnTo)
+            {
+                var returnTo = this.options.returnTo,
+                    view = App.getView(returnTo);
+                if (view)
+                    view.show();
+                else
+                    window.location.hash = returnTo;
+            }
+            else
+            {
+                ReUI.back();
+            }
+        },
+<span id='Sage-Platform-Mobile-Edit-method-onRequestFailure'>        onRequestFailure: function(response, o) {
+</span>            alert(string.substitute(this.requestErrorText, [response, o]));
+            ErrorManager.addError(response, o, this.options, 'failure');
+        },
+<span id='Sage-Platform-Mobile-Edit-method-update'>        update: function() {
+</span>            var values = this.getValues();
+            if (values)
+            {
+                this.disable();
+
+                var entry = this.createEntryForUpdate(values);
+
+                var request = this.createRequest();
+                if (request)
+                    request.update(entry, {
+                        success: this.onUpdateSuccess,
+                        failure: this.onUpdateFailure,
+                        scope: this
+                    });
+            }
+            else
+            {
+                this.onUpdateCompleted(false);
+            }
+        },
+<span id='Sage-Platform-Mobile-Edit-method-onUpdateSuccess'>        onUpdateSuccess: function(entry) {
+</span>            this.enable();
+
+            connect.publish('/app/refresh', [{
+                resourceKind: this.resourceKind,
+                key: entry['$key'],
+                data: entry
+            }]);
+
+            this.onUpdateCompleted(entry);
+        },
+<span id='Sage-Platform-Mobile-Edit-method-onUpdateFailure'>        onUpdateFailure: function(response, o) {
+</span>            this.enable();
+            this.onRequestFailure(response, o);
+        },
+<span id='Sage-Platform-Mobile-Edit-method-onUpdateCompleted'>        onUpdateCompleted: function(entry) {
+</span>            if (this.options &amp;&amp; this.options.returnTo)
+            {
+                var returnTo = this.options.returnTo,
+                    view = App.getView(returnTo);
+                if (view)
+                    view.show();
+                else
+                    window.location.hash = returnTo;
+            }
+            else
+            {
+                ReUI.back();
+            }
+        },
+<span id='Sage-Platform-Mobile-Edit-method-showValidationSummary'>        showValidationSummary: function() {
+</span>            var content = [];                        
+
+            for (var i = 0; i &lt; this.errors.length; i++)
+                content.push(this.validationSummaryItemTemplate.apply(this.errors[i], this.fields[this.errors[i].name]));
+
+            this.set('validationContent', content.join(''));
+            domClass.add(this.domNode, 'panel-form-error');
+        },
+<span id='Sage-Platform-Mobile-Edit-method-hideValidationSummary'>        hideValidationSummary: function() {
+</span>            domClass.remove(this.domNode, 'panel-form-error');
+            this.set('validationContent', '');
+        },
+<span id='Sage-Platform-Mobile-Edit-method-save'>        save: function() {
+</span>            if (this.isFormDisabled())  return;
+
+            this.hideValidationSummary();
+
+            if (this.validate() !== false)
+            {
+                this.showValidationSummary();
+                return;
+            }
+
+            if (this.inserting)
+                this.insert();
+            else
+                this.update();
+        },
+<span id='Sage-Platform-Mobile-Edit-method-getContext'>        getContext: function() {
+</span>            return lang.mixin(this.inherited(arguments), {
+                resourceKind: this.resourceKind,
+                insert: this.options.insert,
+                key: this.options.insert ? false : this.options.entry &amp;&amp; this.options.entry['$key']
+            });
+        },
+<span id='Sage-Platform-Mobile-Edit-method-getSecurity'>        getSecurity: function(access) {
+</span>            var lookup = {
+                'update': this.updateSecurity,
+                'insert': this.insertSecurity
+            };
+
+            return lookup[access];
+        },
+<span id='Sage-Platform-Mobile-Edit-method-beforeTransitionTo'>        beforeTransitionTo: function() {
+</span>            if (this.refreshRequired)
+            {
+                if (this.options.insert === true || this.options.key)
+                    domClass.add(this.domNode, 'panel-loading');
+                else
+                    domClass.remove(this.domNode, 'panel-loading');
+            }
+
+            this.inherited(arguments);
+        },
+<span id='Sage-Platform-Mobile-Edit-method-activate'>        activate: function() {
+</span>            // external navigation (browser back/forward) never refreshes the edit view as it's always a terminal loop.
+            // i.e. you never move &quot;forward&quot; from an edit view; you navigate to child editors, from which you always return.
+        },       
+<span id='Sage-Platform-Mobile-Edit-method-refreshRequiredFor'>        refreshRequiredFor: function(options) {
+</span>            if (this.options)
+            {
+                if (options)
+                {
+                    if (this.options.key &amp;&amp; this.options.key === options['key'])
+                        return false;
+                }
+                return true;
+            }
+            else
+                return this.inherited(arguments);
+        },
+<span id='Sage-Platform-Mobile-Edit-method-refresh'>        refresh: function() {
+</span>            this.entry = false;
+            this.changes = false;
+            this.inserting = (this.options.insert === true);
+
+            domClass.remove(this.domNode, 'panel-form-error');
+
+            this.clearValues();
+
+            if (this.inserting)
+            {
+                if (this.options.template)
+                    this.processTemplateEntry(this.options.template);
+                else
+                    this.requestTemplate();
+            }
+            else
+            {
+                // apply entry as non-modified data
+                if (this.options.entry)
+                {
+                    this.processEntry(this.options.entry);
+
+                    // apply changes as modified data, since we want this to feed-back through
+                    if (this.options.changes)
+                    {
+                        this.changes = this.options.changes;
+                        this.setValues(this.changes);
+                    }
+                }
+                else
+                {
+                    // if key is passed request that keys entity and process
+                    if (this.options.key)
+                        this.requestData();
+                }
+            }
+        }
+    });
+});</pre>
+</body>
+</html>
