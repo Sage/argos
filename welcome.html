@@ -2,18 +2,22 @@
 .body-container
 {
     width:80%;
-    padding-top:16px;
+    padding:16px 0 0 10px;
     position:relative;
     float:left;
 }
-.body-container > img
+.splash-description > img
 {
     position:absolute;
+    left: 10px;
+    top: 10px;
 }
 .splash-description 
 {
     padding-left: 412px;
+    padding-top: 64px;
     vertical-align:top;
+    height: 355px;
 }
 .splash-description > h3 
 {
@@ -30,12 +34,13 @@
 {
     width:19%;
     margin-left:1%;
+    padding-right:10px;
     position:relative;
     float:left;
 }
 .panel-right > .panel
 {
-    margin-top: 32px;
+    margin-top: 16px;
 }
 .panel-right > .panel > h2
 {
@@ -114,30 +119,74 @@
 
 .github-links > a
 {
-    width: 33%;
+    width: 48%;
     text-align:center;
     position:relative;
     float: left;
     color: #000;
     border-right: 1px solid white;
+    padding: 3px 0;
 }
 .github-links > a:last-child
 {
     border-right:none;
 }
+.github-links > a:hover
+{
+    color: #007F64;
+}
+
+.sage-lines
+{
+position:absolute;
+bottom:0; right:0;
+z-index:1;
+width:400px;
+height:207px;
+background: url(resources/images/sage_lines_and_shapes_10.png) no-repeat 0 0;
+}
+.grid-3
+{
+    width: 30%;
+    margin-left:3%;
+    margin-top: 16px;
+    display: inline-block;
+    vertical-align: top;
+}
+.body-container > .grid-3 > h4
+{
+    font-size: 1.5em;
+    color: #E98300;
+}
+
 
 </style>
 <div class="body-container">
-    <img src="resources/images/splash-device.png">
     <div class="splash-description">
+        <img src="resources/images/splash-device.png">
         <h3>Argos</h3>
-        <p>Argos is a <strong>HTML5</strong> mobile framework for enterprise data-drive applications.</p>
+        <p>Argos is an <strong>HTML5</strong> mobile framework for enterprise data-driven applications.</p>
         <div class="github-links">
-            <a href="https://github.com/Sage/argos-sdk/zipball/2.0" target="_blank">Download<br>.Zip</a>
-            <a href="https://github.com/Sage/argos-sdk/tarball/2.0master" target="_blank">Download<br>.Tar</a>
-            <a href="https://github.com/Sage/argos-sdk/tree/2.0" target="_blank">View<br>Source</a>
+            <a href="https://github.com/Sage/argos-sdk/zipball/2.0" target="_blank">Download</a>
+            <a href="https://github.com/Sage/argos-sdk/tree/2.0" target="_blank">View Code</a>
         </div>
     </div>
+        
+    <div class="grid-3">
+    <h4>Cross-Platform</h4>
+    <p>Compatible with devices such as the iPhone&reg;, iPad&reg;, Android&trade;, BlackBerry&reg; or any HTML5 compatible browser.</p>
+    </div>
+    
+    <div class="grid-3">
+    <h4>Deploy Natively</h4>
+    <p>Works seamlessly with <a href="http://www.phonegap.com/" target="_blank">Phonegap</a> to provide native on-device solutions.</p>
+    </div>
+    
+    <div class="grid-3">
+    <h4>More Features</h4>
+    <p>Enjoy many more features from navigation history, localization, template engine, plugin framework and minification tools.</p>
+    </div>
+        
 </div>
 <div class="panel-right">
 
@@ -165,3 +214,6 @@
     </div>
 
 </div>
+
+
+<div class="sage-lines"></div>
