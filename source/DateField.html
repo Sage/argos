@@ -50,20 +50,33 @@ define('Sage/Platform/Mobile/Fields/DateField', [
 <span id='Sage-Platform-Mobile-Fields-DateField'>    /**
 </span>     * The DateField is an extension of the {@link EditorField EditorField} by accepting Date Objects
      * for values and using the {@link Calendar Calendar} view for user input.
+     *
+     * ###Example
+     *
+     *     {
+     *         name: 'StartDate',
+     *         property: 'StartDate',
+     *         label: this.startDateText,
+     *         type: 'date',
+     *         dateFormatText: 'MM/dd HH:mm:ss',
+     *         showTimerPicker: true
+     *     }
+     *
      * @alternateClassName DateField
      * @extends EditorField
      * @requires Calendar
+     * @requires FieldManager
      * @requires format
      */
     var control = declare('Sage.Platform.Mobile.Fields.DateField', [EditorField], {
         // Localization
-<span id='Sage-Platform-Mobile-Fields-DateField-property-emptyText'>        /**
-</span>         * @property {String}
+<span id='Sage-Platform-Mobile-Fields-DateField-cfg-emptyText'>        /**
+</span>         * @cfg {String}
          * The text shown when no value (or null/undefined) is set to the field.
          */
         emptyText: '',
-<span id='Sage-Platform-Mobile-Fields-DateField-property-dateFormatText'>        /**
-</span>         * @property {String}
+<span id='Sage-Platform-Mobile-Fields-DateField-cfg-dateFormatText'>        /**
+</span>         * @cfg {String}
          * The [Datejs format](http://code.google.com/p/datejs/wiki/FormatSpecifiers) the date will be
          * formatted when displaying in the field.
          */
@@ -90,15 +103,43 @@ define('Sage/Platform/Mobile/Fields/DateField', [
             '&lt;input data-dojo-attach-point=&quot;inputNode&quot; data-dojo-attach-event=&quot;onchange:_onChange&quot; type=&quot;text&quot; /&gt;'
         ]),
 
-<span id='Sage-Platform-Mobile-Fields-DateField-property-view'>        view: 'generic_calendar',
-</span><span id='Sage-Platform-Mobile-Fields-DateField-property-showTimePicker'>        showTimePicker: false,
-</span><span id='Sage-Platform-Mobile-Fields-DateField-property-timeless'>        timeless: false,
-</span>
-<span id='Sage-Platform-Mobile-Fields-DateField-method-formatValue'>        formatValue: function(value) {
-</span>            return format.date(value, this.dateFormatText, this.timeless);
+<span id='Sage-Platform-Mobile-Fields-DateField-property-view'>        /**
+</span>         * @property {String}
+         * The target view id that will provide the user input, this should always be to set to the
+         * {@link Calendar Calendars} view id.
+         */
+        view: 'generic_calendar',
+<span id='Sage-Platform-Mobile-Fields-DateField-cfg-showTimePicker'>        /**
+</span>         * @cfg {Boolean}
+         * Sent as part of navigation options to {@link Calendar Calendar}, where it controls the
+         * display of the hour/minute inputs.
+         */
+        showTimePicker: false,
+<span id='Sage-Platform-Mobile-Fields-DateField-cfg-timeless'>        /**
+</span>         * @cfg {Boolean}
+         * Used in formatted and sent as part of navigation options to {@link Calendar Calendar},
+         * where it controls the the conversion to/from UTC and setting the hour:min:sec to 00:00:05.
+         */
+        timeless: false,
+
+<span id='Sage-Platform-Mobile-Fields-DateField-method-formatValue'>        /**
+</span>         * Takes a date object and calls {@link format#date format.date} passing the current
+         * `dateFormatText` and `timeless` values, formatting the date into a string representation.
+         * @param {Date} value Date to be converted
+         * @return {String}
+         */
+        formatValue: function(value) {
+            return format.date(value, this.dateFormatText, this.timeless);
         },
-<span id='Sage-Platform-Mobile-Fields-DateField-method-_onChange'>        _onChange: function(evt) {
-</span>            var val = Date.parseExact(this.inputNode.value, this.dateFormatText);
+<span id='Sage-Platform-Mobile-Fields-DateField-method-_onChange'>        /**
+</span>         * When a value changes it checks that the text in the input field matches the defined
+         * `dateFormatText` by using it to parse it back into a Date Object. If this succeeds then
+         * sets the current value to the Date object and removes any validation warnings. If it
+         * doesn't then current value is empties and the validation styling is added.
+         * @param {Event} evt Event that caused change to fire.
+         */
+        _onChange: function(evt) {
+            var val = Date.parseExact(this.inputNode.value, this.dateFormatText);
 
             if (val)
             {
@@ -111,8 +152,13 @@ define('Sage/Platform/Mobile/Fields/DateField', [
                 domClass.add(this.containerNode, 'row-error'); // todo: not the right spot for this, add validation eventing
             }
         },
-<span id='Sage-Platform-Mobile-Fields-DateField-method-createNavigationOptions'>        createNavigationOptions: function() {
-</span>            var options = this.inherited(arguments);
+<span id='Sage-Platform-Mobile-Fields-DateField-method-createNavigationOptions'>        /**
+</span>         * Extends the parent {@link EditorField#createNavigationOptions createNavigationOptions} to
+         * also include the properties `date`, `showTimePicker` and `timeless` with `date` being the current value
+         * @return {Object} Navigation options
+         */
+        createNavigationOptions: function() {
+            var options = this.inherited(arguments);
 
             options.date = this.currentValue;
             options.showTimePicker = this.showTimePicker;
@@ -120,25 +166,42 @@ define('Sage/Platform/Mobile/Fields/DateField', [
 
             return options;
         },
-<span id='Sage-Platform-Mobile-Fields-DateField-method-getValuesFromView'>        getValuesFromView: function() {
-</span>            var view = App.getPrimaryActiveView();
+<span id='Sage-Platform-Mobile-Fields-DateField-method-getValuesFromView'>        /**
+</span>         * Retrieves the date from the {@link Calendar#getDateTime Calendar} view and sets it to currentValue.
+         */
+        getValuesFromView: function() {
+            var view = App.getPrimaryActiveView();
             if (view)
             {
                 this.currentValue = this.validationValue = view.getDateTime();
                 domClass.remove(this.containerNode, 'row-error'); // todo: not the right spot for this, add validation eventing
             }
         },
-<span id='Sage-Platform-Mobile-Fields-DateField-method-isDirty'>        isDirty: function() {
-</span>            return this.originalValue instanceof Date &amp;&amp; this.currentValue instanceof Date
+<span id='Sage-Platform-Mobile-Fields-DateField-method-isDirty'>        /**
+</span>         * Determines if the current value has been modified from the original value.
+         * @return {Boolean}
+         */
+        isDirty: function() {
+            return this.originalValue instanceof Date &amp;&amp; this.currentValue instanceof Date
                 ? this.originalValue.getTime() != this.currentValue.getTime()
                 : this.originalValue !== this.currentValue;
         },
-<span id='Sage-Platform-Mobile-Fields-DateField-method-clearValue'>        clearValue: function() {
-</span>            this.inherited(arguments);
+<span id='Sage-Platform-Mobile-Fields-DateField-method-clearValue'>        /**
+</span>         * Extends the parent {@link EditorField#clearValue clearValue} to also include removing the
+         * error validation styling.
+         */
+        clearValue: function() {
+            this.inherited(arguments);
             domClass.remove(this.containerNode, 'row-error'); // todo: not the right spot for this, add validation eventing
         },
-<span id='Sage-Platform-Mobile-Fields-DateField-method-validate'>        validate: function() {
-</span>            if (this.inputNode.value !== '' &amp;&amp; !this.currentValue)
+<span id='Sage-Platform-Mobile-Fields-DateField-method-validate'>        /**
+</span>         * Extends the parent {@link EditorField#validate validate} with a check that makes sure if
+         * the user has inputted a date manually into the input field that it had successfully validated
+         * in the {@link #_onChange _onChange} function.
+         * @return {Boolean/Object} False for no errors. True/Object for invalid.
+         */
+        validate: function() {
+            if (this.inputNode.value !== '' &amp;&amp; !this.currentValue)
                 return string.substitute(this.invalidDateFormatErrorText, [this.label]);
 
             return this.inherited(arguments);
