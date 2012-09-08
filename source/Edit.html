@@ -31,8 +31,34 @@
  */
 
 <span id='Sage-Platform-Mobile-Edit'>/**
-</span> *
+</span> * An Edit View is a dual purpose view - used for both Creating and Updating records. It is comprised
+ * of a layout similar to Detail rows but are instead Edit fields.
+ *
+ * A unique part of the Edit view is it's lifecycle in comparison to Detail. The Detail view is torn
+ * down and rebuilt with every record. With Edit the form is emptied (HTML left in-tact) and new values
+ * are applied to the fields.
+ *
+ * Since Edit Views are typically the &quot;last&quot; view (you always come from a List or Detail view) it warrants
+ * special attention to the navigation options that are passed, as they greatly control how the Edit view
+ * functions and operates.
+ *
  * @alternateClassName Edit
+ * @extends View
+ * @requires convert
+ * @requires utility
+ * @requires ErrorManager
+ * @requires FieldManager
+ * @requires BooleanField
+ * @requires DecimalField
+ * @requires DurationField
+ * @requires HiddenField
+ * @requires LookupField
+ * @requires NoteField
+ * @requires PhoneField
+ * @requires SelectField
+ * @requires SignatureField
+ * @requires TextAreaField
+ * @requires TextField
  */
 define('Sage/Platform/Mobile/Edit', [
     'dojo/_base/declare',
@@ -83,70 +109,133 @@ define('Sage/Platform/Mobile/Edit', [
 ) {
 
     return declare('Sage.Platform.Mobile.Edit', [View], {
-<span id='Sage-Platform-Mobile-Edit-property-attributeMap'>        attributeMap: {
-</span>            validationContent: {
+<span id='Sage-Platform-Mobile-Edit-property-attributeMap'>        /**
+</span>         * @property {Object}
+         * Creates a setter map to html nodes, namely:
+         *
+         * * validationContent =&gt; validationContentNode's innerHTML
+         *
+         */
+        attributeMap: {
+            validationContent: {
                 node: 'validationContentNode',
                 type: 'innerHTML'
             }
         },
-<span id='Sage-Platform-Mobile-Edit-property-widgetTemplate'>        widgetTemplate: new Simplate([
-</span>            '&lt;div id=&quot;{%= $.id %}&quot; title=&quot;{%: $.titleText %}&quot; class=&quot;edit panel {%= $.cls %}&quot; {% if ($.resourceKind) { %}data-resource-kind=&quot;{%= $.resourceKind %}&quot;{% } %}&gt;',            
+<span id='Sage-Platform-Mobile-Edit-property-widgetTemplate'>        /**
+</span>         * @property {Simplate}
+         * The template used to render the view's main DOM element when the view is initialized.
+         * This template includes loadingTemplate and validationSummaryTemplate.
+         *
+         * The default template uses the following properties:
+         *
+         *      name                description
+         *      ----------------------------------------------------------------
+         *      id                   main container div id
+         *      title                main container div title attr
+         *      cls                  additional class string added to the main container div
+         *      resourceKind         set to data-resource-kind
+         *
+         */
+        widgetTemplate: new Simplate([
+            '&lt;div id=&quot;{%= $.id %}&quot; title=&quot;{%: $.titleText %}&quot; class=&quot;edit panel {%= $.cls %}&quot; {% if ($.resourceKind) { %}data-resource-kind=&quot;{%= $.resourceKind %}&quot;{% } %}&gt;',            
             '{%! $.loadingTemplate %}',
             '{%! $.validationSummaryTemplate %}',
             '&lt;div class=&quot;panel-content&quot; data-dojo-attach-point=&quot;contentNode&quot;&gt;&lt;/div&gt;',
             '&lt;/div&gt;'
         ]),
-<span id='Sage-Platform-Mobile-Edit-property-loadingTemplate'>        loadingTemplate: new Simplate([
-</span>            '&lt;fieldset class=&quot;panel-loading-indicator&quot;&gt;',
+<span id='Sage-Platform-Mobile-Edit-property-loadingTemplate'>        /**
+</span>         * @property {Simplate}
+         * HTML shown when data is being loaded.
+         *
+         * `$` =&gt; the view instance
+         */
+        loadingTemplate: new Simplate([
+            '&lt;fieldset class=&quot;panel-loading-indicator&quot;&gt;',
             '&lt;div class=&quot;row&quot;&gt;&lt;div&gt;{%: $.loadingText %}&lt;/div&gt;&lt;/div&gt;',
             '&lt;/fieldset&gt;'        
         ]),
-<span id='Sage-Platform-Mobile-Edit-property-validationSummaryTemplate'>        validationSummaryTemplate: new Simplate([
-</span>            '&lt;div class=&quot;panel-validation-summary&quot;&gt;',
+<span id='Sage-Platform-Mobile-Edit-property-validationSummaryTemplate'>        /**
+</span>         * @property {Simplate}
+         * HTML for the validation summary area, this div is shown/hidden as needed.
+         *
+         * `$` =&gt; the view instance
+         */
+        validationSummaryTemplate: new Simplate([
+            '&lt;div class=&quot;panel-validation-summary&quot;&gt;',
             '&lt;h2&gt;{%: $.validationSummaryText %}&lt;/h2&gt;',
             '&lt;ul data-dojo-attach-point=&quot;validationContentNode&quot;&gt;',
             '&lt;/ul&gt;',
             '&lt;/div&gt;'
         ]),
-<span id='Sage-Platform-Mobile-Edit-property-validationSummaryItemTemplate'>        validationSummaryItemTemplate: new Simplate([
-</span>            '&lt;li&gt;',
+<span id='Sage-Platform-Mobile-Edit-property-validationSummaryItemTemplate'>        /**
+</span>         * @property {Simplate}
+         * HTML shown when data is being loaded.
+         *
+         * * `$` =&gt; validation error object
+         * * `$$` =&gt; field instance that the error is on
+         */
+        validationSummaryItemTemplate: new Simplate([
+            '&lt;li&gt;',
             '&lt;a href=&quot;#{%= $.name %}&quot;&gt;',
             '&lt;h3&gt;{%: $.message %}&lt;/h3&gt;',
             '&lt;h4&gt;{%: $$.label %}&lt;/h4&gt;',
             '&lt;/a&gt;',
             '&lt;/li&gt;'
         ]),
-<span id='Sage-Platform-Mobile-Edit-property-sectionBeginTemplate'>        sectionBeginTemplate: new Simplate([
-</span>            '&lt;h2 data-action=&quot;toggleSection&quot; class=&quot;{% if ($.collapsed || $.options.collapsed) { %}collapsed{% } %}&quot;&gt;',
+<span id='Sage-Platform-Mobile-Edit-property-sectionBeginTemplate'>        /**
+</span>         * @property {Simplate}
+         * HTML that starts a new section including the collapsible header
+         *
+         * `$` =&gt; the view instance
+         */
+        sectionBeginTemplate: new Simplate([
+            '&lt;h2 data-action=&quot;toggleSection&quot; class=&quot;{% if ($.collapsed || $.options.collapsed) { %}collapsed{% } %}&quot;&gt;',
             '{%: ($.title || $.options.title) %}&lt;button class=&quot;collapsed-indicator&quot; aria-label=&quot;{%: $$.toggleCollapseText %}&quot;&gt;&lt;/button&gt;',
             '&lt;/h2&gt;',
             '&lt;fieldset class=&quot;{%= ($.cls || $.options.cls) %}&quot;&gt;',
             '&lt;a href=&quot;#&quot; class=&quot;android-6059-fix&quot;&gt;fix for android issue #6059&lt;/a&gt;'
         ]),
-<span id='Sage-Platform-Mobile-Edit-property-sectionEndTemplate'>        sectionEndTemplate: new Simplate([
-</span>            '&lt;/fieldset&gt;'
+<span id='Sage-Platform-Mobile-Edit-property-sectionEndTemplate'>        /**
+</span>         * @property {Simplate}
+         * HTML that ends a section
+         *
+         * `$` =&gt; the view instance
+         */
+        sectionEndTemplate: new Simplate([
+            '&lt;/fieldset&gt;'
         ]),
-<span id='Sage-Platform-Mobile-Edit-property-propertyTemplate'>        propertyTemplate: new Simplate([
-</span>            '&lt;a name=&quot;{%= $.name || $.property %}&quot;&gt;&lt;/a&gt;',
+<span id='Sage-Platform-Mobile-Edit-property-propertyTemplate'>        /**
+</span>         * @property {Simplate}
+         * HTML created for each property (field row).
+         *
+         * * `$` =&gt; the field row object defined in {@link #createLayout createLayout}.
+         * * `$$` =&gt; the view instance
+         */
+        propertyTemplate: new Simplate([
+            '&lt;a name=&quot;{%= $.name || $.property %}&quot;&gt;&lt;/a&gt;',
             '&lt;div class=&quot;row row-edit {%= $.cls %}&quot; data-field=&quot;{%= $.name || $.property %}&quot; data-field-type=&quot;{%= $.type %}&quot;&gt;',
             '&lt;/div&gt;'
         ]),
+
 <span id='Sage-Platform-Mobile-Edit-property-transitionEffect'>        transitionEffect: 'slide',
 </span><span id='Sage-Platform-Mobile-Edit-property-id'>        id: 'generic_edit',
 </span><span id='Sage-Platform-Mobile-Edit-property-layout'>        layout: null,
 </span><span id='Sage-Platform-Mobile-Edit-property-enableCustomizations'>        enableCustomizations: true,
 </span><span id='Sage-Platform-Mobile-Edit-property-customizationSet'>        customizationSet: 'edit',
 </span><span id='Sage-Platform-Mobile-Edit-property-expose'>        expose: false,
-</span><span id='Sage-Platform-Mobile-Edit-property-saveText'>        saveText: 'Save',
+</span><span id='Sage-Platform-Mobile-Edit-property-insertSecurity'>        insertSecurity: false,
+</span><span id='Sage-Platform-Mobile-Edit-property-updateSecurity'>        updateSecurity: false,
+</span>
+<span id='Sage-Platform-Mobile-Edit-property-saveText'>        saveText: 'Save',
 </span><span id='Sage-Platform-Mobile-Edit-property-titleText'>        titleText: 'Edit',
 </span><span id='Sage-Platform-Mobile-Edit-property-toggleCollapseText'>        toggleCollapseText: 'toggle collapse',
 </span><span id='Sage-Platform-Mobile-Edit-property-validationSummaryText'>        validationSummaryText: 'Validation Summary',
 </span><span id='Sage-Platform-Mobile-Edit-property-detailsText'>        detailsText: 'Details',
 </span><span id='Sage-Platform-Mobile-Edit-property-loadingText'>        loadingText: 'loading...',
 </span><span id='Sage-Platform-Mobile-Edit-property-requestErrorText'>        requestErrorText: 'A server error occured while requesting data.',
-</span><span id='Sage-Platform-Mobile-Edit-property-insertSecurity'>        insertSecurity: false,
-</span><span id='Sage-Platform-Mobile-Edit-property-updateSecurity'>        updateSecurity: false,
-</span><span id='Sage-Platform-Mobile-Edit-method-constructor'>        constructor: function(o) {
+</span>
+<span id='Sage-Platform-Mobile-Edit-method-constructor'>        constructor: function(o) {
 </span>            this.fields = {};
         },
 <span id='Sage-Platform-Mobile-Edit-method-startup'>        startup: function() {

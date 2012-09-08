@@ -41,12 +41,34 @@ define('Sage/Platform/Mobile/Fields/TextAreaField', [
     FieldManager
 ) {
 <span id='Sage-Platform-Mobile-Fields-TextAreaField'>    /**
-</span>     *
+</span>     * The TextAreaField extends the base TextField by changing the input element to
+     * an `&lt;textarea&gt;` element with a configurable amount of visible rows.
+     *
+     * ###Example:
+     *     {
+     *         name: 'Description',
+     *         property: 'Description',
+     *         label: this.descriptionText,
+     *         type: 'textarea',
+     *         rows: 6
+     *     }
+     *
+     * @alternateClassName TextAreaField
+     * @extends TextField
+     * @requires FieldManager
      */
     var control = declare('Sage.Platform.Mobile.Fields.TextAreaField', [TextField], {
-<span id='Sage-Platform-Mobile-Fields-TextAreaField-property-rows'>        rows: 4,
-</span><span id='Sage-Platform-Mobile-Fields-TextAreaField-property-enableClearButton'>        enableClearButton: false,
-</span><span id='Sage-Platform-Mobile-Fields-TextAreaField-property-widgetTemplate'>        /**
+<span id='Sage-Platform-Mobile-Fields-TextAreaField-cfg-rows'>        /**
+</span>         * @cfg {Number}
+         * Number of rows to show visually, does not constrain input.
+         */
+        rows: 4,
+<span id='Sage-Platform-Mobile-Fields-TextAreaField-property-enableClearButton'>        /**
+</span>         * @property {Boolean}
+         * Overrides default to hide the clear button.
+         */
+        enableClearButton: false,
+<span id='Sage-Platform-Mobile-Fields-TextAreaField-property-widgetTemplate'>        /**
 </span>         * @property {Simplate}
          * Simplate that defines the fields HTML Markup
          *

@@ -31,8 +31,8 @@
  */
 
 <span id='Sage-Platform-Mobile-_ServiceMixin'>/**
-</span> *
- * @alternateClassName _ServiceMixin
+</span> * @alternateClassName _ServiceMixin
+ * @depracated
  */
 define('Sage/Platform/Mobile/_ServiceMixin', [
     'dojo/_base/declare'
@@ -44,6 +44,7 @@ define('Sage/Platform/Mobile/_ServiceMixin', [
 <span id='Sage-Platform-Mobile-_ServiceMixin-property-serviceMap'>        serviceMap: null,
 </span><span id='Sage-Platform-Mobile-_ServiceMixin-method-constructor'>        constructor: function() {
 </span>            var map = this.serviceMap;
+            console.log(map);
             if (map)
             {
                 for (var property in map)

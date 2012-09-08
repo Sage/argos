@@ -40,13 +40,47 @@ define('Sage/Platform/Mobile/Fields/SelectField', [
     FieldManager
 ) {
 <span id='Sage-Platform-Mobile-Fields-SelectField'>    /**
-</span>     *
+</span>     * The SelectField is a minor extension to te LookupField in that it explicitly hides search and actions.
+     *
+     * It may also optionally pass the `data` option which a view may optionally use instead of requesting data.
+     *
+     * ###Example:
+     *     {
+     *         name: 'State',
+     *         property: 'State',
+     *         label: this.stateText,
+     *         type: 'select',
+     *         view: 'state_list'
+     *     }
+     *
+     * @alternateClassName SelectField
+     * @extends LookupField
+     * @requires FieldManager
      */
     var control = declare('Sage.Platform.Mobile.Fields.SelectField', [LookupField], {
-<span id='Sage-Platform-Mobile-Fields-SelectField-property-valueKeyProperty'>        valueKeyProperty: false,
-</span><span id='Sage-Platform-Mobile-Fields-SelectField-property-valueTextProperty'>        valueTextProperty: false,
-</span><span id='Sage-Platform-Mobile-Fields-SelectField-method-createNavigationOptions'>        createNavigationOptions: function() {
-</span>            var options = this.inherited(arguments);
+<span id='Sage-Platform-Mobile-Fields-SelectField-property-valueKeyProperty'>        /**
+</span>         * @property {Boolean}
+         * Overrides the {@link LookupField LookupField} default to explicitly set it to false forcing
+         * the view to use the currentValue instead of a key/descriptor
+         */
+        valueKeyProperty: false,
+<span id='Sage-Platform-Mobile-Fields-SelectField-property-valueTextProperty'>        /**
+</span>         * @property {Boolean}
+         * Overrides the {@link LookupField LookupField} default to explicitly set it to false forcing
+         * the view to use the currentValue instead of a key/descriptor
+         */
+        valueTextProperty: false,
+<span id='Sage-Platform-Mobile-Fields-SelectField-property-data'>        /**
+</span>         * @property {Object/Object[]/Function}
+         * If defined will be expanded (if function) and passed in the navigation options to the lookup view
+         */
+        data: null,
+<span id='Sage-Platform-Mobile-Fields-SelectField-method-createNavigationOptions'>        /**
+</span>         * Overides the {@link LookupField#createNavigationOptions parent implementation} to set search and actions to
+         * hidden and optionally pass data defined on the field.
+         */
+        createNavigationOptions: function() {
+            var options = this.inherited(arguments);
             options.hideSearch = true;
             options.enableActions = false;
             options.data = this.expandExpression(this.data);

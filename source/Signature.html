@@ -31,8 +31,13 @@
  */
 
 <span id='Sage-Platform-Mobile-Views-Signature'>/**
-</span> *
+</span> * Signature View is a view tailored to present an HTML5 canvas that has signature-recording capabilities.
+ *
+ * It goes hand-in-hand with {@link SignatureField SignatureField}
+ *
  * @alternateClassName SignatureView
+ * @extends View
+ * @requires format
  */
 define('Sage/Platform/Mobile/Views/Signature', [
     'dojo/_base/declare',
@@ -53,13 +58,32 @@ define('Sage/Platform/Mobile/Views/Signature', [
 ) {
 
     return declare('Sage.Platform.Mobile.Views.Signature', [View], {
-<span id='Sage-Platform-Mobile-Views-Signature-property-titleText'>        // Localization
-</span>        titleText: 'Signature',
-<span id='Sage-Platform-Mobile-Views-Signature-property-clearCanvasText'>        clearCanvasText: 'Erase',
-</span><span id='Sage-Platform-Mobile-Views-Signature-property-undoText'>        undoText: 'Undo',
-</span>
-<span id='Sage-Platform-Mobile-Views-Signature-property-widgetTemplate'>        //Templates
-</span>        widgetTemplate: new Simplate([
+        // Localization
+<span id='Sage-Platform-Mobile-Views-Signature-property-titleText'>        /**
+</span>         * @property {String}
+         * Text shown in the top toolbar header
+         */
+        titleText: 'Signature',
+<span id='Sage-Platform-Mobile-Views-Signature-property-clearCanvasText'>        /**
+</span>         * @property {String}
+         * Text shown in the clear button
+         */
+        clearCanvasText: 'Erase',
+<span id='Sage-Platform-Mobile-Views-Signature-property-undoText'>        /**
+</span>         * @property {String}
+         * Text shown in the undo button
+         */
+        undoText: 'Undo',
+
+        //Templates
+<span id='Sage-Platform-Mobile-Views-Signature-property-widgetTemplate'>        /**
+</span>         * @property {Simplate}
+         * Simplate that defines the HTML Markup
+         *
+         * * `$` =&gt; Signature view instance
+         *
+         */
+        widgetTemplate: new Simplate([
             '&lt;div id=&quot;{%= $.id %}&quot; title=&quot;{%: $.titleText %}&quot; class=&quot;panel {%= $.cls %}&quot;&gt;',
                 '{%! $.canvasTemplate %}',
                 '&lt;div class=&quot;buttons&quot;&gt;',
@@ -68,29 +92,86 @@ define('Sage/Platform/Mobile/Views/Signature', [
                 '&lt;/div&gt;',
             '&lt;div&gt;'
         ]),
-<span id='Sage-Platform-Mobile-Views-Signature-property-canvasTemplate'>        canvasTemplate: new Simplate([
-</span>            '&lt;canvas data-dojo-attach-point=&quot;signatureNode&quot; width=&quot;{%: $.canvasNodeWidth %}&quot; height=&quot;{%: $.canvasNodeHeight %}&quot; data-dojo-attach-event=&quot;onmousedown:_penDown,onmousemove:_penMove,onmouseup:_penUp,ontouchstart:_penDown,ontouchmove:_penMove,ontouchend:_penUp&quot;&gt;&lt;/canvas&gt;'
+<span id='Sage-Platform-Mobile-Views-Signature-property-canvasTemplate'>        /**
+</span>         * @property {Simplate}
+         * Simplate that defines the canvas with a set width and height
+         */
+        canvasTemplate: new Simplate([
+            '&lt;canvas data-dojo-attach-point=&quot;signatureNode&quot; width=&quot;{%: $.canvasNodeWidth %}&quot; height=&quot;{%: $.canvasNodeHeight %}&quot; data-dojo-attach-event=&quot;onmousedown:_penDown,onmousemove:_penMove,onmouseup:_penUp,ontouchstart:_penDown,ontouchmove:_penMove,ontouchend:_penUp&quot;&gt;&lt;/canvas&gt;'
         ]),
-<span id='Sage-Platform-Mobile-Views-Signature-property-signatureNode'>        signatureNode: null,
-</span>
-<span id='Sage-Platform-Mobile-Views-Signature-property-id'>        //View Properties
-</span>        id: 'signature_edit',
-<span id='Sage-Platform-Mobile-Views-Signature-property-expose'>        expose: false,
-</span><span id='Sage-Platform-Mobile-Views-Signature-property-signature'>        signature: [],
-</span><span id='Sage-Platform-Mobile-Views-Signature-property-trace'>        trace: [],
-</span><span id='Sage-Platform-Mobile-Views-Signature-property-lastpos'>        lastpos: {x:-1, y:-1},
-</span><span id='Sage-Platform-Mobile-Views-Signature-property-config'>        config: {
-</span>            scale: 1,
+<span id='Sage-Platform-Mobile-Views-Signature-property-signatureNode'>        /**
+</span>         * @property {HTMLElement}
+         * The dojo-attach-point for the canvas element
+         */
+        signatureNode: null,
+
+        //View Properties
+<span id='Sage-Platform-Mobile-Views-Signature-property-id'>        /**
+</span>         * @property {String}
+         * The unique view id
+         */
+        id: 'signature_edit',
+<span id='Sage-Platform-Mobile-Views-Signature-property-expose'>        /**
+</span>         * @property {Boolean}
+         * Flag that may be used to control if the view is shown in configurable lists
+         */
+        expose: false,
+<span id='Sage-Platform-Mobile-Views-Signature-property-signature'>        /**
+</span>         * @property {Number[][]}
+         * Stores series of x,y coordinates in the format of: `[[0,0],[1,5]]`
+         */
+        signature: [],
+<span id='Sage-Platform-Mobile-Views-Signature-property-trace'>        /**
+</span>         * @property {Number[][]}
+         * Collection of the touchmove positions
+         */
+        trace: [],
+<span id='Sage-Platform-Mobile-Views-Signature-property-lastpos'>        /**
+</span>         * @property {Object}
+         * Stores where the last drawn point was
+         */
+        lastpos: {x:-1, y:-1},
+<span id='Sage-Platform-Mobile-Views-Signature-cfg-config'>        /**
+</span>         * @cfg {Object}
+         * Stores the passed options for: `scale`, `lineWidth`, `penColor` and `drawColor`.
+         */
+        config: {
+            scale: 1,
             lineWidth: 3,
             penColor: 'blue',
             drawColor: 'red'
         },
-<span id='Sage-Platform-Mobile-Views-Signature-property-isPenDown'>        isPenDown: false,
-</span><span id='Sage-Platform-Mobile-Views-Signature-property-context'>        context: null,
-</span><span id='Sage-Platform-Mobile-Views-Signature-property-buffer'>        buffer: [],
-</span><span id='Sage-Platform-Mobile-Views-Signature-property-canvasNodeHeight'><span id='Sage-Platform-Mobile-Views-Signature-property-canvasNodeWidth'>        canvasNodeWidth: 360, // starting default size
-</span></span><span id='Sage-Platform-Mobile-Views-Signature-method-show'>        canvasNodeHeight: 120, // adjusted on show()
-</span>
+<span id='Sage-Platform-Mobile-Views-Signature-property-isPenDown'>        /**
+</span>         * @property {Boolean}
+         * Flag for determining if the pen is in &quot;down&quot; state.
+         */
+        isPenDown: false,
+<span id='Sage-Platform-Mobile-Views-Signature-property-context'>        /**
+</span>         * @property {Object}
+         * The stored 2d context of the canvas node
+         */
+        context: null,
+<span id='Sage-Platform-Mobile-Views-Signature-property-buffer'>        /**
+</span>         * @property {Number[][]}
+         * Used to temporarily store the signature
+         */
+        buffer: [],
+<span id='Sage-Platform-Mobile-Views-Signature-cfg-canvasNodeWidth'>        /**
+</span>         * @cfg {Number}
+         * Starting default width of canvas, will be re-sized when the view is shown.
+         */
+        canvasNodeWidth: 360,
+<span id='Sage-Platform-Mobile-Views-Signature-cfg-canvasNodeHeight'>        /**
+</span>         * @cfg {Number}
+         * Starting default height of canvas, will be re-sized when the view is shown.
+         */
+        canvasNodeHeight: 120,
+
+<span id='Sage-Platform-Mobile-Views-Signature-method-show'>        /**
+</span>         * Extends parent implementation to store the options to `this.config`, subscribe to the
+         * `/app/resize` event and immediately call resize so the canvas is scaled.
+         * @param options
+         */
         show: function(options) {
             this.inherited(arguments);
 
@@ -106,19 +187,35 @@ define('Sage/Platform/Mobile/Views/Signature', [
 
             this.redraw(this.signature, this.signatureNode, this.config);
         },
-<span id='Sage-Platform-Mobile-Views-Signature-method-getValues'>        getValues: function() {
-</span>            return json.toJson(this.optimizeSignature());
+<span id='Sage-Platform-Mobile-Views-Signature-method-getValues'>        /**
+</span>         * Returns the optimized signature array as a JSON string
+         * @return {String}
+         */
+        getValues: function() {
+            return json.toJson(this.optimizeSignature());
         },
-<span id='Sage-Platform-Mobile-Views-Signature-method-setValue'>        setValue: function(val, initial) {
-</span>            this.signature = val ? json.fromJson(val) : [];
+<span id='Sage-Platform-Mobile-Views-Signature-method-setValue'>        /**
+</span>         * Sets the current value and draws it.
+         * @param {String} val JSON-stringified Number[][] of x-y coordinates
+         * @param initial Unused.
+         */
+        setValue: function(val, initial) {
+            this.signature = val ? json.fromJson(val) : [];
             this.redraw(this.signature, this.signatureNode, this.config);
         },
-<span id='Sage-Platform-Mobile-Views-Signature-method-clearValue'>        clearValue: function() {
-</span>            this.buffer = this.signature;
+<span id='Sage-Platform-Mobile-Views-Signature-method-clearValue'>        /**
+</span>         * Clears the value and saves the buffer
+         */
+        clearValue: function() {
+            this.buffer = this.signature;
             this.setValue('', true);
         },
-<span id='Sage-Platform-Mobile-Views-Signature-method-_getCoords'>        // _getCoords returns pointer pixel coordinates [x,y] relative to canvas object
-</span>        _getCoords: function (e) {
+<span id='Sage-Platform-Mobile-Views-Signature-method-_getCoords'>        /**
+</span>         * Returns pointer pixel coordinates [x,y] relative to canvas object
+         * @param {Event} e
+         * @return Number[]
+         */
+        _getCoords: function (e) {
             var offset = domGeom.position(this.signatureNode, false);
             return e.touches
                 ? [
@@ -131,15 +228,23 @@ define('Sage/Platform/Mobile/Views/Signature', [
                   ]
                 ;
         },
-<span id='Sage-Platform-Mobile-Views-Signature-method-_penDown'>        _penDown: function (e) {
-</span>            this.isPenDown = true;
+<span id='Sage-Platform-Mobile-Views-Signature-method-_penDown'>        /**
+</span>         * Handler for `ontouchstart`, records the starting point and sets the state to down
+         * @param {Event} e
+         */
+        _penDown: function (e) {
+            this.isPenDown = true;
             this.lastpos = this._getCoords(e);
             this.context.lineWidth = this.config.lineWidth;
             this.context.strokeStyle = this.config.drawColor;
             e.preventDefault();
         },
-<span id='Sage-Platform-Mobile-Views-Signature-method-_penMove'>        _penMove: function (e) {
-</span>            if (!this.isPenDown) { return; }
+<span id='Sage-Platform-Mobile-Views-Signature-method-_penMove'>        /**
+</span>         * Handler for `ontouchmove`, draws the lines between the last postition and current position
+         * @param {Event} e
+         */
+        _penMove: function (e) {
+            if (!this.isPenDown) { return; }
             this.pos = this._getCoords(e);
             e.preventDefault();
             this.context.beginPath();
@@ -151,8 +256,12 @@ define('Sage/Platform/Mobile/Views/Signature', [
             this.lastpos = this.pos;
             this.trace.push(this.pos);
         },
-<span id='Sage-Platform-Mobile-Views-Signature-method-_penUp'>        _penUp: function (e) {
-</span>            e.preventDefault();
+<span id='Sage-Platform-Mobile-Views-Signature-method-_penUp'>        /**
+</span>         * Handler for `ontouchend`, saves the final signature and redraws the canvas
+         * @param e
+         */
+        _penUp: function (e) {
+            e.preventDefault();
             this.isPenDown = false;
             if (this.trace.length)
                 this.signature.push(this.trace);
@@ -161,8 +270,11 @@ define('Sage/Platform/Mobile/Views/Signature', [
             this.context.strokeStyle = this.config.penColor;
             this.redraw(this.signature, this.signatureNode, this.config);
         },
-<span id='Sage-Platform-Mobile-Views-Signature-method-_undo'>        _undo: function () {
-</span>            if (this.signature.length)
+<span id='Sage-Platform-Mobile-Views-Signature-method-_undo'>        /**
+</span>         * Undoes the last pen down-to-pen up line by using the buffer
+         */
+        _undo: function () {
+            if (this.signature.length)
             {
                 this.buffer = this.signature.pop();
                 if (!this.signature.length)
@@ -174,8 +286,11 @@ define('Sage/Platform/Mobile/Views/Signature', [
             }
             this.redraw(this.signature, this.signatureNode, this.config);
         },
-<span id='Sage-Platform-Mobile-Views-Signature-method-_sizeCanvas'>        _sizeCanvas: function () {
-</span>            this.canvasNodeWidth  = Math.floor(win.getBox().w * 0.92);
+<span id='Sage-Platform-Mobile-Views-Signature-method-_sizeCanvas'>        /**
+</span>         * Sets the canvas width/height based on the size of the window/screen
+         */
+        _sizeCanvas: function () {
+            this.canvasNodeWidth  = Math.floor(win.getBox().w * 0.92);
 
             this.canvasNodeHeight = Math.min(
                 Math.floor(this.canvasNodeWidth * 0.5),
@@ -185,8 +300,13 @@ define('Sage/Platform/Mobile/Views/Signature', [
             this.signatureNode.width  = this.canvasNodeWidth;
             this.signatureNode.height = this.canvasNodeHeight;
         },
-<span id='Sage-Platform-Mobile-Views-Signature-method-onResize'>        onResize: function (e) {
-</span>            var newScale,
+<span id='Sage-Platform-Mobile-Views-Signature-method-onResize'>        /**
+</span>         * Calls {@link #_sizeCanvas _sizeCanvas} to size the canvas itself then it also scales the
+         * drawn signature accordingly to the ratio.
+         * @param e
+         */
+        onResize: function (e) {
+            var newScale,
                 oldWidth  = this.canvasNodeWidth,
                 oldHeight = this.canvasNodeHeight;
             this._sizeCanvas();
@@ -199,11 +319,22 @@ define('Sage/Platform/Mobile/Views/Signature', [
             this.signature = this.rescale(newScale);
             this.redraw(this.signature, this.signatureNode, this.config);
         },
-<span id='Sage-Platform-Mobile-Views-Signature-method-redraw'>        redraw: function (vector, canvas, options) {
-</span>            format.canvasDraw(vector, canvas, options);
+<span id='Sage-Platform-Mobile-Views-Signature-method-redraw'>        /**
+</span>         * Calls {@link format#canvasDraw format.canvasDraw} which clears and draws the vectors
+         * @param {Number[][]} vector The x-y coordinates of the points
+         * @param {HTMLElement} canvas Canvas to be drawn to
+         * @param {Object} options Options to be passed to canvasDraw
+         */
+        redraw: function (vector, canvas, options) {
+            format.canvasDraw(vector, canvas, options);
         },
-<span id='Sage-Platform-Mobile-Views-Signature-method-rescale'>        rescale: function (scale) {
-</span>            var rescaled = [];
+<span id='Sage-Platform-Mobile-Views-Signature-method-rescale'>        /**
+</span>         * Loops through the vector points in the signature and applies the given scale ratio
+         * @param {Number} scale Ratio in which to multiply the vector point
+         * @return {Number[][]} Rescaled signature array
+         */
+        rescale: function (scale) {
+            var rescaled = [];
             for (var i = 0; i &lt; this.signature.length; i++)
             {
                 rescaled.push([]);
@@ -217,16 +348,26 @@ define('Sage/Platform/Mobile/Views/Signature', [
             }
             return rescaled;
         },
-<span id='Sage-Platform-Mobile-Views-Signature-method-optimizeSignature'>        optimizeSignature: function() {
-</span>            var optimized = [];
+<span id='Sage-Platform-Mobile-Views-Signature-method-optimizeSignature'>        /**
+</span>         * Loops the signature calling optimize on each pen down-to-pen up segment
+         * @return {Number[][]} Optimized signature
+         */
+        optimizeSignature: function() {
+            var optimized = [];
 
             for (var i = 0; i &lt; this.signature.length; i++)
                 optimized.push(this.optimize(this.signature[i]))
 
             return optimized;
         },
-<span id='Sage-Platform-Mobile-Views-Signature-method-optimize'>        optimize: function(vector) {
-</span>            if (vector.length &lt; 2) return vector;
+<span id='Sage-Platform-Mobile-Views-Signature-method-optimize'>        /**
+</span>         * Attempts to remove points by comparing the x/y variation between the two and
+         * removing points within a certain threshold.
+         * @param {Number[]} vector Array of x,y coordinates to optimize
+         * @return {Number[]} Optimized array
+         */
+        optimize: function(vector) {
+            if (vector.length &lt; 2) return vector;
 
             var result = [],
                 minA = 0.95,
