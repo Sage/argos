@@ -1,17 +1,19 @@
-#Argos-Template
+#Argos-Template Guide
 
 By the end of this guide you will have an enterprise data-driven mobile application with the following:
 
 * A Home Navigation page;
 * Two List, or Collection, Views bound to different entities;
 * A Detail View showing in depth properties, a single quick action and a link to a related List View; and
-* A dual-purpse Edit View used to create and update entities.
+* A dual-purpose Edit View used to create and update entities.
 
-As you are following along the guide will cover topics such as: Configuring SData, AMD loading and Simplates. From start to finish the guide should take around 15-20 minutes to complete and there are many more advanced topics to address specific implementations.
+As you are following along the guide will cover topics such as: Configuring SData, AMD loading and Simplates. From start to finish the 
+guide should take around 15-20 minutes to complete and there are many more advanced topics to address specific implementations.
 
 
 ##Setup
-The Argos framework is meant to serve in an environment of multiple on-going applications and their modules, as such the folder structure allows a single copy of Argos-SDK. You may opt for a different structure but the following provides an extensible foundation.
+The Argos framework is meant to serve in an environment of multiple on-going applications and their modules, as such the folder 
+structure allows a single copy of Argos-SDK. You may opt for a different structure but the following provides an extensible foundation.
 
 1\. Create a folder called `mobile` and within that, create a folder called `argos-sdk` and a folder called `products`.
 
@@ -23,7 +25,8 @@ The Argos framework is meant to serve in an environment of multiple on-going app
 
 4\. Download the SDK and extract the zip into the `argos-`sdk` folder: [https://github.com/Sage/argos-sdk/downloads](https://github.com/Sage/argos-sdk/downloads) 
 
-5\. A bare-bones app that this guide will use as a kickstarter has been created as Argos-Template. Download it from here: [https://github.com/Sage/argos-template/downloads](https://github.com/Sage/argos-template/downloads)
+5\. A bare-bones app that this guide will use as a kickstarter has been created as Argos-Template. 
+Download it from here: [https://github.com/Sage/argos-template/downloads](https://github.com/Sage/argos-template/downloads)
 
 6\. Create a new folder under `products` named `argos-template` and place the extracted contents there.
 
@@ -34,18 +37,22 @@ The Argos framework is meant to serve in an environment of multiple on-going app
 
 Congratulations you have your first Argos app!
 
-If you want to know about all the files you downloaded, see [Overview](#!/guides/v2_overview) - for an explanation of all files and folders currently in `argos-template`.
+If you want to know about all the files you downloaded, see [Overview](#!/guides/v2_overview) - for an explanation of all files and 
+folders currently in `argos-template`.
 
 ####Local Files
-Running `index-dev.html` off the local file system may not always work as files loaded in this way is treated as a security concern in certain browsers. You should setup a local server (ISS, WAMP, XAMPP, etc) and run from localhost.
+Running `index-dev.html` off the local file system may not always work as files loaded in this way is treated as a security concern in 
+certain browsers. You should setup a local server (ISS, WAMP, XAMPP, etc) and run from localhost.
 
 ####Cache
-Be aware that modern browsers cache things heavily and you should make sure that when opening or refreshing your app it is always the latest code. Many use "private" browsing features to disable cookies and cache. If using a local server make sure it is also set to not cache any files. 
+Be aware that modern browsers cache things heavily and you should make sure that when opening or refreshing your app it is always 
+the latest code. Many use "private" browsing features to disable cookies and cache. If using a local server make sure it is also set to not cache any files. 
 
 
 ##Configuring an SData Connection
 
-SData is the lifeblood of Argos-SDK, all data input and output are bound to the protocol and the base List, Detail and Edit Views process and construct the data bound calls in SData format.
+SData is the lifeblood of Argos-SDK, all data input and output are bound to the protocol and the base List, Detail and Edit Views 
+process and construct the data bound calls in SData format.
 
 To set up the service that all calls will use we will point to a public provider with sample data and test user.
 
@@ -71,7 +78,8 @@ To set up the service that all calls will use we will point to a public provider
 
 2\. The configuration should return an object containing the `connections` key. That is where all SData connections will be defined.
 
-3\. Within the `connections` object, each key will define a service. Currently there is a `crm` service with an empty url, edit it to point to our sample provider: 
+3\. Within the `connections` object, each key will define a service. Currently there is a `crm` service with an empty url, edit it to 
+point to our sample provider: 
 
     http://50.16.242.109/sdata/slx/dynamic/-/
 
@@ -105,7 +113,7 @@ When making any new Views you need to do two things:
 ###Step 1: Coding a List View
 List Views are designed to display a collection or list of a single entity. Some examples include: employees, artists, bug reports or sales orders.
 
-For our entity choice will be making a List (and Detail, Edit) View of the entity "Account" which uses the SData endpoint "accounts".
+For our entity choice we will be making a List (and Detail, Edit) View of the entity "Account" which uses the SData endpoint "accounts".
 
 1\. Create a new folder in `argos-template\src\Views` named "Account".
 
@@ -173,7 +181,8 @@ For our entity choice will be making a List (and Detail, Edit) View of the entit
         });
 
         
-7\. Every row is constructed by a List Views `itemTemplate` property. All templates use Simplate, which is a templating engine where the item entry and the list view is passed as variables: `$` and `$$`. See {@link Simplate Simplate} for more information on the template engine.
+7\. Every row is constructed by a List Views `itemTemplate` property. All templates use Simplate, which is a templating engine where 
+the item entry and the list view is passed as variables: `$` and `$$`. See {@link Simplate Simplate} for more information on the template engine.
 
 8\. Add the following itemTemplate to your view:
 
@@ -203,7 +212,8 @@ Before any view or module is loaded into the application (via AMD) it needs to b
     ) {
 
     
-2\. Go to the `loadViews()` function, as you can see it is already registering the Home page. Following the same setup go ahead and register your list view using the referenced variable:
+2\. Go to the `loadViews()` function, as you can see it is already registering the Home page. Following the same setup go ahead and 
+register your list view using the referenced variable:
 
                 this.registerView(new AccountList());
 
@@ -212,7 +222,8 @@ Before any view or module is loaded into the application (via AMD) it needs to b
 Your view is now defined and registered and will be created, initialized and added to the DOM when your application starts.
 
 ###Step 3: Quick Peek
-If you open `index-dev.html` right now you will see the blank Home view and no way to get to the List view. However, we can take a quick peek and directly go to the view - this trick is useful for developing and debugging views.
+If you open `index-dev.html` right now you will see the blank Home view and no way to get to the List view. However, we can take a 
+quick peek and directly go to the view - this trick is useful for developing and debugging views.
 
 1\. Open `index-dev.html`.
 
@@ -235,15 +246,16 @@ Features seen in the Quick Peek:
 * Navigation context and history (note the URL);
 * Offline cache (inspect your local storage);
 * Footer bar with Top and Copyright text; and
-* Retrieved and rendered out 20 acccounts.
+* Retrieved and rendered out 20 accounts.
 
-The above is the default behaviour - every piece is customizable so that you can tailor it to your business needs.
+The above is the default behavior - every piece is customizable so that you can tailor it to your business needs.
 
 
 ##Adding a List View to the Home Page
 With a List view defined lets add a link to it on the Home page.
 
-1\. Open `argos-template/src/Application.js` and find the the `getDefaultViews` function. This function returns a list of view ids that should be on the Home screen by default. Add your new view id to the list:
+1\. Open `argos-template/src/Application.js` and find the the `getDefaultViews` function. This function returns a list of view ids that 
+should be on the Home screen by default. Add your new view id to the list:
 
             getDefaultViews: function() {
                 return [
@@ -258,11 +270,13 @@ With a List view defined lets add a link to it on the Home page.
 
 The icon displayed came from the `icon` property defined on the list view.
 
-Clicking the row will take you to your Account List view where it will automatically construct an SData request, parse and present the results using `itemTemplate` and use a simple paging mechanism.
+Clicking the row will take you to your Account List view where it will automatically construct an SData request, parse and present the
+ results using `itemTemplate` and use a simple paging mechanism.
 
 
 ##Create a Simple Detail View
-Detail Views are intended to display a wealth of knowledge all categorically organized with helpful actions and links to perform on this entry or take you to ones related.
+Detail Views are intended to display a wealth of knowledge all categorically organized with helpful actions and links to perform on this 
+entry or take you to ones related.
 
 Creating a Detail View is very similar to creating a List in that you need to do three things:
 
@@ -301,7 +315,8 @@ Creating a Detail View is very similar to creating a List in that you need to do
             id: 'account_detail'
         });
 
-4\. Now for the data. The two detail view properties we need are: resourceKind and querySelect. The resource kind is the endpoint of our entity and querySelect tells the request what fields we need.
+4\. Now for the data. The two detail view properties we need are: resourceKind and querySelect. The resource kind is the endpoint of 
+our entity and querySelect tells the request what fields we need.
 
 * resourceKind to `'accounts'`
 * querySelect to an array of strings for: `AccountName`, `AccountManager/UserInfo/*`, `WebAddress`, `MainPhone`, and `Industry`
@@ -322,9 +337,10 @@ Creating a Detail View is very similar to creating a List in that you need to do
             ]
         });
 
-5\. All Detail views must define a `createLayout()` function that defines the view `layout` property. The property `layout` is an array of "section" objects. Each section has a property named "children" which in turn is an array of "row" objects.
+5\. All Detail views must define a `createLayout()` function that defines the view `layout` property. The property `layout` is an array 
+of "section" objects. Each section has a property named "children" which in turn is an array of "row" objects.
 
-The sections get turn into collapsible headers with the children being the rows of information under that header.
+The sections get turned into collapsible headers with the children being the rows of information under that header.
 
     // section example
     {
@@ -340,9 +356,11 @@ The sections get turn into collapsible headers with the children being the rows 
         label: 'Label shown in user interface'
     }
 
-6\. The row objects `property` property should match up with your `querySelect`s, this ties the data from the SData response to the displayed row to the user. Further options for layout are covered in [Advanced Detail Create Layout](#!/guides/v2_beyond_the_guide_detail_layout_properties). 
+6\. The row objects `property` property should match up with your `querySelect`s, this ties the data from the SData response to the
+ displayed row to the user. Further options for layout are covered in [Advanced Detail Create Layout](#!/guides/v2_beyond_the_guide_detail_layout_properties). 
 
-7\. To utilize localization utilities of Argos all the row labels and section titles are defined as a property of the view and suffixed with `Text`. Any text string that is shown to the user should be defined this way.
+7\. To utilize localization utilities of Argos all the row labels and section titles are defined as a property of the view and suffixed with 
+`Text`. Any text string that is shown to the user should be defined this way.
 
             createLayout: function() {
                 return this.layout || (this.layout = [{
@@ -437,10 +455,12 @@ Our Account List View does not know about the Account Detail View so let's add t
 
 For further details on how the wiring works please see [Wiring List to Detail](#!/guides/v2_appendix_wire_list_to_detail).
 
-As you can see several of the fields don't look as they should, the phone number isn't formatted, the website isn't a hyperlink and the name just says Object. These rows require some additional properties in order to render correctly.
+As you can see several of the fields don't look as they should, the phone number isn't formatted, the website isn't a hyperlink and the name 
+just says Object. These rows require some additional properties in order to render correctly.
 
 ##Detail Layouts: Renderer and Template
-Each row in a detail layout has the `renderer` property available which is used a "presenter". It takes the existing value and changes the rendered format without modifying the value underneath. Some examples are addresses, dates, clickable URLs, boolean to yes/no text, and others. 
+Each row in a detail layout has the `renderer` property available which is used a "presenter". It takes the existing value and changes the
+ rendered format without modifying the value underneath. Some examples are addresses, dates, clickable URLs, boolean to yes/no text, and others. 
 
 Currently on our Detail View we have: an unclickable url and a name as `[Object object]`.
 
@@ -480,7 +500,8 @@ Argos-SDK provides a number of built-in formatters available via `Sage.Platform.
 {@img detail-link.png Detail Link}
 
 ###Step 2: Objects
-The reason the row shows `[Object object]` is because the value for that SData property is actually a JSON object. In this case it's returning a 1:1 relation with an `owner` entity.
+The reason the row shows `[Object object]` is because the value for that SData property is actually a JSON object. In this case it's returning 
+a 1:1 relation with an `owner` entity.
 
 To show the properties that we want we could either use `renderer` and provide a function that handles the object or we could use: 
 
@@ -510,7 +531,9 @@ To show the properties that we want we could either use `renderer` and provide a
     ]),
 
     
-4\. To go over what is happening: it uses two Simplate techniques: `{% executable code %}` and `{%: encoded text %}`. To write it out the logic: if we have an object and the object has a LastName and FirstName property join with a comma, else put whichever one we do have. In this context `$` is the object from SData and `$$` is the Detail View instance.
+4\. To go over what is happening: it uses two Simplate techniques: `{% executable code %}` and `{%: encoded text %}`. To write it out the
+ logic: if we have an object and the object has a LastName and FirstName property join with a comma, else put whichever one we do have. 
+ In this context `$` is the object from SData and `$$` is the Detail View instance.
 
 5\. Save and open your app to any Detail view.
 
@@ -560,9 +583,11 @@ Edit Views take a few extra steps to get up and running:
             id: 'account_edit'
         });
 
-4\. Now for the data. The two Edit view properties we need are: `resourceKind` and `querySelect`. The resource kind is the endpoint of our entity and query select tells the request what fields we need. 
+4\. Now for the data. The two Edit view properties we need are: `resourceKind` and `querySelect`. The resource kind is the endpoint of our
+ entity and query select tells the request what fields we need. 
 
-The reason for `querySelect` is because when we are inserting a new item it does a request for the SData defaults (`$template`) and these fields are the ones it will request and apply.
+The reason for `querySelect` is because when we are inserting a new item it does a request for the SData defaults (`$template`) and these
+ fields are the ones it will request and apply.
 
 * resourceKind to `'accounts'`
 * querySelect to the exact same as your Detail querySelect: `AccountName`, `AccountManager/UserInfo/*`, `WebAddress`, `MainPhone`, and `Industry`.
@@ -582,21 +607,25 @@ The reason for `querySelect` is because when we are inserting a new item it does
             ],
 
             
-5\. All Edit views must define a `createLayout()` function that defines the view `layout` property. The property `layout` is an array of "field" objects. You can also have sections like Detail and have their `children` property as "field" objects but normally there is no sections.
+5\. All Edit views must define a `createLayout()` function that defines the view `layout` property. The property `layout` is an array 
+of "field" objects. You can also have sections like Detail and have their `children` property as "field" objects but normally there are no sections.
 
     // field object example
     {
         label: 'text shown in ui',
         name: 'uniqueFieldId',
         property: 'data bound property',
+        'default': 'default value', // optional
         type: 'field type'
         // additional properties related to the field type
     }
 
     
-6\. The first three are the same, but the new key: `type` designates the type of field. Examples of field types are: `text`, `textarea`, `date`, `decimal`, `phone`, `lookup` and `boolean`. 
+6\. `type` designates the type of field. Examples of field types are: `text`, `textarea`,
+ `date`, `decimal`, `phone`, `lookup` and `boolean`. 
 
-7\. Not only do field objects have the above properties but any further defined properties are passed to the field type instance. For example say we have a `decimal` field and we want the decimal places to go out to 4:
+7\. Not only do field objects have the above properties but any further defined properties are passed to the field type instance. For 
+example say we have a `decimal` field and we want the decimal places to go out to 4:
 
     {
         label: 'example',
@@ -642,7 +671,8 @@ The reason for `querySelect` is because when we are inserting a new item it does
           }
 
           
-10\. As with the others go back and add the localization strings, since typically Detail and Edit mirror each other label-wise its often easy to just copy+paste from the Detail view:
+10\. As with the others go back and add the localization strings, since typically Detail and Edit mirror each other label-wise its often 
+easy to just copy+paste from the Detail view:
 
     titleText: 'Account Edit',
     accountNameText: 'account',
@@ -702,19 +732,22 @@ We'll get to sorting out the needed properties - just make sure you that the Det
 {@img edit-view-insert.png Edit View Insert}
 
 ####Additional Info
-For more details on how the wiring for Edit Views work, including how it distinguishes Insert vs Update please see [Wire Detail to Edit](#!/guides/v2_beyond_the_guide_wire_detail_to_edit) and [Wire List to Edit](#!/guides/v2_beyond_the_guide_wire_list_to_edit).
+For more details on how the wiring for Edit Views work, including how it distinguishes Insert vs Update please see
+ [Wire Detail to Edit](#!/guides/v2_beyond_the_guide_wire_detail_to_edit) and [Wire List to Edit](#!/guides/v2_beyond_the_guide_wire_list_to_edit).
 
 Next we need to step through each of the field objects and assign the correct type while investigating any properties that field may introduce.
 
 ##Edit View Layouts
-The Edit View currently has five text fields with only two that are actual text inputs - `AccountName` and `Industry`. The other three `AccountManager`, `MainPhone` and `WebAddress` should be changed:
+The Edit View currently has five text fields with only two that are actual text inputs - `AccountName` and `Industry`. 
+The other three `AccountManager`, `MainPhone` and `WebAddress` should be changed:
 
 * WebAddress to use the "www" keyboard input;
 * MainPhone to the `phone` type; and
 * AccountManager to the `lookup` type.
 
 ###Step 1: WebAddress Input Type
-The text field adds a property named `inputType` which directly controls the `<input type="">` underneath. This is useful for utilizing the latest HTML5 keyboard types.
+The text field adds a property named `inputType` which directly controls the `<input type="">` underneath. This is useful for 
+utilizing the latest HTML5 keyboard types.
 
 Currently only iOS supports the `url` keyboard providing quick keys for `.`, `/` and `.com`.
 
@@ -734,7 +767,8 @@ For more information and additional properties of the text field see it's {@link
 
 
 ###Step 2: MainPhone as `phone`
-Also provided by the SDK is the `phone` type field. This field formats valid phone numbers into a more human readable format and also changes the input keyboard for iOS to the `tel` board which resembles the calling a number keyboard.
+Also provided by the SDK is the `phone` type field. This field formats valid phone numbers into a more human readable format 
+and also changes the input keyboard for iOS to the `tel` board which resembles the calling a number keyboard.
 
 1\. Open `argos-template/src/Views/Account/Edit.js` and down to the MainPhone field.
 
@@ -750,13 +784,16 @@ Also provided by the SDK is the `phone` type field. This field formats valid pho
 For more information and additional properties of the phone field see it's {@link PhoneField API Docs}.
 
 ###Step 3: AccountManager as `lookup`
-A `lookup` type field is one that takes the user to a different List View and let's them choose a row that is returned to the Edit view. This is how the user sets foriegn key relationships on an entity.
+A `lookup` type field is one that takes the user to a different List View and let's them choose a row that is returned to the 
+Edit view. This is how the user sets foreign key relationships on an entity.
 
 1\. Open `argos-template/src/Views/Account/Edit.js` and down to the AccountManager field.
 
 2\. Change `type` to `'lookup'`.
 
-3\. If you recall from the Detail View the textual display came from `AccountManager.UserInfo.FirstName` and `.LastName`. The Lookup Field uses the `textProperty` and `textTemplate` to do the same functionality as before. Add the two keys and set them to `UserInfo` and `this.userInfoNameTemplate`:
+3\. If you recall from the Detail View the textual display came from `AccountManager.UserInfo.FirstName` and `.LastName`. 
+The Lookup Field uses the `textProperty` and `textTemplate` to do the same functionality as before. Add the two keys 
+and set them to `UserInfo` and `this.userInfoNameTemplate`:
 
     },{
        name: 'AccountManager',
@@ -767,7 +804,8 @@ A `lookup` type field is one that takes the user to a different List View and le
        type: 'lookup'
     },{
 
-4\. What the above does is take the `AccountManager` object and its `UserInfo` field (which is also an object) and passes that to the Simplate defined in `textTemplate`. Go ahead and copy the `userInfoNameTemplate` from the Detail view to the Edit view:
+4\. What the above does is take the `AccountManager` object and its `UserInfo` field (which is also an object) and passes 
+that to the Simplate defined in `textTemplate`. Go ahead and copy the `userInfoNameTemplate` from the Detail view to the Edit view:
 
             // Templates
             userInfoNameTemplate: new Simplate([
@@ -780,13 +818,16 @@ A `lookup` type field is one that takes the user to a different List View and le
                 '{% } %}'
             ]),
 
-5\. Save Edit.js and open your app - we are not done but let's take a look at what we have so far, make sure to edit an existing entry to see the `textTemplate` in action.
+5\. Save Edit.js and open your app - we are not done but let's take a look at what we have so far, make sure to edit an 
+existing entry to see the `textTemplate` in action.
 
 {@img edit-progress.png Edit progress}
 
-6\. If you are using an iOS device to test you can checkout the URL keyboard and the tel keyboard for `WebAddress` and `MainPhone`. Note that the `AccountManager` now has a magnifying glass icon - it doesn't do anything yet but it did render the name correctly.
+6\. If you are using an iOS device to test you can checkout the URL keyboard and the tel keyboard for `WebAddress` and 
+`MainPhone`. Note that the `AccountManager` now has a magnifying glass icon - it doesn't do anything yet but it did render the name correctly.
 
-7\. The last piece the lookup is telling it which List View it should go to. This is controlled by the `view` property, we don't have another List view yet but will will define one soon. For now add `view` and set it to `user_list`:
+7\. The last piece the lookup is telling it which List View it should go to. This is controlled by the `view` property, we don't 
+have another List view yet but will will define one soon. For now add `view` and set it to `user_list`:
 
     },{
        name: 'AccountManager',
@@ -822,8 +863,10 @@ A `lookup` type field is one that takes the user to a different List View and le
             ],
             resourceKind: 'users'
 
-10\. Don't forget to register the view. Save and open your app. Try either adding a new account or editing an existing one - use the lookup to select a different Account Manager from the User endpoint.
+10\. Don't forget to register the view. Save and open your app. Try either adding a new account or editing an existing one - use 
+the lookup to select a different Account Manager from the User endpoint.
 
-That's it! You've completed the Argos-Template Guide. If you want to download a previously finished copy of all of the above you may download the zipped archive here: [Completed Template Guide](guides/v2_template_guide/argos-template_guide-complete.zip).
+That's it! You've completed the Argos-Template Guide. If you want to download a previously finished copy of all of the above you may 
+download the zipped archive here: [Completed Template Guide](guides/v2_template_guide/argos-template_guide-complete.zip).
 
 

@@ -218,28 +218,119 @@ define('Sage/Platform/Mobile/Edit', [
             '&lt;/div&gt;'
         ]),
 
-<span id='Sage-Platform-Mobile-Edit-property-transitionEffect'>        transitionEffect: 'slide',
-</span><span id='Sage-Platform-Mobile-Edit-property-id'>        id: 'generic_edit',
-</span><span id='Sage-Platform-Mobile-Edit-property-layout'>        layout: null,
-</span><span id='Sage-Platform-Mobile-Edit-property-enableCustomizations'>        enableCustomizations: true,
-</span><span id='Sage-Platform-Mobile-Edit-property-customizationSet'>        customizationSet: 'edit',
-</span><span id='Sage-Platform-Mobile-Edit-property-expose'>        expose: false,
-</span><span id='Sage-Platform-Mobile-Edit-property-insertSecurity'>        insertSecurity: false,
-</span><span id='Sage-Platform-Mobile-Edit-property-updateSecurity'>        updateSecurity: false,
-</span>
-<span id='Sage-Platform-Mobile-Edit-property-saveText'>        saveText: 'Save',
-</span><span id='Sage-Platform-Mobile-Edit-property-titleText'>        titleText: 'Edit',
-</span><span id='Sage-Platform-Mobile-Edit-property-toggleCollapseText'>        toggleCollapseText: 'toggle collapse',
-</span><span id='Sage-Platform-Mobile-Edit-property-validationSummaryText'>        validationSummaryText: 'Validation Summary',
-</span><span id='Sage-Platform-Mobile-Edit-property-detailsText'>        detailsText: 'Details',
-</span><span id='Sage-Platform-Mobile-Edit-property-loadingText'>        loadingText: 'loading...',
-</span><span id='Sage-Platform-Mobile-Edit-property-requestErrorText'>        requestErrorText: 'A server error occured while requesting data.',
-</span>
-<span id='Sage-Platform-Mobile-Edit-method-constructor'>        constructor: function(o) {
-</span>            this.fields = {};
+<span id='Sage-Platform-Mobile-Edit-property-transitionEffect'>        /**
+</span>         * @property {String}
+         * Sets the ReUI transition effect for when this view comes into view
+         */
+        transitionEffect: 'slide',
+<span id='Sage-Platform-Mobile-Edit-cfg-id'>        /**
+</span>         * @cfg {String}
+         * The unique identifier of the view
+         */
+        id: 'generic_edit',
+<span id='Sage-Platform-Mobile-Edit-property-layout'>        /**
+</span>         * @property {Object}
+         * The layout definition that constructs the detail view with sections and rows
+         */
+        layout: null,
+<span id='Sage-Platform-Mobile-Edit-cfg-enableCustomizations'>        /**
+</span>         * @cfg {Boolean}
+         * Enables the use of the customization engine on this view instance
+         */
+        enableCustomizations: true,
+<span id='Sage-Platform-Mobile-Edit-property-customizationSet'>        /**
+</span>         * @property {String}
+         * The customization identifier for this class. When a customization is registered it is passed
+         * a path/identifier which is then matched to this property.
+         */
+        customizationSet: 'edit',
+<span id='Sage-Platform-Mobile-Edit-cfg-expose'>        /**
+</span>         * @cfg {Boolean}
+         * Controls if the view should be exposed
+         */
+        expose: false,
+<span id='Sage-Platform-Mobile-Edit-cfg-insertSecurity'>        /**
+</span>         * @cfg {String/Object}
+         * May be used for verifying the view is accessible for creating entries
+         */
+        insertSecurity: false,
+<span id='Sage-Platform-Mobile-Edit-cfg-updateSecurity'>        /**
+</span>         * @cfg {String/Object}
+         * May be used for verifying the view is accessible for editing entries
+         */
+        updateSecurity: false,
+
+<span id='Sage-Platform-Mobile-Edit-property-saveText'>        /**
+</span>         * @deprecated
+         */
+        saveText: 'Save',
+<span id='Sage-Platform-Mobile-Edit-cfg-titleText'>        /**
+</span>         * @cfg {String}
+         * Default title text shown in the top toolbar
+         */
+        titleText: 'Edit',
+<span id='Sage-Platform-Mobile-Edit-property-toggleCollapseText'>        /**
+</span>         * @property {String}
+         * ARIA label text for a collapsible section header
+         */
+        toggleCollapseText: 'toggle collapse',
+<span id='Sage-Platform-Mobile-Edit-cfg-validationSummaryText'>        /**
+</span>         * @cfg {String}
+         * The text placed in the header when there are validation errors
+         */
+        validationSummaryText: 'Validation Summary',
+<span id='Sage-Platform-Mobile-Edit-property-detailsText'>        /**
+</span>         * @property {String}
+         * Default text used in the section header
+         */
+        detailsText: 'Details',
+<span id='Sage-Platform-Mobile-Edit-property-loadingText'>        /**
+</span>         * @property {String}
+         * Text shown while the view is loading.
+         */
+        loadingText: 'loading...',
+<span id='Sage-Platform-Mobile-Edit-property-requestErrorText'>        /**
+</span>         * @property {String}
+         * Text alerted to user when any server error occurs.
+         */
+        requestErrorText: 'A server error occured while requesting data.',
+<span id='Sage-Platform-Mobile-Edit-property-fields'>        /**
+</span>         * @property {Object}
+         * Collection of the fields in the layout where the key is the `name` of the field.
+         */
+        fields: null,
+<span id='Sage-Platform-Mobile-Edit-property-entry'>        /**
+</span>         * @property {Object}
+         * The saved SData response.
+         */
+        entry: null,
+<span id='Sage-Platform-Mobile-Edit-property-templateEntry'>        /**
+</span>         * @property {Object}
+         * The saved template SData response.
+         */
+        templateEntry: null,
+<span id='Sage-Platform-Mobile-Edit-property-inserting'>        /**
+</span>         * @property {Boolean}
+         * Flags if the view is in &quot;insert&quot; (create) mode, or if it is in &quot;update&quot; (edit) mode.
+         */
+        inserting: null,
+
+<span id='Sage-Platform-Mobile-Edit-method-constructor'>        /**
+</span>         * Extends constructor to initialze `this.fields` to {}
+         * @param o
+         */
+        constructor: function(o) {
+            this.fields = {};
         },
-<span id='Sage-Platform-Mobile-Edit-method-startup'>        startup: function() {
-</span>            this.inherited(arguments);
+<span id='Sage-Platform-Mobile-Edit-method-startup'>        /**
+</span>         * When the app is started this fires, the Edit view renders its layout immediately, then
+         * renders each field instance.
+         *
+         * On refresh it will clear the values, but leave the layout intact.
+         *
+         */
+        startup: function() {
+            this.inherited(arguments);
             
             this.processLayout(this._createCustomizedLayout(this.createLayout()));
 
@@ -250,14 +341,26 @@ define('Sage/Platform/Mobile/Edit', [
                     field.renderTo(node);
             }, this);
         },
-<span id='Sage-Platform-Mobile-Edit-method-init'>        init: function() {
-</span>            this.inherited(arguments);
+<span id='Sage-Platform-Mobile-Edit-method-init'>        /**
+</span>         * Extends init to also init the fields in `this.fields`.
+         */
+        init: function() {
+            this.inherited(arguments);
 
             for (var name in this.fields)
                 this.fields[name].init();
         },
-<span id='Sage-Platform-Mobile-Edit-method-createToolLayout'>        createToolLayout: function() {
-</span>            return this.tools || (this.tools = {
+<span id='Sage-Platform-Mobile-Edit-method-createToolLayout'>        /**
+</span>         * Sets and returns the toolbar item layout definition, this method should be overriden in the view
+         * so that you may define the views toolbar items.
+         *
+         * By default it adds a save button bound to `this.save()` and cancel that fires `ReUI.back()`
+         *
+         * @return {Object} this.tools
+         * @template
+         */
+        createToolLayout: function() {
+            return this.tools || (this.tools = {
                 'tbar': [{
                     id: 'save',
                     action: 'save',
@@ -272,20 +375,57 @@ define('Sage/Platform/Mobile/Edit', [
                 }]
             });
         },
-<span id='Sage-Platform-Mobile-Edit-method-_onShowField'>        _onShowField: function(field) {
-</span>            domClass.remove(field.containerNode, 'row-hidden');
+<span id='Sage-Platform-Mobile-Edit-method-_onShowField'>        /**
+</span>         * Handler for a fields on show event.
+         *
+         * Removes the row-hidden css class.
+         *
+         * @param {_Field} field Field instance that is being shown
+         */
+        _onShowField: function(field) {
+            domClass.remove(field.containerNode, 'row-hidden');
         },
-<span id='Sage-Platform-Mobile-Edit-method-_onHideField'>        _onHideField: function(field) {
-</span>            domClass.add(field.containerNode, 'row-hidden');
+<span id='Sage-Platform-Mobile-Edit-method-_onHideField'>        /**
+</span>         * Handler for a fields on hide event.
+         *
+         * Adds the row-hidden css class.
+         *
+         * @param {_Field} field Field instance that is being hidden
+         */
+        _onHideField: function(field) {
+            domClass.add(field.containerNode, 'row-hidden');
         },
-<span id='Sage-Platform-Mobile-Edit-method-_onEnableField'>        _onEnableField: function(field) {
-</span>            domClass.remove(field.containerNode, 'row-disabled');
+<span id='Sage-Platform-Mobile-Edit-method-_onEnableField'>        /**
+</span>         * Handler for a fields on enable event.
+         *
+         * Removes the row-disabled css class.
+         *
+         * @param {_Field} field Field instance that is being enabled
+         */
+        _onEnableField: function(field) {
+            domClass.remove(field.containerNode, 'row-disabled');
         },
-<span id='Sage-Platform-Mobile-Edit-method-_onDisableField'>        _onDisableField: function(field) {
-</span>            domClass.add(field.containerNode, 'row-disabled');
+<span id='Sage-Platform-Mobile-Edit-method-_onDisableField'>        /**
+</span>         * Handler for a fields on disable event.
+         *
+         * Adds the row-disabled css class.
+         *
+         * @param {_Field} field Field instance that is being disabled
+         */
+        _onDisableField: function(field) {
+            domClass.add(field.containerNode, 'row-disabled');
         },
-<span id='Sage-Platform-Mobile-Edit-method-invokeAction'>        invokeAction: function(name, parameters, evt, node) {
-</span>            var fieldNode = node &amp;&amp; query(node, this.contentNode).parents('[data-field]'),
+<span id='Sage-Platform-Mobile-Edit-method-invokeAction'>        /**
+</span>         * Extends invokeAction to first look for the specified function name on the field instance
+         * first before passing it to the view.
+         * @param {String} name Name of the function to invoke
+         * @param {Object} parameters Parameters of the function to be passed
+         * @param {Event} evt The original click/tap event
+         * @param {HTMLElement} node The node that initiated the event
+         * @return {Function} Either calls the fields action or returns the inherited version which looks at the view for the action
+         */
+        invokeAction: function(name, parameters, evt, node) {
+            var fieldNode = node &amp;&amp; query(node, this.contentNode).parents('[data-field]'),
                 field = this.fields[fieldNode.length &gt; 0 &amp;&amp; domAttr.get(fieldNode[0], 'data-field')];
 
             if (field &amp;&amp; typeof field[name] === 'function')
@@ -293,8 +433,15 @@ define('Sage/Platform/Mobile/Edit', [
 
             return this.inherited(arguments);
         },
-<span id='Sage-Platform-Mobile-Edit-method-hasAction'>        hasAction: function(name, evt, node) {
-</span>            var fieldNode = node &amp;&amp; query(node, this.contentNode).parents('[data-field]'),
+<span id='Sage-Platform-Mobile-Edit-method-hasAction'>        /**
+</span>         * Determines if a field has defined on it the supplied name as a function
+         * @param {String} name Name of the function to test for
+         * @param {Event} evt The original click/tap event
+         * @param {HTMLElement} node The node that initiated the event
+         * @return {Boolean} If the field has the named function defined
+         */
+        hasAction: function(name, evt, node) {
+            var fieldNode = node &amp;&amp; query(node, this.contentNode).parents('[data-field]'),
                 field = fieldNode &amp;&amp; this.fields[fieldNode.length &gt; 0 &amp;&amp; domAttr.get(fieldNode[0], 'data-field')];
 
             if (field &amp;&amp; typeof field[name] === 'function')
@@ -302,13 +449,26 @@ define('Sage/Platform/Mobile/Edit', [
 
             return this.inherited(arguments);
         },
-<span id='Sage-Platform-Mobile-Edit-method-toggleSection'>        toggleSection: function(params) {
-</span>            var node = dom.byId(params.$source);
+<span id='Sage-Platform-Mobile-Edit-method-toggleSection'>        /**
+</span>         * Toggles the collapsed state of the section.
+         * @param {Object} params Collection of `data-` attributes from the source node.
+         */
+        toggleSection: function(params) {
+            var node = dom.byId(params.$source);
             if (node)
                 domClass.toggle(node, 'collapsed');
         },
-<span id='Sage-Platform-Mobile-Edit-method-createRequest'>        createRequest: function() {
-</span>            var request = new Sage.SData.Client.SDataSingleResourceRequest(this.getService());
+<span id='Sage-Platform-Mobile-Edit-method-createRequest'>        /**
+</span>         * Creates Sage.SData.Client.SDataSingleResourceRequest instance and sets a number of known properties.
+         *
+         * List of properties used `this.property/this.options.property`:
+         *
+         * `entry['$key']/key`, `contractName`, `resourceKind`, `querySelect`, `queryInclude`, and `queryOrderBy`
+         *
+         * @return {Object} Sage.SData.Client.SDataSingleResourceRequest instance.
+         */
+        createRequest: function() {
+            var request = new Sage.SData.Client.SDataSingleResourceRequest(this.getService());
 
             var key = (this.entry &amp;&amp; this.entry['$key']) || this.options.key
             if (key)
@@ -331,8 +491,17 @@ define('Sage/Platform/Mobile/Edit', [
 
             return request;
         },
-<span id='Sage-Platform-Mobile-Edit-method-createTemplateRequest'>        createTemplateRequest: function() {
-</span>            var request = new Sage.SData.Client.SDataTemplateResourceRequest(this.getService());
+<span id='Sage-Platform-Mobile-Edit-method-createTemplateRequest'>        /**
+</span>         * Creates Sage.SData.Client.SDataTemplateResourceRequest instance and sets a number of known properties.
+         *
+         * List of properties used `this.property/this.options.property`:
+         *
+         * `resourceKind`, `querySelect`, `queryInclude`
+         *
+         * @return {Object} Sage.SData.Client.SDataTemplateResourceRequest instance.
+         */
+        createTemplateRequest: function() {
+            var request = new Sage.SData.Client.SDataTemplateResourceRequest(this.getService());
 
             if (this.resourceKind)
                 request.setResourceKind(this.resourceKind);
@@ -345,8 +514,35 @@ define('Sage/Platform/Mobile/Edit', [
 
             return request;
         },
-<span id='Sage-Platform-Mobile-Edit-method-createLayout'>        createLayout: function() {
-</span>            return this.layout || [];
+<span id='Sage-Platform-Mobile-Edit-method-createLayout'>        /**
+</span>         * Sets and returns the Edit view layout by following a standard for section and field:
+         *
+         * The `this.layout` itself is an array of section objects where a section object is defined as such:
+         *
+         *     {
+         *        name: 'String', // Required. unique name for identification/customization purposes
+         *        title: 'String', // Required. Text shown in the section header
+         *        children: [], // Array of child row objects
+         *     }
+         *
+         * A child row object has:
+         *
+         *     {
+         *        name: 'String', // Required. unique name for identification/customization purposes
+         *        property: 'String', // Optional. The SData property of the current entity to bind to
+         *        label: 'String', // Optional. Text shown in the label to the left of the property
+         *        type: 'String', // Required. The field type as registered with the FieldManager.
+         *        // Examples of type: 'text', 'decimal', 'date', 'lookup', 'select', 'duration'
+         *        'default': value // Optional. If defined the value will be set as the default &quot;unmodified&quot; value (not dirty).
+         *     }
+         *
+         * All further properties are set by their respective type, please see the individual field for
+         * its configurable options.
+         *
+         * @return {Object[]} Edit layout definition
+         */
+        createLayout: function() {
+            return this.layout || [];
         },
 <span id='Sage-Platform-Mobile-Edit-method-processLayout'>        processLayout: function(layout)
 </span>        {
@@ -404,12 +600,21 @@ define('Sage/Platform/Mobile/Edit', [
                 this.processLayout(current);
             }
         },
-<span id='Sage-Platform-Mobile-Edit-method-onRequestDataFailure'>        onRequestDataFailure: function(response, o) {
-</span>            alert(string.substitute(this.requestErrorText, [response, o]));
+<span id='Sage-Platform-Mobile-Edit-method-onRequestDataFailure'>        /**
+</span>         * Handler when an error occurs while request data from the SData endpoint.
+         * @param {Object} response The response object.
+         * @param {Object} o The options that were passed when creating the Ajax request.
+         */
+        onRequestDataFailure: function(response, o) {
+            alert(string.substitute(this.requestErrorText, [response, o]));
             ErrorManager.addError(response, o, this.options, 'failure');
         },
-<span id='Sage-Platform-Mobile-Edit-method-onRequestDataSuccess'>        onRequestDataSuccess: function(entry) {
-</span>            this.processEntry(entry);
+<span id='Sage-Platform-Mobile-Edit-method-onRequestDataSuccess'>        /**
+</span>         * Handler when a request to SData is successful, calls processEntry
+         * @param {Object} entry The SData response
+         */
+        onRequestDataSuccess: function(entry) {
+            this.processEntry(entry);
 
             if (this.options.changes)
             {
@@ -417,8 +622,11 @@ define('Sage/Platform/Mobile/Edit', [
                 this.setValues(this.changes);
             }
         },
-<span id='Sage-Platform-Mobile-Edit-method-requestData'>        requestData: function() {
-</span>            var request = this.createRequest();
+<span id='Sage-Platform-Mobile-Edit-method-requestData'>        /**
+</span>         * Initiates the SData request.
+         */
+        requestData: function() {
+            var request = this.createRequest();
             if (request)
                 request.read({
                     success: this.onRequestDataSuccess,
@@ -426,15 +634,27 @@ define('Sage/Platform/Mobile/Edit', [
                     scope: this
                 });
         },
-<span id='Sage-Platform-Mobile-Edit-method-onRequestTemplateFailure'>        onRequestTemplateFailure: function(response, o) {
-</span>            alert(string.substitute(this.requestErrorText, [response, o]));
+<span id='Sage-Platform-Mobile-Edit-method-onRequestTemplateFailure'>        /**
+</span>         * Handler when an error occurs while request data from the SData endpoint.
+         * @param {Object} response The response object.
+         * @param {Object} o The options that were passed when creating the Ajax request.
+         */
+        onRequestTemplateFailure: function(response, o) {
+            alert(string.substitute(this.requestErrorText, [response, o]));
             ErrorManager.addError(response, o, this.options, 'failure');
         },
-<span id='Sage-Platform-Mobile-Edit-method-onRequestTemplateSuccess'>        onRequestTemplateSuccess: function(entry) {
-</span>            this.processTemplateEntry(entry);
+<span id='Sage-Platform-Mobile-Edit-method-onRequestTemplateSuccess'>        /**
+</span>         * Handler when a request to SData is successful, calls processTemplateEntry
+         * @param {Object} entry The SData response
+         */
+        onRequestTemplateSuccess: function(entry) {
+            this.processTemplateEntry(entry);
         },
-<span id='Sage-Platform-Mobile-Edit-method-requestTemplate'>        requestTemplate: function() {
-</span>            var request = this.createTemplateRequest();
+<span id='Sage-Platform-Mobile-Edit-method-requestTemplate'>        /**
+</span>         * Initiates the SData request for the template (default values).
+         */
+        requestTemplate: function() {
+            var request = this.createTemplateRequest();
             if (request)
                 request.read({
                     success: this.onRequestTemplateSuccess,
@@ -442,8 +662,13 @@ define('Sage/Platform/Mobile/Edit', [
                     scope: this
                 });
         },
-<span id='Sage-Platform-Mobile-Edit-method-convertEntry'>        convertEntry: function(entry) {
-</span>            // todo: should we create a deep copy?
+<span id='Sage-Platform-Mobile-Edit-method-convertEntry'>        /**
+</span>         * Loops a given entry testing for SData date strings and converts them to javascript Date objects
+         * @param {Object} entry SData entry
+         * @return {Object} Entry with actual Date objects
+         */
+        convertEntry: function(entry) {
+            // todo: should we create a deep copy?
             // todo: do a deep conversion?
 
             for (var n in entry)
@@ -454,8 +679,14 @@ define('Sage/Platform/Mobile/Edit', [
 
             return entry;
         },
-<span id='Sage-Platform-Mobile-Edit-method-convertValues'>        convertValues: function(values) {
-</span>            // todo: do a deep conversion?
+<span id='Sage-Platform-Mobile-Edit-method-convertValues'>        /**
+</span>         * Does the reverse of {@link #convertEntry convertEntry} in that it loops the payload being
+         * sent back to SData and converts Date objects into SData date strings
+         * @param {Object} values Payload
+         * @return {Object} Entry with string dates
+         */
+        convertValues: function(values) {
+            // todo: do a deep conversion?
 
             for (var n in values)
             {
@@ -467,16 +698,39 @@ define('Sage/Platform/Mobile/Edit', [
 
             return values;
         },
-<span id='Sage-Platform-Mobile-Edit-method-processEntry'>        processEntry: function(entry) {
-</span>            this.entry = this.convertEntry(entry || {});
+<span id='Sage-Platform-Mobile-Edit-method-processEntry'>        /**
+</span>         * Handles the SData response by converting the date strings and storing the fixed extry to
+         * `this.entry` and applies the values.
+         * @param entry
+         */
+        processEntry: function(entry) {
+            this.entry = this.convertEntry(entry || {});
             this.setValues(this.entry, true);
 
             domClass.remove(this.domNode, 'panel-loading');
         },
-<span id='Sage-Platform-Mobile-Edit-method-applyContext'>        applyContext: function(templateEntry) {
-</span>        },
-<span id='Sage-Platform-Mobile-Edit-method-applyFieldDefaults'>        applyFieldDefaults: function(){
-</span>            for (var name in this.fields)
+<span id='Sage-Platform-Mobile-Edit-method-applyContext'>        /**
+</span>         * ApplyContext is called during {@link #processTemplateEntry processTemplateEntry} and is
+         * intended as a hook for when you are inserting a new entry (not editing) and wish to apply
+         * values from context, ie, from a view in the history.
+         *
+         * The cycle of a template values is (first to last, last being the one that overwrites all)
+         *
+         * 1\. Set the values of the template SData response
+         * 2\. Set any field defaults (the fields `default` property)
+         * 3\. ApplyContext is called
+         * 4\. If `this.options.entry` is defined, apply those values
+         *
+         * @param templateEntry
+         */
+        applyContext: function(templateEntry) {
+        },
+<span id='Sage-Platform-Mobile-Edit-method-applyFieldDefaults'>        /**
+</span>         * Loops all the fields looking for any with the `default` property set, if set apply that
+         * value as the initial value of the field. If the value is a function, its expanded then applied.
+         */
+        applyFieldDefaults: function(){
+            for (var name in this.fields)
             {
                 var field = this.fields[name],
                     defaultValue = field['default'];
@@ -486,8 +740,21 @@ define('Sage/Platform/Mobile/Edit', [
                 field.setValue(this.expandExpression(defaultValue, field));
             }
         },
-<span id='Sage-Platform-Mobile-Edit-method-processTemplateEntry'>        processTemplateEntry: function(templateEntry) {
-</span>            this.templateEntry = this.convertEntry(templateEntry || {});
+<span id='Sage-Platform-Mobile-Edit-method-processTemplateEntry'>        /**
+</span>         * Processes the returned SData template entry by saving it to `this.templateEntry` and applies
+         * the default values to fields by:
+         *
+         * The cycle of a template values is (first to last, last being the one that overwrites all)
+         *
+         * 1\. Set the values of the template SData response
+         * 2\. Set any field defaults (the fields `default` property)
+         * 3\. ApplyContext is called
+         * 4\. If `this.options.entry` is defined, apply those values
+         *
+         * @param {Object} templateEntry SData template entry
+         */
+        processTemplateEntry: function(templateEntry) {
+            this.templateEntry = this.convertEntry(templateEntry || {});
 
             this.setValues(this.templateEntry, true);
             this.applyFieldDefaults();
@@ -503,14 +770,27 @@ define('Sage/Platform/Mobile/Edit', [
 
             domClass.remove(this.domNode, 'panel-loading');
         },
-<span id='Sage-Platform-Mobile-Edit-method-clearValues'>        clearValues: function() {
-</span>            for (var name in this.fields)
+<span id='Sage-Platform-Mobile-Edit-method-clearValues'>        /**
+</span>         * Loops all fields and calls its `clearValue()`.
+         */
+        clearValues: function() {
+            for (var name in this.fields)
             {
                 this.fields[name].clearValue();
             }
         },
-<span id='Sage-Platform-Mobile-Edit-method-setValues'>        setValues: function(values, initial) {
-</span>            var noValue = {},
+<span id='Sage-Platform-Mobile-Edit-method-setValues'>        /**
+</span>         * Sets the given values by looping the fields and checking if the field property matches
+         * a key in the passed values object (after considering a fields `applyTo`).
+         *
+         * The value set is then passed the initial state, true for default/unmodified/clean and false
+         * for dirty or altered.
+         *
+         * @param {Object} values SData entry, or collection of key/values where key matches a fields property attribute
+         * @param {Boolean} initial Initial state of the value, true for clean, false for dirty
+         */
+        setValues: function(values, initial) {
+            var noValue = {},
                 field,
                 value;
 
@@ -534,8 +814,17 @@ define('Sage/Platform/Mobile/Edit', [
                 if (value !== noValue) field.setValue(value, initial);
             }
         },
-<span id='Sage-Platform-Mobile-Edit-method-getValues'>        getValues: function(all) {
-</span>            var o = {},
+<span id='Sage-Platform-Mobile-Edit-method-getValues'>        /**
+</span>         * Retrieves the value from every field, skipping the ones excluded, and merges them into a
+         * single payload with the key being the fields `property` attribute, taking into consideration `applyTo` if defined.
+         *
+         * If all is passed as true, it also grabs hidden and unmodified (clean) values.
+         *
+         * @param {Boolean} all True to also include hidden and unmodified values.
+         * @return {Object} A single object payload with all the values.
+         */
+        getValues: function(all) {
+            var o = {},
                 empty = true,
                 field,
                 value,
@@ -580,8 +869,13 @@ define('Sage/Platform/Mobile/Edit', [
             }
             return empty ? false : o;
         },
-<span id='Sage-Platform-Mobile-Edit-method-validate'>        validate: function() {
-</span>            this.errors = [];
+<span id='Sage-Platform-Mobile-Edit-method-validate'>        /**
+</span>         * Loops and gathers the validation errors returned from each field and adds them to the
+         * validation summary area. If no errors, removes the validation summary.
+         * @return {Boolean/Object[]} Returns the array of errors if present or false for no errors.
+         */
+        validate: function() {
+            this.errors = [];
 
             for (var name in this.fields)
             {
@@ -607,15 +901,25 @@ define('Sage/Platform/Mobile/Edit', [
                 ? this.errors
                 : false;
         },
-<span id='Sage-Platform-Mobile-Edit-method-createEntry'>        createEntry: function() {
-</span>            var values = this.getValues();
+<span id='Sage-Platform-Mobile-Edit-method-createEntry'>        /**
+</span>         * Gathers the values for the entry to send back to SData and returns the appropriate
+         * create for inserting or updating.
+         * @return {Object} SData entry/payload
+         */
+        createEntry: function() {
+            var values = this.getValues();
 
             return this.inserting
                 ? this.createEntryForInsert(values)
                 : this.createEntryForUpdate(values);
         },
-<span id='Sage-Platform-Mobile-Edit-method-createEntryForUpdate'>        createEntryForUpdate: function(values) {
-</span>            values = this.convertValues(values);
+<span id='Sage-Platform-Mobile-Edit-method-createEntryForUpdate'>        /**
+</span>         * Takes the values object and adds in $key, $etag and $name
+         * @param {Object} values
+         * @return {Object} Object with added properties
+         */
+        createEntryForUpdate: function(values) {
+            values = this.convertValues(values);
 
             return lang.mixin(values, {
                 '$key': this.entry['$key'],
@@ -623,34 +927,54 @@ define('Sage/Platform/Mobile/Edit', [
                 '$name': this.entry['$name']
             });
         },
-<span id='Sage-Platform-Mobile-Edit-method-createEntryForInsert'>        createEntryForInsert: function(values) {
-</span>            values = this.convertValues(values);
+<span id='Sage-Platform-Mobile-Edit-method-createEntryForInsert'>        /**
+</span>         * Takes the values object and adds in $name
+         * @param {Object} values
+         * @return {Object} Object with added properties
+         */
+        createEntryForInsert: function(values) {
+            values = this.convertValues(values);
             
             return lang.mixin(values, {
                 '$name': this.entityName
             });
         },
-<span id='Sage-Platform-Mobile-Edit-method-isFormDisabled'>        isFormDisabled: function() {
-</span>            return this.busy;
+<span id='Sage-Platform-Mobile-Edit-method-isFormDisabled'>        /**
+</span>         * Determines if the form is currently busy/disabled
+         * @return {Boolean}
+         */
+        isFormDisabled: function() {
+            return this.busy;
         },
-<span id='Sage-Platform-Mobile-Edit-method-disable'>        disable: function() {
-</span>            this.busy = true;
+<span id='Sage-Platform-Mobile-Edit-method-disable'>        /**
+</span>         * Disables the form by setting busy to true and disabling the toolbar.
+         */
+        disable: function() {
+            this.busy = true;
 
             if (App.bars.tbar)
                 App.bars.tbar.disable();
 
             domClass.add(this.domNode, 'busy');
         },
-<span id='Sage-Platform-Mobile-Edit-method-enable'>        enable: function() {
-</span>            this.busy = false;
+<span id='Sage-Platform-Mobile-Edit-method-enable'>        /**
+</span>         * Enables the form by setting busy to false and enabling the toolbar
+         */
+        enable: function() {
+            this.busy = false;
 
             if (App.bars.tbar)
                 App.bars.tbar.enable();
 
             domClass.remove(this.domNode, 'busy');
         },
-<span id='Sage-Platform-Mobile-Edit-method-insert'>        insert: function() {
-</span>            this.disable();
+<span id='Sage-Platform-Mobile-Edit-method-insert'>        /**
+</span>         * Called by save() when performing an insert (create).
+         * Gathers the values, creates the payload for insert, creates the sdata request and
+         * calls `create`.
+         */
+        insert: function() {
+            this.disable();
 
             var values = this.getValues();
             if (values)
@@ -670,8 +994,16 @@ define('Sage/Platform/Mobile/Edit', [
                 ReUI.back();
             }
         },
-<span id='Sage-Platform-Mobile-Edit-method-onInsertSuccess'>        onInsertSuccess: function(entry) {
-</span>            this.enable();
+<span id='Sage-Platform-Mobile-Edit-method-onInsertSuccess'>        /**
+</span>         * Handler for when insert() is successfull, publishes the global `/app/refresh` event which
+         * forces other views listening for this resourceKind to refresh.
+         *
+         * Finishes up by calling {@link #onInsertComplete onInsertComplete}.
+         *
+         * @param entry
+         */
+        onInsertSuccess: function(entry) {
+            this.enable();
 
             connect.publish('/app/refresh', [{
                 resourceKind: this.resourceKind
@@ -679,12 +1011,22 @@ define('Sage/Platform/Mobile/Edit', [
 
             this.onInsertCompleted(entry);
         },
-<span id='Sage-Platform-Mobile-Edit-method-onInsertFailure'>        onInsertFailure: function(response, o) {
-</span>            this.enable();
+<span id='Sage-Platform-Mobile-Edit-method-onInsertFailure'>        /**
+</span>         * Handler for when instert() fails, enables the form and passes the results to the default
+         * error handler which alerts the user of an error.
+         * @param response
+         * @param o
+         */
+        onInsertFailure: function(response, o) {
+            this.enable();
             this.onRequestFailure(response, o);
         },
-<span id='Sage-Platform-Mobile-Edit-method-onInsertCompleted'>        onInsertCompleted: function(entry) {
-</span>            if (this.options &amp;&amp; this.options.returnTo)
+<span id='Sage-Platform-Mobile-Edit-method-onInsertCompleted'>        /**
+</span>         * Handler for insert complete, checks for `this.options.returnTo` else it simply goes back.
+         * @param entry
+         */
+        onInsertCompleted: function(entry) {
+            if (this.options &amp;&amp; this.options.returnTo)
             {
                 var returnTo = this.options.returnTo,
                     view = App.getView(returnTo);
@@ -698,12 +1040,22 @@ define('Sage/Platform/Mobile/Edit', [
                 ReUI.back();
             }
         },
-<span id='Sage-Platform-Mobile-Edit-method-onRequestFailure'>        onRequestFailure: function(response, o) {
-</span>            alert(string.substitute(this.requestErrorText, [response, o]));
+<span id='Sage-Platform-Mobile-Edit-method-onRequestFailure'>        /**
+</span>         * Handler when an error occurs while request data from the SData endpoint.
+         * @param {Object} response The response object.
+         * @param {Object} o The options that were passed when creating the Ajax request.
+         */
+        onRequestFailure: function(response, o) {
+            alert(string.substitute(this.requestErrorText, [response, o]));
             ErrorManager.addError(response, o, this.options, 'failure');
         },
-<span id='Sage-Platform-Mobile-Edit-method-update'>        update: function() {
-</span>            var values = this.getValues();
+<span id='Sage-Platform-Mobile-Edit-method-update'>        /**
+</span>         * Called by save() when performing an update (edit).
+         * Gathers the values, creates the payload for update, creates the sdata request and
+         * calls `update`.
+         */
+        update: function() {
+            var values = this.getValues();
             if (values)
             {
                 this.disable();
@@ -723,8 +1075,16 @@ define('Sage/Platform/Mobile/Edit', [
                 this.onUpdateCompleted(false);
             }
         },
-<span id='Sage-Platform-Mobile-Edit-method-onUpdateSuccess'>        onUpdateSuccess: function(entry) {
-</span>            this.enable();
+<span id='Sage-Platform-Mobile-Edit-method-onUpdateSuccess'>        /**
+</span>         * Handler for when update() is successfull, publishes the global `/app/refresh` event which
+         * forces other views listening for this resourceKind to refresh.
+         *
+         * Finishes up by calling {@link #onUpdateCompleted onUpdateCompleted}.
+         *
+         * @param entry
+         */
+        onUpdateSuccess: function(entry) {
+            this.enable();
 
             connect.publish('/app/refresh', [{
                 resourceKind: this.resourceKind,
@@ -734,12 +1094,21 @@ define('Sage/Platform/Mobile/Edit', [
 
             this.onUpdateCompleted(entry);
         },
-<span id='Sage-Platform-Mobile-Edit-method-onUpdateFailure'>        onUpdateFailure: function(response, o) {
-</span>            this.enable();
+<span id='Sage-Platform-Mobile-Edit-method-onUpdateFailure'>        /**
+</span>         * Handler when an error occurs while request data from the SData endpoint.
+         * @param {Object} response The response object.
+         * @param {Object} o The options that were passed when creating the Ajax request.
+         */
+        onUpdateFailure: function(response, o) {
+            this.enable();
             this.onRequestFailure(response, o);
         },
-<span id='Sage-Platform-Mobile-Edit-method-onUpdateCompleted'>        onUpdateCompleted: function(entry) {
-</span>            if (this.options &amp;&amp; this.options.returnTo)
+<span id='Sage-Platform-Mobile-Edit-method-onUpdateCompleted'>        /**
+</span>         * Handler for update complete, checks for `this.options.returnTo` else it simply goes back.
+         * @param entry
+         */
+        onUpdateCompleted: function(entry) {
+            if (this.options &amp;&amp; this.options.returnTo)
             {
                 var returnTo = this.options.returnTo,
                     view = App.getView(returnTo);
@@ -753,8 +1122,12 @@ define('Sage/Platform/Mobile/Edit', [
                 ReUI.back();
             }
         },
-<span id='Sage-Platform-Mobile-Edit-method-showValidationSummary'>        showValidationSummary: function() {
-</span>            var content = [];                        
+<span id='Sage-Platform-Mobile-Edit-method-showValidationSummary'>        /**
+</span>         * Creates the markup by applying the `validationSummaryItemTemplate` to each item in `this.errors`
+         * then sets the combined result into the summary validation node and sets the styling to visible
+         */
+        showValidationSummary: function() {
+            var content = [];                        
 
             for (var i = 0; i &lt; this.errors.length; i++)
                 content.push(this.validationSummaryItemTemplate.apply(this.errors[i], this.fields[this.errors[i].name]));
@@ -762,12 +1135,22 @@ define('Sage/Platform/Mobile/Edit', [
             this.set('validationContent', content.join(''));
             domClass.add(this.domNode, 'panel-form-error');
         },
-<span id='Sage-Platform-Mobile-Edit-method-hideValidationSummary'>        hideValidationSummary: function() {
-</span>            domClass.remove(this.domNode, 'panel-form-error');
+<span id='Sage-Platform-Mobile-Edit-method-hideValidationSummary'>        /**
+</span>         * Removes the summary validation visible styling and empties its contents of error markup
+         */
+        hideValidationSummary: function() {
+            domClass.remove(this.domNode, 'panel-form-error');
             this.set('validationContent', '');
         },
-<span id='Sage-Platform-Mobile-Edit-method-save'>        save: function() {
-</span>            if (this.isFormDisabled())  return;
+<span id='Sage-Platform-Mobile-Edit-method-save'>        /**
+</span>         * Handler for the save toolbar action.
+         *
+         * First validates the forms, showing errors and stoping saving if found.
+         * Then calls either {@link #insert insert} or {@link #update update} based upon `this.inserting`.
+         *
+         */
+        save: function() {
+            if (this.isFormDisabled())  return;
 
             this.hideValidationSummary();
 
@@ -782,23 +1165,34 @@ define('Sage/Platform/Mobile/Edit', [
             else
                 this.update();
         },
-<span id='Sage-Platform-Mobile-Edit-method-getContext'>        getContext: function() {
-</span>            return lang.mixin(this.inherited(arguments), {
+<span id='Sage-Platform-Mobile-Edit-method-getContext'>        /**
+</span>         * Extends the getContext function to also include the `resourceKind` of the view, `insert`
+         * state and `key` of the entry (false if inserting)
+         */
+        getContext: function() {
+            return lang.mixin(this.inherited(arguments), {
                 resourceKind: this.resourceKind,
                 insert: this.options.insert,
                 key: this.options.insert ? false : this.options.entry &amp;&amp; this.options.entry['$key']
             });
         },
-<span id='Sage-Platform-Mobile-Edit-method-getSecurity'>        getSecurity: function(access) {
-</span>            var lookup = {
+<span id='Sage-Platform-Mobile-Edit-method-getSecurity'>        /**
+</span>         * Wrapper for detecting security for update mode or insert mode
+         * @param {String} access Can be either &quot;update&quot; or &quot;insert&quot;
+         */
+        getSecurity: function(access) {
+            var lookup = {
                 'update': this.updateSecurity,
                 'insert': this.insertSecurity
             };
 
             return lookup[access];
         },
-<span id='Sage-Platform-Mobile-Edit-method-beforeTransitionTo'>        beforeTransitionTo: function() {
-</span>            if (this.refreshRequired)
+<span id='Sage-Platform-Mobile-Edit-method-beforeTransitionTo'>        /**
+</span>         * Extends beforeTransitionTo to add the loading styling if refresh is needed
+         */
+        beforeTransitionTo: function() {
+            if (this.refreshRequired)
             {
                 if (this.options.insert === true || this.options.key)
                     domClass.add(this.domNode, 'panel-loading');
@@ -808,12 +1202,20 @@ define('Sage/Platform/Mobile/Edit', [
 
             this.inherited(arguments);
         },
-<span id='Sage-Platform-Mobile-Edit-method-activate'>        activate: function() {
-</span>            // external navigation (browser back/forward) never refreshes the edit view as it's always a terminal loop.
-            // i.e. you never move &quot;forward&quot; from an edit view; you navigate to child editors, from which you always return.
-        },       
-<span id='Sage-Platform-Mobile-Edit-method-refreshRequiredFor'>        refreshRequiredFor: function(options) {
-</span>            if (this.options)
+<span id='Sage-Platform-Mobile-Edit-method-activate'>        /**
+</span>         * Empties the activate method which prevents detection of refresh from transititioning.
+         *
+         * External navigation (browser back/forward) never refreshes the edit view as it's always a terminal loop.
+         * i.e. you never move &quot;forward&quot; from an edit view; you navigate to child editors, from which you always return.
+         */
+        activate: function() {
+        },
+<span id='Sage-Platform-Mobile-Edit-method-refreshRequiredFor'>        /**
+</span>         * Extends refreshRequiredFor to return false if we already have the key the options is passing
+         * @param {Object} options Navigation options from previous view
+         */
+        refreshRequiredFor: function(options) {
+            if (this.options)
             {
                 if (options)
                 {
@@ -825,8 +1227,21 @@ define('Sage/Platform/Mobile/Edit', [
             else
                 return this.inherited(arguments);
         },
-<span id='Sage-Platform-Mobile-Edit-method-refresh'>        refresh: function() {
-</span>            this.entry = false;
+<span id='Sage-Platform-Mobile-Edit-method-refresh'>        /**
+</span>         * Refresh first clears out any variables set to previous data such as `this.entry` and `this.changing`.
+         *
+         * The mode of the Edit view is set and determined via `this.options.insert`, and the views values are cleared.
+         *
+         * Lastly it makes the appropiate data request:
+         *
+         * 1\. If we are inserting and passed a `template`, process the template. No request.
+         * 2\. If we are inserting and not passed a `template`, request a template from SData.
+         * 3\. If we are not inserting and passed an `entry`, process the `entry` and process `changes`.
+         * 4\. If we are not inserting and not passed an `entry`, but were passed a `key`, request the keys detail and use that as an entry.
+         *
+         */
+        refresh: function() {
+            this.entry = false;
             this.changes = false;
             this.inserting = (this.options.insert === true);
 

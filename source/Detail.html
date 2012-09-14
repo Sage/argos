@@ -246,8 +246,8 @@ define('Sage/Platform/Mobile/Detail', [
          * The layout definition that constructs the detail view with sections and rows
          */
         layout: null,
-<span id='Sage-Platform-Mobile-Detail-property-security'>        /**
-</span>         * @property {String/Object}
+<span id='Sage-Platform-Mobile-Detail-cfg-security'>        /**
+</span>         * @cfg {String/Object}
          * May be used for verifying the view is accessible
          */
         security: false,
@@ -262,9 +262,12 @@ define('Sage/Platform/Mobile/Detail', [
          * Controls if the view should be exposed
          */
         expose: false,
-<span id='Sage-Platform-Mobile-Detail-property-editText'>        editText: 'Edit',
-</span><span id='Sage-Platform-Mobile-Detail-property-titleText'>        /**
-</span>         * @property {String}
+<span id='Sage-Platform-Mobile-Detail-property-editText'>        /**
+</span>         * @deprecated
+         */
+        editText: 'Edit',
+<span id='Sage-Platform-Mobile-Detail-cfg-titleText'>        /**
+</span>         * @cfg {String}
          * Default title text shown in the top toolbar
          */
         titleText: 'Detail',
@@ -293,8 +296,8 @@ define('Sage/Platform/Mobile/Detail', [
          * Text used in the notAvailableTemplate
          */
         notAvailableText: 'The requested entry is not available.',
-<span id='Sage-Platform-Mobile-Detail-property-editView'>        /**
-</span>         * @property {String}
+<span id='Sage-Platform-Mobile-Detail-cfg-editView'>        /**
+</span>         * @cfg {String}
          * The view id to be taken to when the Edit button is pressed in the toolbar
          */
         editView: false,

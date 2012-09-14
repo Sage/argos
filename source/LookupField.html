@@ -74,8 +74,17 @@ define('Sage/Platform/Mobile/Fields/LookupField', [
      * @requires utility
      */
     var control = declare('Sage.Platform.Mobile.Fields.LookupField', [_Field], {
-<span id='Sage-Platform-Mobile-Fields-LookupField-property-attributeMap'>        attributeMap: {
-</span>            inputValue: {
+<span id='Sage-Platform-Mobile-Fields-LookupField-property-attributeMap'>        /**
+</span>         * @property {Object}
+         * Creates a setter map to html nodes, namely:
+         *
+         * * inputValue =&gt; inputNodes's value
+         * * inputDisabled =&gt; inputNodes's disabled
+         * * inputReadOnly =&gt; inputNodes readonly
+         *
+         */
+        attributeMap: {
+            inputValue: {
                 node: 'inputNode',
                 type: 'attribute',
                 attribute: 'value'
@@ -105,25 +114,162 @@ define('Sage/Platform/Mobile/Fields/LookupField', [
             '&lt;input data-dojo-attach-point=&quot;inputNode&quot; type=&quot;text&quot; {% if ($.requireSelection) { %}readonly=&quot;readonly&quot;{% } %} /&gt;'
         ]),
 
-<span id='Sage-Platform-Mobile-Fields-LookupField-property-dependentErrorText'>        // Localization
-</span>        dependentErrorText: &quot;A value for '${0}' must be selected.&quot;,
-<span id='Sage-Platform-Mobile-Fields-LookupField-property-emptyText'>        emptyText: '',
-</span><span id='Sage-Platform-Mobile-Fields-LookupField-property-completeText'>        completeText: 'Select',
-</span><span id='Sage-Platform-Mobile-Fields-LookupField-property-lookupLabelText'>        lookupLabelText: 'lookup',
-</span><span id='Sage-Platform-Mobile-Fields-LookupField-property-lookupText'>        lookupText: '...',
-</span>        
-<span id='Sage-Platform-Mobile-Fields-LookupField-property-view'>        view: false,
-</span><span id='Sage-Platform-Mobile-Fields-LookupField-property-keyProperty'>        keyProperty: '$key',
-</span><span id='Sage-Platform-Mobile-Fields-LookupField-property-textProperty'>        textProperty: '$descriptor',
-</span><span id='Sage-Platform-Mobile-Fields-LookupField-property-textTemplate'>        textTemplate: null,
-</span><span id='Sage-Platform-Mobile-Fields-LookupField-property-textRenderer'>        textRenderer: null,
-</span><span id='Sage-Platform-Mobile-Fields-LookupField-property-valueKeyProperty'>        valueKeyProperty: null,
-</span><span id='Sage-Platform-Mobile-Fields-LookupField-property-valueTextProperty'>        valueTextProperty: null,
-</span><span id='Sage-Platform-Mobile-Fields-LookupField-property-requireSelection'>        requireSelection: true,
-</span><span id='Sage-Platform-Mobile-Fields-LookupField-property-singleSelect'>        singleSelect: true,
-</span>
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-init'>        init: function() {
-</span>            this.inherited(arguments);
+        // Localization
+<span id='Sage-Platform-Mobile-Fields-LookupField-property-dependentErrorText'>        /**
+</span>         * @property {String}
+         * Error text shown when validation fails.
+         *
+         * * `${0}` is the label text of the field
+         */
+        dependentErrorText: &quot;A value for '${0}' must be selected.&quot;,
+<span id='Sage-Platform-Mobile-Fields-LookupField-cfg-emptyText'>        /**
+</span>         * @cfg {String}
+         * Text displayed when the field is cleared or set to null
+         */
+        emptyText: '',
+<span id='Sage-Platform-Mobile-Fields-LookupField-property-completeText'>        /**
+</span>         * @deprecated
+         */
+        completeText: 'Select',
+<span id='Sage-Platform-Mobile-Fields-LookupField-property-lookupLabelText'>        /**
+</span>         * @property {String}
+         * The ARIA label text in the lookup button
+         */
+        lookupLabelText: 'lookup',
+<span id='Sage-Platform-Mobile-Fields-LookupField-property-lookupText'>        /**
+</span>         * @property {String}
+         * The text placed inside the lookup button
+         */
+        lookupText: '...',
+
+<span id='Sage-Platform-Mobile-Fields-LookupField-cfg-view'>        /**
+</span>         * @cfg {String}
+         * Required. Must be set to a view id of the target lookup view
+         */
+        view: false,
+<span id='Sage-Platform-Mobile-Fields-LookupField-property-keyProperty'>        /**
+</span>         * @property {String}
+         * The default `valueKeyProperty` if `valueKeyProperty` is not defined.
+         */
+        keyProperty: '$key',
+<span id='Sage-Platform-Mobile-Fields-LookupField-property-textProperty'>        /**
+</span>         * @property {String}
+         * The default `valueTextProperty` if `valueTextProperty` is not defined.
+         */
+        textProperty: '$descriptor',
+<span id='Sage-Platform-Mobile-Fields-LookupField-cfg-textTemplate'>        /**
+</span>         * @cfg {Simplate}
+         * If provided the displayed textProperty is transformed with the given Simplate.
+         *
+         * * `$` =&gt; value extracted
+         * * `$$` =&gt; field instance
+         *
+         * Note that this (and renderer) are destructive, meaning once transformed the stored
+         * text value will be the result of the template/renderer. Typically this is not a concern
+         * as SData will only use the key property. But be aware if any other fields use this field as
+         * context.
+         *
+         */
+        textTemplate: null,
+<span id='Sage-Platform-Mobile-Fields-LookupField-cfg-textRenderer'>        /**
+</span>         * @cfg {Function}
+         * If provided the displayed textProperty is transformed with the given function.
+         *
+         * The function is passed the current value and should return a string to be displayed.
+         *
+         * Note that this (and renderer) are destructive, meaning once transformed the stored
+         * text value will be the result of the template/renderer. Typically this is not a concern
+         * as SData will only use the key property. But be aware if any other fields use this field as
+         * context.
+         *
+         */
+        textRenderer: null,
+<span id='Sage-Platform-Mobile-Fields-LookupField-cfg-valueKeyProperty'>        /**
+</span>         * @cfg {String}
+         * The property name of the returned entry to use as the key
+         */
+        valueKeyProperty: null,
+<span id='Sage-Platform-Mobile-Fields-LookupField-cfg-valueTextProperty'>        /**
+</span>         * @cfg {String}
+         * The property name of the returned entry to use as the displayed text/description
+         */
+        valueTextProperty: null,
+<span id='Sage-Platform-Mobile-Fields-LookupField-cfg-requireSelection'>        /**
+</span>         * @cfg {Boolean}
+         * Flag that indicates the field is required and that a choice has to be made. If false,
+         * it passes the navigation option that {@link List List} views listen for for adding a &quot;Empty&quot;
+         * selection choice.
+         */
+        requireSelection: true,
+<span id='Sage-Platform-Mobile-Fields-LookupField-property-singleSelect'>        /**
+</span>         * @property {Boolean}
+         * Sets the singleSelect navigation option and if true limits gather the value from the
+         * target list view to the first selection.
+         */
+        singleSelect: true,
+<span id='Sage-Platform-Mobile-Fields-LookupField-property-singleSelectAction'>        /**
+</span>         * @property {String}
+         * The data-action of the toolbar item (which will be hidden) sent in navigation options. This
+         * with `singleSelect` is listened to in {@link List List} so clicking a row invokes the action,
+         * which is the function name defined (on the field instance in this case).
+         */
+        singleSelectAction: 'complete',
+<span id='Sage-Platform-Mobile-Fields-LookupField-cfg-dependsOn'>        /**
+</span>         * @cfg {String}
+         * Name of the field in which this fields depends on before going to the target view. The value
+         * is retrieved from the dependOn field and passed to expandable navigation options (resourceKind,
+         * where, resourcePredicate and previousSelections).
+         *
+         * If dependsOn is set, the target field does not have a value and a user attempts to do a lookup
+         * an error will be shown.
+         *
+         */
+        dependsOn: null,
+<span id='Sage-Platform-Mobile-Fields-LookupField-cfg-resourceKind'>        /**
+</span>         * @cfg {String/Function}
+         * May be set and passed in the navigation options to the target List view.
+         *
+         * Used to indicate the entity type.
+         *
+         */
+        resourceKind: null,
+<span id='Sage-Platform-Mobile-Fields-LookupField-cfg-resourcePredicate'>        /**
+</span>         * @cfg {String/Function}
+         * May be set and passed in the navigation options to the target List view.
+         */
+        resourcePredicate: null,
+<span id='Sage-Platform-Mobile-Fields-LookupField-cfg-where'>        /**
+</span>         * @cfg {String/Function}
+         * May be set and passed in the navigation options to the target List view.
+         *
+         * Sets the where expression used in the SData query of the List view.
+         */
+        where: null,
+<span id='Sage-Platform-Mobile-Fields-LookupField-cfg-orderBy'>        /**
+</span>         * @cfg {String/Function}
+         * May be set and passed in the navigation options to the target List view.
+         *
+         * Sets the orderBy expression used in the SData query of the List view.
+         */
+        orderBy: null,
+<span id='Sage-Platform-Mobile-Fields-LookupField-property-currentValue'>        /**
+</span>         * @property {Object}
+         * The current value object defined using the extracted key/text properties from the selected
+         * entry.
+         */
+        currentValue: null,
+<span id='Sage-Platform-Mobile-Fields-LookupField-property-currentSelection'>        /**
+</span>         * @property {Object}
+         * The entire selected entry from the target view (not just the key/text properties).
+         */
+        currentSelection: null,
+
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-init'>        /**
+</span>         * Extends init to connect to the click event, if the field is read only disable and
+         * if require selection is false connect to onkeyup and onblur.
+         */
+        init: function() {
+            this.inherited(arguments);
 
             this.connect(this.containerNode, 'onclick', this._onClick);
 
@@ -138,41 +284,82 @@ define('Sage/Platform/Mobile/Fields/LookupField', [
                 this.connect(this.inputNode, 'onblur', this._onBlur);
             }
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-enable'>        enable: function() {
-</span>            this.inherited(arguments);
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-enable'>        /**
+</span>         * Extends enable to also remove the disabled attribute
+         */
+        enable: function() {
+            this.inherited(arguments);
 
             this.set('inputDisabled', false);
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-disable'>        disable: function() {
-</span>            this.inherited(arguments);
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-disable'>        /**
+</span>         * Extends disable to also set the disabled attribute
+         */
+        disable: function() {
+            this.inherited(arguments);
 
             this.set('inputDisabled', true);
-        },  
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-isReadOnly'>        isReadOnly: function() {
-</span>            return !this.view;
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-getDependentValue'>        getDependentValue: function() {
-</span>            if (this.dependsOn &amp;&amp; this.owner)
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-isReadOnly'>        /**
+</span>         * Determines if the field is readonly by checking for a target view
+         * @return {Boolean}
+         */
+        isReadOnly: function() {
+            return !this.view;
+        },
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-getDependentValue'>        /**
+</span>         * Retrieves the value of the field named with `this.dependsOn`
+         * @return {String/Object/Number/Boolean}
+         */
+        getDependentValue: function() {
+            if (this.dependsOn &amp;&amp; this.owner)
             {
                 var field = this.owner.fields[this.dependsOn];
                 if (field) return field.getValue();
             }
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-getDependentLabel'>        getDependentLabel: function() {
-</span>            if (this.dependsOn &amp;&amp; this.owner)
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-getDependentLabel'>        /**
+</span>         * Retrieves the label string of the field named with `this.dependsOn`
+         * @return {String}
+         */
+        getDependentLabel: function() {
+            if (this.dependsOn &amp;&amp; this.owner)
             {
                 var field = this.owner.fields[this.dependsOn];
                 if (field) return field.label;
             }
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-expandExpression'>        expandExpression: function(expression) {
-</span>            if (typeof expression === 'function')
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-expandExpression'>        /**
+</span>         * Expands the passed expression if it is a function.
+         * @param {String/Function} expression Returns string directly, if function it is called and the result returned.
+         * @return {String} String expression.
+         */
+        expandExpression: function(expression) {
+            if (typeof expression === 'function')
                 return expression.apply(this, Array.prototype.slice.call(arguments, 1));
             else
                 return expression;
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-createNavigationOptions'>        createNavigationOptions: function() {
-</span>            var options = {
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-createNavigationOptions'>        /**
+</span>         * Creates the options to be passed in navigation to the target view
+         *
+         * Key points of the options set by default:
+         *
+         * * enableActions = false, List views should not be showing their list-actions bar this hides it
+         * * selectionOnly = true, List views should not allow editing/viewing, just selecting
+         * * negateHistory = true, disables saving of this options object when storing the history context
+         * * tools = {}, overrides the toolbar of the target view so that the function that fires is invoked
+         * in the context of this field, not the List.
+         *
+         * The following options are &quot;expandable&quot; meaning they can be strings or functions that return strings:
+         *
+         * resourceKind, resourcePredicate, where and previousSelections
+         *
+         * They will be passed the `dependsOn` field value (if defined).
+         *
+         */
+        createNavigationOptions: function() {
+            var options = {
                 enableActions: false,
                 selectionOnly: true,
                 singleSelect: this.singleSelect,
@@ -229,14 +416,22 @@ define('Sage/Platform/Mobile/Fields/LookupField', [
 
             return options;
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-navigateToListView'>        navigateToListView: function() {
-</span>            var view = App.getView(this.view),
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-navigateToListView'>        /**
+</span>         * Navigates to the `this.view` id passing the options created from {@link #createNavigationOptions createNavigationOptions}.
+         */
+        navigateToListView: function() {
+            var view = App.getView(this.view),
                 options = this.createNavigationOptions();
             if (view &amp;&amp; options &amp;&amp; !this.disabled)
                 view.show(options);
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-_onClick'>        _onClick: function(evt) {
-</span>            var buttonNode = query(evt.target).closest('.button')[0];
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-_onClick'>        /**
+</span>         * Handler for the click event, fires {@link #navigateToListView navigateToListView} if the
+         * field is not disabled.
+         * @param evt
+         */
+        _onClick: function(evt) {
+            var buttonNode = query(evt.target).closest('.button')[0];
 
             if (!this.isDisabled() &amp;&amp; (buttonNode || this.requireSelection))
             {
@@ -245,32 +440,70 @@ define('Sage/Platform/Mobile/Fields/LookupField', [
                 this.navigateToListView();
             }
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-_onKeyUp'>        _onKeyUp: function(evt) {
-</span>            if (!this.isDisabled() &amp;&amp; this.notificationTrigger == 'keyup')
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-_onKeyUp'>        /**
+</span>         * Handler for onkeyup, fires {@link #onNotificationTrigger onNotificationTrigger} if
+         * `this.notificationTrigger` is `'keyup'`.
+         * @param {Event} evt Click event
+         */
+        _onKeyUp: function(evt) {
+            if (!this.isDisabled() &amp;&amp; this.notificationTrigger == 'keyup')
                 this.onNotificationTrigger(evt);
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-_onBlur'>        _onBlur: function(evt) {
-</span>            if (!this.isDisabled() &amp;&amp; this.notificationTrigger == 'blur')
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-_onBlur'>        /**
+</span>         * Handler for onblur, fires {@link #onNotificationTrigger onNotificationTrigger} if
+         * `this.notificationTrigger` is `'blur'`.
+         * @param {Event} evt Blur event
+         */
+        _onBlur: function(evt) {
+            if (!this.isDisabled() &amp;&amp; this.notificationTrigger == 'blur')
                 this.onNotificationTrigger(evt);
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-onNotificationTrigger'>        onNotificationTrigger: function(evt) {
-</span>            var currentValue = this.getValue();
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-onNotificationTrigger'>        /**
+</span>         * Called from onkeyup and onblur handlers if the trigger is set.
+         *
+         * Checks the current value against `this.previousValue` and if different
+         * fires {@link #onChange onChange}.
+         *
+         * @param {Event} evt
+         */
+        onNotificationTrigger: function(evt) {
+            var currentValue = this.getValue();
 
             if (this.previousValue != currentValue)
                 this.onChange(currentValue, this);
 
             this.previousValue = currentValue;
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-setText'>        setText: function(text) {
-</span>            this.set('inputValue', text);
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-setText'>        /**
+</span>         * Sets the displayed text of the field
+         * @param {String} text
+         */
+        setText: function(text) {
+            this.set('inputValue', text);
 
             this.previousValue = text;
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-getText'>        getText: function() {
-</span>            return this.inputNode.value;
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-getText'>        /**
+</span>         * Returns the string text of the field (note, not the value of the field)
+         * @return {String}
+         */
+        getText: function() {
+            return this.inputNode.value;
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-complete'>        complete: function() {
-</span>            // todo: should there be a better way?
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-complete'>        /**
+</span>         * Called from the target list view when a row is selected.
+         *
+         * The intent of the complete function is to gather the value(s) from the list view and
+         * transfer them to the field - then handle navigating back to the Edit view.
+         *
+         * The target view must be the currently active view and must have a selection model.
+         *
+         * The values are gathered and passed to {@link #setSelection setSelection}, `ReUI.back()` is
+         * fired and lastly {@link #_onComplete _onComplete} is called in a setTimeout due to bizarre
+         * transition issues, namely in IE.
+         */
+        complete: function() {
+            // todo: should there be a better way?
             var view = App.getPrimaryActiveView();
 
             if (view &amp;&amp; view.get('selectionModel'))
@@ -304,11 +537,18 @@ define('Sage/Platform/Mobile/Fields/LookupField', [
                 setTimeout(lang.hitch(this, this._onComplete), 0);
             }
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-_onComplete'>        _onComplete: function() {
-</span>            this.onChange(this.currentValue, this);
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-_onComplete'>        /**
+</span>         * Forces {@link #onChange onChange} to fire
+         */
+        _onComplete: function() {
+            this.onChange(this.currentValue, this);
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-isDirty'>        isDirty: function() {
-</span>            if (this.originalValue &amp;&amp; this.currentValue)
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-isDirty'>        /**
+</span>         * Determines if the field has been altered from the default/template value.
+         * @return {Boolean}
+         */
+        isDirty: function() {
+            if (this.originalValue &amp;&amp; this.currentValue)
             {
                 if (this.originalValue.key != this.currentValue.key)
                     return true;
@@ -341,11 +581,20 @@ define('Sage/Platform/Mobile/Fields/LookupField', [
 
             return (this.originalValue != this.currentValue);
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-getSelection'>        getSelection: function() {
-</span>            return this.currentSelection;
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-getSelection'>        /**
+</span>         * Returns the current selection that was set from the target list view.
+         * @return {Object}
+         */
+        getSelection: function() {
+            return this.currentSelection;
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-getValue'>        getValue: function() {
-</span>            var value = null,
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-getValue'>        /**
+</span>         * Returns the current value either by extracting the valueKeyProperty and valueTextProperty or
+         * several other methods of getting it to that state.
+         * @return {Object/String}
+         */
+        getValue: function() {
+            var value = null,
                 text = this.getText() || '',
                 // if valueKeyProperty or valueTextProperty IS NOT EXPLICITLY set to false
                 // and IS NOT defined use keyProperty or textProperty in its place.
@@ -399,8 +648,30 @@ define('Sage/Platform/Mobile/Fields/LookupField', [
             
             return value;
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-setSelections'>        setSelections: function(values) {
-</span>            this.currentValue = (this.formatValue)
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-formatValue'>        /**
+</span>         * If using a multi-select enabled lookup then the view will return multiple objects as the value.
+         *
+         * This function takes that array and returns the single value that should be used for `this.currentValue`.
+         *
+         * @template
+         * @param {Object[]} values
+         * @return {Object/String}
+         */
+        formatValue: function(values) {
+            return values;
+        },
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-setSelections'>        /**
+</span>         * If using a multi-select enabled lookup this function will be called by {@link #complete complete}
+         * in that the target view returned multiple entries.
+         *
+         * Sets the currentValue using {@link #formatValue formatValue}.
+         *
+         * Sets the displayed text using `this.textRenderer`.
+         *
+         * @param {Object[]} values
+         */
+        setSelections: function(values) {
+            this.currentValue = (this.formatValue)
                 ? this.formatValue.call(this, values)
                 : values;
 
@@ -410,8 +681,21 @@ define('Sage/Platform/Mobile/Fields/LookupField', [
 
             this.setText(text);
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-setSelection'>        setSelection: function(val, key) {
-</span>            var key = utility.getValue(val, this.keyProperty, val) || key, // if we can extract the key as requested, use it instead of the selection key
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-setSelection'>        /**
+</span>         * If using a singleSelect enabled lookup this function will be called by {@link #complete complete}
+         * and the single entry's data and key will be passed to this function.
+         *
+         * Sets the `this.currentSelection` to the passed data (entire entry)
+         *
+         * Sets the `this.currentValue` to the extract key/text properties
+         *
+         * Calls {@link #setText setText} with the extracted text property.
+         *
+         * @param {Object} val Entire selection entry
+         * @param {String} key data-key attribute of the selected row (typically $key from SData)
+         */
+        setSelection: function(val, key) {
+            var key = utility.getValue(val, this.keyProperty, val) || key, // if we can extract the key as requested, use it instead of the selection key
                 text = utility.getValue(val, this.textProperty);
 
             if (text &amp;&amp; this.textTemplate)
@@ -428,8 +712,14 @@ define('Sage/Platform/Mobile/Fields/LookupField', [
 
             this.setText(text);
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-setValue'>        setValue: function(val, initial) {
-</span>            // if valueKeyProperty or valueTextProperty IS NOT EXPLICITLY set to false
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-setValue'>        /**
+</span>         * Sets the given value to `this.currentValue` using the initial flag if to set it as
+         * clean/unmodified or false for dirty.
+         * @param {Object/String} val Value to set
+         * @param {Boolean} initial Dirty flag (true is clean)
+         */
+        setValue: function(val, initial) {
+            // if valueKeyProperty or valueTextProperty IS NOT EXPLICITLY set to false
             // and IS NOT defined use keyProperty or textProperty in its place.
             var key,
                 text,
@@ -501,8 +791,15 @@ define('Sage/Platform/Mobile/Fields/LookupField', [
                 this.setText(text);
             }
         },
-<span id='Sage-Platform-Mobile-Fields-LookupField-method-clearValue'>        clearValue: function(flag) {
-</span>            var initial = flag !== true;
+<span id='Sage-Platform-Mobile-Fields-LookupField-method-clearValue'>        /**
+</span>         * Clears the value by setting null (which triggers usage of `this.emptyText`.
+         *
+         * Flag is used to indicate if to set null as the initial value (unmodified) or not.
+         *
+         * @param {Boolean} flag
+         */
+        clearValue: function(flag) {
+            var initial = flag !== true;
 
             this.setValue(null, initial);
         }

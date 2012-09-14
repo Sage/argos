@@ -13,7 +13,7 @@ Production landing page. This file will be used when application is built and de
 Application is the global object accessible anywhere using the `App` variable. It handles communication the underlying rendering library and handles topics like: navigation history, initializing views, global events. You may want to consider code that affects the entire app to be placed here: login, user info, session state, preference saving/loading etc.
 
 **src/ApplicationModule.js**   
-This file is the "load and register" module. All views and any supporting modules will be put as dependencies and referenced in this module. It also handles registering the built in toolbars and loading any external customization's.
+This file is the "load and register" module. All views and any supporting modules will be put as dependencies and referenced in this module. It also handles registering the built in toolbars and loading any external customizations.
 
 **src/Views/Home.js**   
 This is the built in Home page that is initially loaded and navigated to upon load. It is like a table of contents with links to the rest of your app.

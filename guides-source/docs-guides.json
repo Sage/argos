@@ -59,8 +59,13 @@
         "items": [
               {
                   "name": "v2_beyond_the_guide_localization",
-                  "title": "Export and Import Locales",
-                  "description": "How to export strings, import them and activate dynamic locale detection."
+                  "title": "Localization Abstract",
+                  "description": "High level explanation of how to enable Argos apps to use the Argos-Localizer tool."
+              },
+              {
+                  "name": "v2_localization_example",
+                  "title": "Localization Example",
+                  "description": "Complete walk-thru of taking a completed application and translating it to other languages."
               }
         ]
       },
