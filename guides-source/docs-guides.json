@@ -43,6 +43,11 @@
                   "description": "How to define an action sub_panel in List Views."
               },
               {
+                "name": "v2_beyond_the_guide_detail_layout_properties",
+                "title": "Detail Layout Properties",
+                "description": "Covers all the properties available to Detail Layout rows"
+              },
+              {
                   "name": "v2_beyond_the_guide_defining_quick_actions",
                   "title": "Detail Actions",
                   "description": "How to define prominent actions on a Detail View."
