@@ -2,7 +2,7 @@
 Related Views are List Views that we want to duplicate for purposes of looking up or for specific filters. For example I may adding a new "Employee" and need to assign them to a "Company". When selecting a company it should show a list with logic to handle making a selection and passing the value back to my new employee. We don't want that extra logic to still be there when looking at the "main" employee listing.
 
 ##Prep
-Since we need a base list view in order to create a related one make a new List view (see Create a List in [Argos-Template Guide](#!/guides/v2_template_guide) for help) with the following properties into `argos-template/src/Views/Contact/List.js`:
+Since we need a base list view in order to create a related one make a new List view (see Create a List in [Argos-Template Guide](#!/guide/v2_template_guide) for help) with the following properties into `argos-template/src/Views/Contact/List.js`:
 
         //Template
         itemTemplate: new Simplate([

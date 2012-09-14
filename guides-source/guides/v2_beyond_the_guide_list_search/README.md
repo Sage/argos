@@ -2,7 +2,7 @@
 By default all List views have a built in search bar that lets the user search for more records. This topic will first cover hiding/showing the bar and then into the specifics of what happens when a user types in a query and presses search.
 
 ##Hiding Search
-Since the default is to show a search we will turn it off in a view then turn it back on. We will use the Account List view made in [Argos-Template Guide](#!/guides/v2_template_guide).
+Since the default is to show a search we will turn it off in a view then turn it back on. We will use the Account List view made in [Argos-Template Guide](#!/guide/v2_template_guide).
 
 1\. Open `argos-template/src/Views/Account/List.js`.
 

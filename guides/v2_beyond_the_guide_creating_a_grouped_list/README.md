@@ -4,7 +4,7 @@ A common extension of List Views is a Grouped List which is used to logically ca
 ##Contact List
 To demonstrate we will make a new List view for the Contact entity but it will be based off GroupedList instead of List. When the items are added to the page they will be alphabetized and separated by the first letter of the last names -- just like a phone book.
 
-If you have completed [How List Search Works](#!/guides/v2_beyond_the_guide_list_search) then you already have the file defined, just follow along and add the new properties.
+If you have completed [How List Search Works](#!/guide/v2_beyond_the_guide_list_search) then you already have the file defined, just follow along and add the new properties.
 
 1\. Create a new folder in `argos-template/src/Views` named Contact. Within that folder create a file named `List.js` and open it up.
 

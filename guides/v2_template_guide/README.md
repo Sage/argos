@@ -37,7 +37,7 @@ Download it from here: [https://github.com/Sage/argos-template/downloads](https:
 
 Congratulations you have your first Argos app!
 
-If you want to know about all the files you downloaded, see [Overview](#!/guides/v2_overview) - for an explanation of all files and 
+If you want to know about all the files you downloaded, see [Overview](#!/guide/v2_overview) - for an explanation of all files and 
 folders currently in `argos-template`.
 
 ####Local Files
@@ -119,7 +119,7 @@ For our entity choice we will be making a List (and Detail, Edit) View of the en
 
 2\. Create an empty file named `List.js` into `argos-template\src\Views\Account\` and open it up.
 
-3\. First we setup the declare and define according the AMD standard. For more information see [Appendix: AMD](#!/guides/v2_appendix_amd).
+3\. First we setup the declare and define according the AMD standard. For more information see [Appendix: AMD](#!/guide/v2_appendix_amd).
 
     define('Mobile/Template/Views/Account/List', [
         'dojo/_base/declare',
@@ -227,7 +227,7 @@ quick peek and directly go to the view - this trick is useful for developing and
 
 1\. Open `index-dev.html`.
 
-2\. Open your javascript console. See [Browsers Help](#!/guides/v2_appendix_browser-setup) for the shortcut key for your chosen browser.
+2\. Open your javascript console. See [Browsers Help](#!/guide/v2_appendix_browser-setup) for the shortcut key for your chosen browser.
 
 3\. Type in: `App.getView('account_list').show()`
 
@@ -289,7 +289,7 @@ Creating a Detail View is very similar to creating a List in that you need to do
 ###Step 1: Coding a Detail View
 1\. Create an empty file named `Detail.js` into `argos-template\src\Views\Account\` and open it up.
 
-2\. First we setup the declare and define according the AMD standard. For more information see [Appendix: AMD](#!/guides/v2_appendix_amd).
+2\. First we setup the declare and define according the AMD standard. For more information see [Appendix: AMD](#!/guide/v2_appendix_amd).
 
     define('Mobile/Template/Views/Account/Detail', [
         'dojo/_base/declare',
@@ -357,7 +357,7 @@ The sections get turned into collapsible headers with the children being the row
     }
 
 6\. The row objects `property` property should match up with your `querySelect`s, this ties the data from the SData response to the
- displayed row to the user. Further options for layout are covered in [Advanced Detail Create Layout](#!/guides/v2_beyond_the_guide_detail_layout_properties). 
+ displayed row to the user. Further options for layout are covered in [Advanced Detail Create Layout](#!/guide/v2_beyond_the_guide_detail_layout_properties). 
 
 7\. To utilize localization utilities of Argos all the row labels and section titles are defined as a property of the view and suffixed with 
 `Text`. Any text string that is shown to the user should be defined this way.
@@ -453,7 +453,7 @@ Our Account List View does not know about the Account Detail View so let's add t
 
 (Details may vary)
 
-For further details on how the wiring works please see [Wiring List to Detail](#!/guides/v2_appendix_wire_list_to_detail).
+For further details on how the wiring works please see [Wiring List to Detail](#!/guide/v2_appendix_wire_list_to_detail).
 
 As you can see several of the fields don't look as they should, the phone number isn't formatted, the website isn't a hyperlink and the name 
 just says Object. These rows require some additional properties in order to render correctly.
@@ -558,7 +558,7 @@ Edit Views take a few extra steps to get up and running:
 ###Step 1: Coding an Edit View
 1\. Create an empty file named `Edit.js` into `argos-template\src\Views\Account\` and open it up.
 
-2\. First we setup the declare and define according the AMD standard. For more information see [Appendix: AMD](#!/guides/v2_appendix_amd).
+2\. First we setup the declare and define according the AMD standard. For more information see [Appendix: AMD](#!/guide/v2_appendix_amd).
 
     define('Mobile/Template/Views/Account/Edit', [
         'dojo/_base/declare',
@@ -733,7 +733,7 @@ We'll get to sorting out the needed properties - just make sure you that the Det
 
 ####Additional Info
 For more details on how the wiring for Edit Views work, including how it distinguishes Insert vs Update please see
- [Wire Detail to Edit](#!/guides/v2_beyond_the_guide_wire_detail_to_edit) and [Wire List to Edit](#!/guides/v2_beyond_the_guide_wire_list_to_edit).
+ [Wire Detail to Edit](#!/guide/v2_beyond_the_guide_wire_detail_to_edit) and [Wire List to Edit](#!/guide/v2_beyond_the_guide_wire_list_to_edit).
 
 Next we need to step through each of the field objects and assign the correct type while investigating any properties that field may introduce.
 

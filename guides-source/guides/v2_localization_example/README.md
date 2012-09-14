@@ -1,7 +1,7 @@
 #Localization Example
 
-While the [How To Localize Guide](#!/guides/v2_beyond_the_guide_localization) explains it at the high level, this guide will take the completed 
-[Argos Template](#!/guides/v2_template_guide), configure the localizer and show the results.
+While the [How To Localize Guide](#!/guide/v2_beyond_the_guide_localization) explains it at the high level, this guide will take the completed 
+[Argos Template](#!/guide/v2_template_guide), configure the localizer and show the results.
 
 
 ##Pre-Setup

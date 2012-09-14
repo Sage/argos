@@ -25,7 +25,7 @@ Every field widget derives from the base {@link _Field _Field} which has the {@l
 ##Validators
 Validators are quick and simple methods for adding validation logic, they can be defined as: RegExp, functions, or objects that have either `test` for RegExp or `fn` for function. Objects may also have a `message` defined for custom error messages. If the message is define it is treated as a `string.substitute` format string and is passed: value, field name, field label as `${0}`, `${1}` and `${2}` respectively.
 
-This part assumes you've completed [Argos-Template Guide](#!/guides/v2_template-guide).
+This part assumes you've completed [Argos-Template Guide](#!/guide/v2_template-guide).
 
 1\. Open `argos-template/src/Views/Account/Edit` down to `createLayout()` and the AccountName field.
 

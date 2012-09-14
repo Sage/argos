@@ -3,7 +3,7 @@ Navigation is an important role in a single page app as it needs to not only han
 
 All Views have an `id` property. Knowing the `id` enables you to get a references to that View, and therefore it's `show()` function for navigation.
 
-This guide assumes you have completed [Argos-Template Guide](#!/guides/v2-template-guide). For all the exercises the id's of the views in argos-template are: `account_list`, `account_detail` and `account_edit`.
+This guide assumes you have completed [Argos-Template Guide](#!/guide/v2-template-guide). For all the exercises the id's of the views in argos-template are: `account_list`, `account_detail` and `account_edit`.
 
 ##Navigation Options
 Navigation Options, or sometimes called View Options, is the object passed into the `show()` call that get stored into the views `options` property. Many Views have custom navigation options that they respond to and they will be covered under their respective help pages, for now let's try out passing `key` to a Detail View.

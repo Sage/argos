@@ -204,7 +204,7 @@ It is also important to note that the `getService()` calls returns the _instance
                 this.navigateToLoginView();
             },
 
-23\. We now need to undo the hard coded userName and password that was added in [Argos-Template Guide](#!/guides/v2_template_guide).
+23\. We now need to undo the hard coded userName and password that was added in [Argos-Template Guide](#!/guide/v2_template_guide).
 
 24\. Open `argos-template/configuration/development.js` and remove the `userName` and `password` keys from the `crm` service.
 

@@ -2,7 +2,7 @@
 Hashtags are like a quick filter for searches and in the case of Argos, used to insert predefined Where expressions. For example: `#open` may insert `'Status eq "open"`, any other part of the search will go through the normal search formatting.
 
 ##Adding a Hashtag
-Here we will be adding a simple hash tag to our Account List view (from the [Argos-Template Guide](#!/guides/v2_template_guide)) for finding small businesses with less than 10,000 in revenue using `#10k`.
+Here we will be adding a simple hash tag to our Account List view (from the [Argos-Template Guide](#!/guide/v2_template_guide)) for finding small businesses with less than 10,000 in revenue using `#10k`.
 
 1\. Open `argos-template/src/Views/Account/List.js` and add a new property `hashTagQueries` and set it to an object with a key of `10k` with value `'Revenue lt 10000'`:
 
