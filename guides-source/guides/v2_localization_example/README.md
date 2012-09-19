@@ -20,9 +20,9 @@ If you have completed the Argos Template Guide, then you already have the folder
 
 
     /code/mobile
-                        /argos-sdk
-                        /products
-                                       /argos-template
+                /argos-sdk
+                /products
+                         /argos-template
                                        
 
 ##Setup
@@ -31,7 +31,7 @@ Now that you have all the source files, it's time to get the localizer tool itse
 
 1\. Download and extract the [windows exe bundle](https://github.com/downloads/SageScottsdalePlatform/argos-localizer/argos-localizer-windows.zip), for this example it'll be extracted to `C:\code\argos-localizer`.
 
-2\. Duplicate (copy+paste, rename) the file `C:\code\argos-localizer\config\argos-saleslogix.json` to the same folder and named `argos-template`.
+2\. Duplicate (copy+paste and rename) the file `C:\code\argos-localizer\config\argos-saleslogix.json` to the same folder and named `argos-template`.
 
 3\. Open the new config file `C:\code\argos-localizer\config\argos-template.json` and find the `export` key at the top:
 
@@ -66,7 +66,7 @@ Now that you have all the source files, it's time to get the localizer tool itse
 * Note, if you do not want to include the SDK strings then simply remove it from the projects array, leaving only `[{argos-template}]`.
 
 
-7\. Since `path` in step 5. is relative to our source code root (`C:\code\mobile`) so save the config file and make the two folders:
+7\. Since `path` in step 5. is relative to our source code root (`C:\code\mobile`) save the config file and make its two folders:
 
     C:\code\mobile\localization\
 
@@ -80,7 +80,7 @@ and
 
 This first step of the tool inspects dojo AMD defined modules and extracts any property that name ends with `Text`, adding them into a XML file for translation.
 
-1\. Run the tool by opening Windows Run (winkey+r) and enterting the following command (quotes are not needed unless you have spaces in the path):
+1\. Run the tool by opening Windows Run (winkey+r) and entering the following command (quotes are not needed unless you have spaces in the path):
 
     "C:\code\argos-localizer\argos-localizer.exe export --base-path "C:\code\mobile" --config-path "C:\code\argos-localizer\config\argos-template.json"
 
@@ -113,7 +113,7 @@ is the combined file.
 At this point the localization team/department would duplicate the base xml file and translate the `<value>` for each data entry, naming the duplicated 
 file with the locale they are translating it into: `mobile-strings-de.xml`, `mobile-strings-fr.xml` and so on. 
 
-Meaning at the end you should have the base xml file (which is really `mobile-strings-en-US.xml`) and one (or two if using the splitte ones) per locale.
+Meaning at the end you should have the base xml file (which is really `mobile-strings-en-US.xml`) and one (or two if using the split ones) per locale.
 
 For this example duplicate the file to `mobile-strings-de.xml` and change the `titleText` for the Home View to `Zuhause` (the `<data>` node for 
 Home should be near the bottom of your xml file):
@@ -238,7 +238,7 @@ We have the German javascript translation for our app -- time to add it in and l
 
 4\. Open `index-dev.html` and notice the top title:
 
-{@img german_home.png German Home}
+{@img German_home.png German Home}
 
 5\. Use `index-dev.aspx` for dynamic server (C#) detection of the locale the browser is running instead of typing it in manually in `index-dev.html`.
 

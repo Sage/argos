@@ -71,6 +71,11 @@
                   "name": "v2_localization_example",
                   "title": "Localization Example",
                   "description": "Complete walk-thru of taking a completed application and translating it to other languages."
+              },
+              {
+                  "name": "v2_localization_detection",
+                  "title": "Localization Detection",
+                  "description": "Explains how the .html and .aspx locale detection works and tips on testing different languages."
               }
         ]
       },
