@@ -1,0 +1,17 @@
+ [
+      {
+        "title": "Appendix",
+        "items": [
+               {
+                  "name": "v2_appendix_amd",
+                  "title": "AMD - Define and Declare",
+                  "description": "Describes how the AMD loader works with defining modules."
+               },
+               {
+                  "name": "v2_appendix_browser_setup",
+                  "title": "Browser Setup",
+                  "description": "Helpful setup tips and general browser guidance."
+               }
+        ]
+      }
+  ]

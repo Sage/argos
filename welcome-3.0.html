@@ -1,0 +1,215 @@
+<style type="text/css">
+.body-container
+{
+    width:80%;
+    padding:16px 0 0 10px;
+    position:relative;
+    float:left;
+}
+.splash-description > img
+{
+    position:absolute;
+    left: 10px;
+    top: 32px;
+}
+.splash-description 
+{
+    padding-left: 412px;
+    padding-top: 64px;
+    vertical-align:top;
+    height: 300px;
+}
+.splash-description > h3 
+{
+    font-size: 2em;
+    color: #007F64;
+    
+}
+.splash-description > p 
+{
+    font-size: 1.25em;
+}
+
+.panel-right
+{
+    width:19%;
+    margin-left:1%;
+    padding-right:10px;
+    position:relative;
+    float:left;
+}
+.panel-right > .panel
+{
+    margin-top: 16px;
+}
+.panel-right > .panel > h2
+{
+    border-radius: 11px 11px 0 0;
+    border: 1px solid #ababab;
+    background-color: #E6E6E6;
+    background-image: linear-gradient(top, #E6E6E6, #CCC);
+    background-image: -webkit-gradient(
+     linear,
+     left top,
+     left bottom,
+     color-stop(0, #E6E6E6),
+     color-stop(1, #CCC)
+     );
+    background-image: -moz-linear-gradient(top, #E6E6E6, #CCC);
+    color: black;
+    text-shadow: white 0px 1px 0px;
+    font-weight: bold;
+    -webkit-box-sizing: border-box;
+    height: 32px;
+    line-height: 32px;
+    margin: 0;
+    padding: 0 0 0 12px;
+    font-size: 1em;
+    z-index: 5;
+    position: relative;    
+}
+.panel-right > .panel > .panel-content
+{
+    padding: 6px;
+    background: #efefef;
+    border: 1px solid #ababab;
+    border-top-width: 0;
+    border-radius: 0 0 11px 11px;
+}
+.panel-right > .panel > .panel-content > ul
+{
+    margin: 3px 3px 3px 18px;
+    padding: 0;
+}
+.panel-right > .panel > .panel-content > ul > li
+{
+    list-style: disc;
+}
+.github-links 
+{
+    border-radius: 11px;
+    border: 1px solid #ababab;
+    background-color: #E6E6E6;
+    background-image: linear-gradient(top, #E6E6E6, #CCC);
+    background-image: -webkit-gradient(
+     linear,
+     left top,
+     left bottom,
+     color-stop(0, #E6E6E6),
+     color-stop(1, #CCC)
+     );
+    background-image: -moz-linear-gradient(top, #E6E6E6, #CCC);
+    color: black;
+    text-shadow: white 0px 1px 0px;
+    font-weight: bold;
+    -webkit-box-sizing: border-box;
+    padding: 3px;
+    width: 60%;
+    margin: 12px auto;
+}
+
+.github-links:before,
+.github-links:after {
+    content:"";
+    display:table;
+}
+.github-links:after {
+    clear:both;
+}
+
+.github-links > a
+{
+    width: 48%;
+    text-align:center;
+    position:relative;
+    float: left;
+    color: #000;
+    border-right: 1px solid white;
+    padding: 3px 0;
+}
+.github-links > a:last-child
+{
+    border-right:none;
+}
+.github-links > a:hover
+{
+    color: #007F64;
+}
+
+.sage-lines
+{
+position:absolute;
+bottom:0; right:0;
+z-index:1;
+width:400px;
+height:207px;
+background: url(resources/images/sage_lines_and_shapes_10.png) no-repeat 0 0;
+}
+.grid-3
+{
+    width: 30%;
+    margin-left:3%;
+    margin-top: 16px;
+    display: inline-block;
+    vertical-align: top;
+}
+.body-container > .grid-3 > h4
+{
+    font-size: 1.5em;
+    color: #E98300;
+}
+
+
+</style>
+<div class="body-container">
+    <div class="splash-description">
+        <img src="resources/images/splash-device.png">
+        <h3>Argos 3.0</h3>
+        <p>Argos is an <strong>HTML5</strong> mobile framework for enterprise data-driven applications.</p>
+        <div class="github-links">
+            <a href="https://github.com/Sage/argos-sdk/zipball" target="_blank">Download</a>
+            <a href="https://github.com/Sage/argos-sdk/" target="_blank">View Code</a>
+        </div>
+    </div>
+        
+    <div class="grid-3">
+    <h4>Cross-Platform</h4>
+    <p>Compatible with devices such as the iPhone&reg;, iPad&reg;, Android&trade;, BlackBerry&reg; or any HTML5 compatible browser.</p>
+    </div>
+    
+    <div class="grid-3">
+    <h4>Deploy Natively</h4>
+    <p>Works seamlessly with <a href="http://www.phonegap.com/" target="_blank">Phonegap</a> to provide native on-device solutions.</p>
+    </div>
+    
+    <div class="grid-3">
+    <h4>Feature Filled</h4>
+    <p>Enjoy many features from navigation history, localization, template engine, plugin framework and minification tools.</p>
+    </div>
+        
+</div>
+<div class="panel-right">
+
+    <div class="panel">
+        <h2>Recent Additions</h2>
+        <div class="panel-content">
+            <ul>
+            </ul>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Source Code</h2>
+        <div class="panel-content">
+            <ul>
+                <li><a href="https://github.com/Sage/argos-sdk" target="_blank">Argos-SDK</a></li>
+                <li><a href="https://github.com/Sage/SDataJavaScriptClientLib" target="_blank">SData JavaScript Client</a></li>
+                <li><a href="https://github.com/mmorton/simplate" target="_blank">Simplate</a></li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="sage-lines"></div>
