@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='argos-ApplicationModule'>/**
+</span> * You may think of ApplicationModule as &quot;loader&quot; or initializer.
+ *
+ * @alternateClassName ApplicationModule
+ * @requires App
+ */
+define('argos/ApplicationModule', [
+    'dojo/_base/array',
+    'dojo/_base/connect',
+    'dojo/_base/declare',
+    'dojo/_base/lang',
+    './Application'
+], function(
+    array,
+    connect,
+    declare,
+    lang
+) {
+
+    return declare('argos.ApplicationModule', null, {
+<span id='argos-ApplicationModule-property-_signals'>        _signals: null,
+</span><span id='argos-ApplicationModule-property-application'>        /**
+</span>         * @property {Object}
+         * The {@link App App} instance for the application
+         */
+        application: null,
+<span id='argos-ApplicationModule-method-constructor'>        /**
+</span>         * Mixes in the passed options object into itself
+         * @param {Object} options Properties to be mixed in
+         */
+        constructor: function(options) {
+            this._signals = [];
+
+            lang.mixin(this, options);
+        },
+<span id='argos-ApplicationModule-method-destroy'>        /**
+</span>         * Destroy loops and removes all `_signals`s.
+         * Also calls {@link #uninitialize uninitialize}
+         */
+        destroy: function() {
+            array.forEach(this._signals, function(signal) {
+                signal.remove();
+            });
+
+            delete this._signals;
+
+            this.uninitialize();
+        },
+<span id='argos-ApplicationModule-method-uninitialize'>        /**
+</span>         * Performs any additional destruction requirements
+         * @template
+         */
+        uninitialize: function() {
+
+        },
+<span id='argos-ApplicationModule-method-startup'>        /**
+</span>         * 1. {@link #loadCustomizations loadCustomizations}
+         * 1. {@link #loadViews loadViews}
+         */
+        startup: function() {
+            this.loadCustomizations(this.application); /* todo: potentially replace application with customization set */
+            this.loadViews(this.application &amp;&amp; this.application.scene);
+        },
+<span id='argos-ApplicationModule-method-setApplication'>        setApplication: function(application) {
+</span>            this.application = application;
+        },
+<span id='argos-ApplicationModule-method-loadCustomizations'>        /**
+</span>         * This function should be overriden in the app and be used to register all customizations.
+         * @template
+         */
+        loadCustomizations: function(customizationSet) {
+        },
+<span id='argos-ApplicationModule-method-loadViews'>        /**
+</span>         * This function should be overriden in the app and be used to register all views.
+         * @template
+         */
+        loadViews: function(scene) {
+        },
+<span id='argos-ApplicationModule-method-registerView'>        /**
+</span>         * Legacy support for registering views. Now should be done through {@link scene scene}.
+         * @deprecated
+         * @param view
+         */
+        registerView: function(view) {
+            var scene = this.application &amp;&amp; this.application.scene;
+            if (scene)
+                scene.registerView(view.id, view);
+        },
+<span id='argos-ApplicationModule-method-registerCustomization'>        /**
+</span>         * Legacy support for registering customizations. Now should be done through {@link scene scene}.
+         * @deprecated
+         * @param set
+         * @param id
+         * @param spec
+         */
+        registerCustomization: function(set, id, spec) {
+            var customizationSet = this.application;
+            if (customizationSet)
+                customizationSet.registerCustomization(set, id, spec);
+        }
+    });
+});</pre>
+</body>
+</html>

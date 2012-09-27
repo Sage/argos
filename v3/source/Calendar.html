@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='argos-Views-Calendar'>/**
+</span> * Calendar
+ * @alternateClassName Calendar
+ * @extends View
+ * @requires CalendarWidget
+ */
+define('argos/Calendar', [
+    'dojo/_base/declare',
+    'dojo/_base/lang',
+    'dojo/_base/connect',
+    'dojo/_base/Deferred', /* todo: use `dojo/when` in 1.8 */
+    'dojo/dom-class',
+    'dojo/dom-construct',
+    'dojo/dom-geometry',
+    'dojo/dom-style',
+    'dojo/string',
+    '../View',
+    '../CalendarWidget'
+], function(
+    declare,
+    lang,
+    connect,
+    Deferred,
+    domClass,
+    domConstruct,
+    domGeom,
+    domStyle,
+    string,
+    View,
+    CalendarWidget
+) {
+    return declare('argos.Views.Calendar', [View], {
+<span id='argos-Views-Calendar-property-events'>        events: {
+</span>            'click': true
+        },
+<span id='argos-Views-Calendar-property-components'>        components: [
+</span>            {name: 'calendarWidget', type: CalendarWidget}
+        ],
+<span id='argos-Views-Calendar-property-baseClass'>        baseClass: 'view calendar',
+</span><span id='argos-Views-Calendar-property-contentNode'>        contentNode: null,
+</span>
+<span id='argos-Views-Calendar-property-id'>        id: 'scroll-calendar',
+</span><span id='argos-Views-Calendar-property-tier'>        tier: 0,
+</span>
+<span id='argos-Views-Calendar-property-titleText'>        titleText: 'Calendar',
+</span>
+<span id='argos-Views-Calendar-method-onStartup'>        onStartup: function() {
+</span>            this.inherited(arguments);
+            this.subscribe('/app/refresh', this._onRefresh);
+        },
+<span id='argos-Views-Calendar-method-refreshRequiredFor'>        refreshRequiredFor: function(options) {
+</span>            // refresh if widget is not rendered
+            if (!this.$.calendarWidget._baseRendered)
+                return true;
+            else return this.inherited(arguments);
+        },
+<span id='argos-Views-Calendar-method-load'>        load: function() {
+</span>            console.log('refresh');
+            this.$.calendarWidget.renderBase();
+        },
+<span id='argos-Views-Calendar-method-createToolLayout'>        createToolLayout: function() {
+</span>            return this.tools || (this.tools = {
+                'top': []
+            });
+        },
+<span id='argos-Views-Calendar-method-onContentChange'>        onContentChange: function() {
+</span>        }
+    });
+});</pre>
+</body>
+</html>

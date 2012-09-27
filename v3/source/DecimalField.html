@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='argos-Fields-DecimalField'>/**
+</span> * The Decimal Field is used for inputting numbers and extends {@link TextField TextField} with:
+ *
+ * * hides the clear (x) button;
+ * * when setting a value, it converts the decimal and thousands group separator to the localized versions; and
+ * * when getting a value, it back-converts the localized punctuation into the en-US format and converts the result into a float (Number).
+ *
+ * ###Example:
+ *     {
+ *         name: 'SalesPotential',
+ *         property: 'SalesPotential',
+ *         label: this.salesPotentialText,
+ *         type: 'decimal'
+ *     }
+ *
+ * Note that this requires `Mobile.CultureInfo` to be set with required top level localization values.
+ *
+ * @alternateClassName DecimalField
+ * @extends TextField
+ */
+define('argos/Fields/DecimalField', [
+    'dojo/_base/declare',
+    'dojo/_base/event',
+    'dojo/string',
+    './TextField'
+], function(
+    declare,
+    event,
+    string,
+    TextField
+) {
+    return declare('argos.Fields.DecimalField', [TextField], {
+<span id='argos-Fields-DecimalField-property-widgetTemplate'>        /**
+</span>         * @property {Simplate}
+         * Overrides the Simplate that defines the fields HTML Markup to add more event handlers and attributes for HTML5
+         * nuumber type like `step`
+         *
+         * * `$` =&gt; Field instance
+         * * `$$` =&gt; Owner View instance
+         *
+         */
+        widgetTemplate: new Simplate([
+            '&lt;div&gt;',
+            '{% if ($.enableClearButton &amp;&amp; !$.readonly) { %}',
+            '&lt;button class=&quot;clear-button&quot; data-dojo-attach-point=&quot;clearNode&quot; data-dojo-attach-event=&quot;onclick:_onClearClick&quot;&gt;&lt;/button&gt;',
+            '{% } %}',
+            '&lt;input data-dojo-attach-point=&quot;inputNode&quot; data-dojo-attach-event=&quot;onkeyup: _onKeyUp, onblur: _onBlur, onfocus: _onFocus, onmouseup: _onMouseUp&quot; class=&quot;text-input&quot; type=&quot;{%= $.inputType %}&quot; name=&quot;{%= $.name %}&quot; step=&quot;any&quot; {% if ($.readonly) { %} readonly {% } %}&gt;',
+            '&lt;/div&gt;'
+        ]),
+
+<span id='argos-Fields-DecimalField-cfg-precision'>        /**
+</span>         * @cfg {Number}
+         * Defines how many decimal places to format when setting the value.
+         */
+        precision: 2,
+
+<span id='argos-Fields-DecimalField-property-enableClearButton'>        /**
+</span>         * @property {Boolean}
+         * Disables the display of the clear (x) button inherited from {@link TextField TextField}.
+         */
+        enableClearButton: false,
+
+<span id='argos-Fields-DecimalField-property-inputType'>        /**
+</span>         * @property {String}
+         * Overrides the `&lt;input type=` to be the HTML5 `'number'` type. This provides a numerical keyboard on mobile.
+         */
+        inputType: 'number',
+
+<span id='argos-Fields-DecimalField-method-setValue'>        /**
+</span>         * Before calling the {@link TextField#setValue parent implementation} it parses the value
+         * via `parseFloat`, trims the decimal place and then applies localization for the decimal
+         * and thousands punctuation.
+         * @param {Number/String} val Value to be set
+         */
+        setValue: function(val, initial) {
+            if (isNaN(parseFloat(val)))
+                val = 0;
+
+            var precision = (isNaN(this.precision) || this.precision &lt; 0)
+                ? Mobile.CultureInfo.numberFormat.currencyDecimalDigits
+                : this.precision;
+            val = parseFloat(val).toFixed(precision);
+
+            val = val.replace('.', Mobile.CultureInfo.numberFormat.currencyDecimalSeparator);
+
+            this.inherited(arguments, [val, initial]);
+        },
+<span id='argos-Fields-DecimalField-method-_onFocus'>        /**
+</span>         * Handler when the field receives focus.
+         *
+         * Creates a selection range on the current inputted value.
+         *
+         * @param {Event} evt Focus event
+         * @private
+         */
+        _onFocus: function(evt) {
+            this.inherited(arguments);
+            // ios does not support .select(), using suggested https://developer.mozilla.org/en/DOM/Input.select
+            evt.target.setSelectionRange(0, 9999);
+        },
+<span id='argos-Fields-DecimalField-method-_onMouseUp'>        /**
+</span>         * Handler for the fields onmouseup event.
+         *
+         * Since we are creating a selection on focus some browsers fire that event before mouseup and thereby
+         * deselect our selection. This prevents the event.
+         *
+         * @param {Event} evt Mouse up event
+         * @private
+         */
+        _onMouseUp: function(evt) {
+            this.inherited(arguments);
+            event.stop(evt); // prevent de-selecting focused text
+        },
+<span id='argos-Fields-DecimalField-method-getValue'>        /**
+</span>         * Retrieves the value from the {@link TextField#getValue parent implementation} but before
+         * returning it de-converts the punctuation back to `en-US` format.
+         * @return {Number}
+         */
+        getValue: function() {
+            var value = this.inherited(arguments);
+            // SData (and other functions) expect American formatted numbers
+            value = value
+                .replace(Mobile.CultureInfo.numberFormat.currencyGroupSeparator, '')
+                .replace(Mobile.CultureInfo.numberFormat.numberGroupSeparator, '')
+                .replace(Mobile.CultureInfo.numberFormat.currencyDecimalSeparator, '.')
+                .replace(Mobile.CultureInfo.numberFormat.numberDecimalSeparator, '.');
+            return parseFloat(value);
+        }
+    });
+});</pre>
+</body>
+</html>

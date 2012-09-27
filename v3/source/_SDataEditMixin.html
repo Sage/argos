@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='argos-_SDataEditMixin'>/**
+</span> * _SDataEditMixin
+ * @alternateClassName _SDataEditMixin
+ * @extends _SDataDetailMixin
+ * @requires SData
+ */
+define('argos/_SDataEditMixin', [
+    'dojo/_base/declare',
+    'dojo/_base/lang',
+    'dojo/string',
+    'dojo/dom-class',
+    './Store/SData',
+    './_SDataDetailMixin'
+], function(
+    declare,
+    lang,
+    string,
+    domClass,
+    SData,
+    _SDataDetailMixin
+) {
+<span id='argos-_SDataEditMixin-property-'>    /**
+</span>     * SData enablement for the Detail view.
+     */
+    return declare('argos._SDataEditMixin', [_SDataDetailMixin], {
+<span id='argos-_SDataEditMixin-method-_buildRefreshMessage'>        _buildRefreshMessage: function(item, result) {
+</span>            var message = this.inherited(arguments);
+
+            return lang.mixin(message, {
+                resourceKind: this.resourceKind
+            });
+        },
+<span id='argos-_SDataEditMixin-method-_onRequestTemplateFailure'>        _onRequestTemplateFailure: function(xhr, xhrOptions) {
+</span>            var error = new Error('An error occurred requesting: ' + xhrOptions.url);
+
+            error.xhr = xhr;
+            error.status = xhr.status;
+            error.responseText = xhr.responseText;
+
+            this._onGetError({}, error);
+        },
+<span id='argos-_SDataEditMixin-method-_onRequestTemplateSuccess'>        _onRequestTemplateSuccess: function(template) {
+</span>            this._processTemplateData(template);
+        },
+<span id='argos-_SDataEditMixin-method-_requestTemplateData'>        _requestTemplateData: function() {
+</span>            var request = this.createTemplateRequest();
+            if (request)
+                request.read({
+                    success: this._onRequestTemplateSuccess,
+                    failure: this._onRequestTemplateFailure,
+                    scope: this
+                });
+        },
+<span id='argos-_SDataEditMixin-method-createTemplateRequest'>        createTemplateRequest: function() {
+</span>            var request = new Sage.SData.Client.SDataTemplateResourceRequest(this.getConnection());
+
+            if (this.resourceKind)
+                request.setResourceKind(this.resourceKind);
+
+            if (this.querySelect)
+                request.setQueryArg(Sage.SData.Client.SDataUri.QueryArgNames.Select, this.querySelect.join(','));
+
+            if (this.queryInclude)
+                request.setQueryArg(Sage.SData.Client.SDataUri.QueryArgNames.Include, this.queryInclude.join(','));
+
+            return request;
+        },
+<span id='argos-_SDataEditMixin-method-_applyStateToPutOptions'>        _applyStateToPutOptions: function(putOptions) {
+</span>            var store = this.get('store');
+
+            putOptions.version = store.getVersion(this.item);
+            putOptions.entity = store.getEntity(this.item) || this.entityName;
+        },
+<span id='argos-_SDataEditMixin-method-_applyStateToAddOptions'>        _applyStateToAddOptions: function(addOptions) {
+</span>            addOptions.entity = this.entityName;
+        }
+    });
+});</pre>
+</body>
+</html>

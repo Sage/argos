@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='argos-_SDataDetailMixin'>/**
+</span> * _SDataDetailMixin
+ * @alternateClassName _SDataDetailMixin
+ * @requires SData
+ */
+define('argos/_SDataDetailMixin', [
+    'dojo/_base/declare',
+    './Store/SData'
+], function(
+    declare,
+    SData
+) {
+<span id='argos-_SDataDetailMixin-property-'>    /**
+</span>     * SData enablement for the Detail view.
+     */
+    return declare('argos._SDataDetailMixin', null, {
+<span id='argos-_SDataDetailMixin-property-resourceKind'>        /**
+</span>         * @cfg {String} resourceKind
+         * The SData resource kind the view is responsible for.  This will be used as the default resource kind
+         * for all SData requests.
+         * @type {String}
+         */
+        resourceKind: '',
+<span id='argos-_SDataDetailMixin-property-querySelect'>        /**
+</span>         * A list of fields to be selected in an SData request.
+         * @type {Array.&lt;String&gt;}
+         */
+        querySelect: null,
+<span id='argos-_SDataDetailMixin-property-queryInclude'>        /**
+</span>         * A list of child properties to be included in an SData request.
+         * @type {Array.&lt;String&gt;}
+         */
+        queryInclude: null,
+<span id='argos-_SDataDetailMixin-property-resourceProperty'>        /**
+</span>         * The default resource property for an SData request.
+         * @type {String|Function}
+         */
+        resourceProperty: null,
+<span id='argos-_SDataDetailMixin-property-resourcePredicate'>        /**
+</span>         * The default resource predicate for an SData request.
+         * @type {String|Function}
+         */
+        resourcePredicate: null,
+<span id='argos-_SDataDetailMixin-property-keyProperty'>        keyProperty: '$key',
+</span><span id='argos-_SDataDetailMixin-property-descriptorProperty'>        descriptorProperty: '$descriptor',
+</span><span id='argos-_SDataDetailMixin-method-createStore'>        createStore: function() {
+</span>            return new SData({
+                service: this.getConnection(),
+                contractName: this.contractName,
+                resourceKind: this.resourceKind,
+                resourceProperty: this.resourceProperty,
+                resourcePredicate: this.resourcePredicate,
+                include: this.queryInclude,
+                select: this.querySelect,
+                identityProperty: this.keyProperty,
+                scope: this
+            });
+        },
+<span id='argos-_SDataDetailMixin-method-_buildGetExpression'>        _buildGetExpression: function() {
+</span>            var options = this.options;
+
+            return options &amp;&amp; (options.id || options.key);
+        },
+<span id='argos-_SDataDetailMixin-method-_applyStateToGetOptions'>        _applyStateToGetOptions: function(getOptions) {
+</span>            var options = this.options;
+            if (options)
+            {
+                if (options.select) getOptions.select = options.select;
+                if (options.include) getOptions.include = options.include;
+                if (options.contractName) getOptions.contractName = options.contractName;
+                if (options.resourceKind) getOptions.resourceKind = options.resourceKind;
+                if (options.resourceProperty) getOptions.resourceProperty = options.resourceProperty;
+                if (options.resourcePredicate) getOptions.resourcePredicate = options.resourcePredicate;
+            }
+        }
+    });
+});</pre>
+</body>
+</html>

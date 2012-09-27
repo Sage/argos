@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='argos-ScrollContainer'>/**
+</span> * ScrollContainer is a {@link #_Component Component} that provides an iscroll enabled container.
+ *
+ * For proper iscrolling you will need to bind `onContentChange` and call it whenever HTML is added/removed.
+ *
+ * Example:
+ *
+ *     {name: 'scroller', type: ScrollContainer, props: {subscribeEvent: 'onContentChange:onContentChange', components: [
+ *         {name: 'scroll', tag: 'div', components: [
+ *             {name: 'content', tag: 'div', attachPoint: 'contentNode'}
+ *         ]}
+ *     ]}
+ *
+ * @alternateClassName ScrollContainer
+ * @extends _UiComponent
+ * @requires utility
+ */
+define('argos/ScrollContainer', [
+    'dojo/_base/declare',
+    'dojo/_base/lang',
+    'dojo/dom-class',
+    'dijit/_WidgetBase',
+    './_UiComponent',
+    './utility'
+], function(
+    declare,
+    lang,
+    domClass,
+    _WidgetBase,
+    _UiComponent,
+    utility
+) {
+    var onBeforeScrollStart = function(e) {
+        var target = e.target;
+        while (target.nodeType != 1) target = target.parentNode;
+
+        if (target.tagName != 'SELECT' &amp;&amp; target.tagName != 'INPUT' &amp;&amp; target.tagName != 'TEXTAREA')
+            e.preventDefault();
+    };
+
+    /* todo: going to need some way to temporarily turn off the iScroll container when view is not visible, i.e. resize events. */
+    return declare('argos.ScrollContainer', [_WidgetBase, _UiComponent], {
+<span id='argos-ScrollContainer-property-baseClass'>        /**
+</span>         * @property {String}
+         * CSS class string to be added to the container node
+         */
+        baseClass: 'scroll-container',
+<span id='argos-ScrollContainer-cfg-enableFormFix'>        /**
+</span>         * @cfg {Boolean}
+         * Option to enable the form elemtns (select, input, textarea) scroll fixes for iscroll
+         */
+        enableFormFix: false,
+<span id='argos-ScrollContainer-cfg-forceScroller'>        /**
+</span>         * @cfg {Boolean}
+         * Bypass the touch detection and force iscroll to be used.
+         */
+        forceScroller: false,
+<span id='argos-ScrollContainer-cfg-useTransition'>        /**
+</span>         * @cfg {Boolean}
+         * Option to use TransitionTimingFunction CSS for scroll animating
+         */
+        useTransition: true,
+<span id='argos-ScrollContainer-cfg-onPullDown'>        /**
+</span>         * @cfg {String}
+         * Similar to a `data-action`, set to the name of a function on the parent view to be called
+         * when the scroll is &quot;pulled down&quot; beyond the top of container.
+         */
+        onPullDown: null,
+<span id='argos-ScrollContainer-cfg-onPullUp'>        /**
+</span>         * @cfg {String}
+         * Similar to a `data-action`, set to the name of a function on the parent view to be called
+         * when the scroll is &quot;pulled up&quot; below the container.
+         */
+        onPullUp: null,
+<span id='argos-ScrollContainer-cfg-onMove'>        /**
+</span>         * @cfg {Function}
+         * Function to be fired when the iscroll moves.
+         */
+        onMove: null,
+<span id='argos-ScrollContainer-cfg-onStart'>        /**
+</span>         * @cfg {Function}
+         * Function to be fired when the iscroll is first starts a scroll event (on mouse down/touch start)
+         */
+        onStart: null,
+<span id='argos-ScrollContainer-cfg-onEnd'>        /**
+</span>         * @cfg {Function}
+         * Function to be fired when the iscroll finishes scrolling (on mouse up, touch end)
+         */
+        onEnd: null,
+<span id='argos-ScrollContainer-property-_pulledDown'>        /**
+</span>         * @property {Boolean}
+         * Scroll down below the container detected in {@link #onScrollMove onScrollMove},
+         * to then invoke the related action in {@link #onScrollEnd onScrollEnd}.
+         */
+        _pulledDown: null,
+<span id='argos-ScrollContainer-property-_pulledUp'>        /**
+</span>         * @property {Boolean}
+         * Scroll up above the container detected in {@link #onScrollMove onScrollMove},
+         * to then invoke the related action in {@link #onScrollEnd onScrollEnd}.
+         */
+        _pulledUp: null,
+
+<span id='argos-ScrollContainer-method-startup'>        startup: function() {
+</span>            this.inherited(arguments);
+
+            var child = this.domNode.children[0];
+            if (child) domClass.add(child, 'scroll-content');
+
+            var useScroller = this.forceScroller || ('ontouchstart' in window);
+            if (useScroller)
+            {
+                var options = {
+                    useTransition: this.useTransition,
+                    checkDOMChanges: false,
+                    hScrollbar: false,
+                    vScrollbar: false
+                };
+
+                if (this.enableFormFix) options.onBeforeScrollStart = onBeforeScrollStart;
+
+                if (this.onMove || this.onStart || this.onEnd)
+                {
+                    var scope = this.getComponentOwner();
+                    if (this.onMove) options.onScrollMove = utility.expand(scope, this.onMove);
+                    if (this.onStart) options.onScrollStart = utility.expand(scope, this.onStart);
+                    if (this.onEnd) options.onScrollEnd = utility.expand(scope, this.onEnd);
+                }
+
+                if (this.onPullDown || this.onPullUp)
+                {
+                    options.onScrollMove = this._onScrollMove.bindDelegate(this);
+                    options.onScrollEnd = this._onScrollEnd.bindDelegate(this);
+                }
+
+
+                this._scroll = new iScroll(this.domNode, options);
+            }
+        },
+<span id='argos-ScrollContainer-method-_onScrollMove'>        _onScrollMove: function(e) {
+</span>            var scroller = this._scroll;
+            if (scroller.y &gt; 5)
+            {
+                this._pulledDown = true;
+                scroller.minScrollY = 0;
+            }
+            else if (scroller.y &lt; (scroller.maxScrollY - 5))
+            {
+                this._pulledUp = true;
+            }
+        },
+<span id='argos-ScrollContainer-method-_onScrollEnd'>        _onScrollEnd: function() {
+</span>            var scope = this.getComponentOwner();
+
+            if (this._pulledDown &amp;&amp; this.onPullDown)
+            {
+                scope[this.onPullDown].apply(scope);
+            }
+            else if (this._pulledUp &amp;&amp; this.onPullUp)
+            {
+                scope[this.onPullUp].apply(scope);
+            }
+
+            this._pulledDown = false;
+            this._pulledUp = false;
+        },
+<span id='argos-ScrollContainer-method-onContentChange'>        onContentChange: function() {
+</span>            console.log('content changed: %s', this.getComponentOwner().id);
+            if (this._scroll)
+                this._scroll.refresh();
+        },
+<span id='argos-ScrollContainer-method-destroy'>        destroy: function(preserveDom) {
+</span>            if (this._scroll)
+            {
+                this._scroll.destroy(!preserveDom);
+
+                delete this._scroll;
+            }
+
+            this.inherited(arguments);
+        },
+<span id='argos-ScrollContainer-method-scrollTo'>        scrollTo: function(x, y, time, relative) {
+</span>            if (this._scroll)
+                this._scroll.scrollTo(x, y, time, relative);
+        }
+    });
+
+});</pre>
+</body>
+</html>

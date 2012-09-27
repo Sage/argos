@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='argos-_SDataListMixin'>/**
+</span> * _SDataListMixin
+ * @alternateClassName _SDataListMixin
+ * @requires SData
+ * @requires utility
+ */
+define('argos/_SDataListMixin', [
+    'dojo/_base/declare',
+    './Store/SData',
+    './utility'
+], function(
+    declare,
+    SData,
+    utility
+) {
+<span id='argos-_SDataListMixin-property-'>    /**
+</span>     * SData enablement for the List view.
+     */
+    return declare('argos._SDataListMixin', null, {
+<span id='argos-_SDataListMixin-property-resourceKind'>        /**
+</span>         * @cfg {String} resourceKind
+         * The SData resource kind the view is responsible for.  This will be used as the default resource kind
+         * for all SData requests.
+         * @type {String}
+         */
+        resourceKind: '',
+<span id='argos-_SDataListMixin-property-querySelect'>        /**
+</span>         * A list of fields to be selected in an SData request.
+         * @type {Array.&lt;String&gt;}
+         */
+        querySelect: null,
+<span id='argos-_SDataListMixin-property-queryInclude'>        /**
+</span>         * A list of child properties to be included in an SData request.
+         * @type {Array.&lt;String&gt;}
+         */
+        queryInclude: null,
+<span id='argos-_SDataListMixin-property-queryOrderBy'>        /**
+</span>         * The default order by expression for an SData request.
+         * @type {String}
+         */
+        queryOrderBy: null,
+<span id='argos-_SDataListMixin-property-queryWhere'>        /**
+</span>         * The default where expression for an SData request.
+         * @type {String|Function}
+         */
+        queryWhere: null,
+<span id='argos-_SDataListMixin-property-resourceProperty'>        /**
+</span>         * The default resource property for an SData request.
+         * @type {String|Function}
+         */
+        resourceProperty: null,
+<span id='argos-_SDataListMixin-property-resourcePredicate'>        /**
+</span>         * The default resource predicate for an SData request.
+         * @type {String|Function}
+         */
+        resourcePredicate: null,
+<span id='argos-_SDataListMixin-property-keyProperty'>        keyProperty: '$key',
+</span><span id='argos-_SDataListMixin-property-descriptorProperty'>        descriptorProperty: '$descriptor',
+</span><span id='argos-_SDataListMixin-method-createStore'>        createStore: function() {
+</span>            return new SData({
+                service: this.getConnection(),
+                contractName: this.contractName,
+                resourceKind: this.resourceKind,
+                resourceProperty: this.resourceProperty,
+                resourcePredicate: this.resourcePredicate,
+                include: this.queryInclude,
+                select: this.querySelect,
+                where: this.queryWhere,
+                orderBy: this.queryOrderBy,
+                idProperty: this.keyProperty,
+                scope: this
+            });
+        },
+<span id='argos-_SDataListMixin-method-_buildQueryExpression'>        _buildQueryExpression: function() {
+</span>            var options = this.options,
+                passed = options &amp;&amp; (options.query || options.where);
+
+            return passed
+                ? this.query
+                    ? '(' + utility.expand(this, passed) + ') and (' + this.query + ')'
+                    : '(' + utility.expand(this, passed) + ')'
+                : this.query;
+        },
+<span id='argos-_SDataListMixin-method-_applyStateToQueryOptions'>        _applyStateToQueryOptions: function(queryOptions) {
+</span>            var options = this.options;
+            if (options)
+            {
+                if (options.select) queryOptions.select = options.select;
+                if (options.include) queryOptions.include = options.include;
+                if (options.orderBy) queryOptions.sort = options.orderBy;
+                if (options.contractName) queryOptions.contractName = options.contractName;
+                if (options.resourceKind) queryOptions.resourceKind = options.resourceKind;
+                if (options.resourceProperty) queryOptions.resourceProperty = options.resourceProperty;
+                if (options.resourcePredicate) queryOptions.resourcePredicate = options.resourcePredicate;
+            }
+        },
+<span id='argos-_SDataListMixin-method-formatSearchQuery'>        formatSearchQuery: function(query) {
+</span>            return query;
+        },
+<span id='argos-_SDataListMixin-method-formatHashTagQuery'>        formatHashTagQuery: function(query) {
+</span>            var layout = this.get('hashTags') || [],
+                queries = [],
+                additional = query;
+
+            this.hashTagSearchRE.lastIndex = 0;
+
+            var match;
+            while (match = this.hashTagSearchRE.exec(query))
+            {
+                var tag = match[1],
+                    expression = null;
+
+                // todo: can optimize later if necessary
+                for (var i = 0; i &lt; layout.length &amp;&amp; !expression; i++)
+                {
+                    if (layout[i].tag == tag) expression = layout[i].query;
+                }
+
+                if (!expression) continue;
+
+                queries.push(this.expandExpression(expression));
+
+                additional = additional.replace(match[0], '');
+            }
+
+            if (queries.length &lt; 1) return this.formatSearchQuery(query);
+
+            query = '(' + queries.join(') and (') + ')';
+
+            additional = additional.replace(/^\s+|\s+$/g, '');
+
+            if (additional)
+            {
+                query += ' and (' + this.formatSearchQuery(additional) + ')';
+            }
+
+            return query;
+        },
+<span id='argos-_SDataListMixin-method-escapeSearchQuery'>        escapeSearchQuery: function(query) {
+</span>            return (query || '').replace(/&quot;/g, '&quot;&quot;');
+        }
+    });
+});</pre>
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sage Argos 3.0</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="fragment" content="!">
+
+  <link rel="shortcut icon" type="image/ico" href="favicon.ico" />
+  <link rel="stylesheet" href="resources/css/app.css" type="text/css" />
+  <link rel="stylesheet" href="resources/prettify/prettify.css" type="text/css" />
+
+  <script type="text/javascript" src="extjs/ext-all.js"></script>
+  <script type="text/javascript" src="data.js"></script>
+  <script type="text/javascript" src="app.js"></script>
+  <script type="text/javascript" src="resources/prettify/prettify.js"></script>
+  <script type="text/javascript" src="menuConfig.js"></script>
+
+  
+
+</head>
+<body id="ext-body">
+
+  <div id="loading"><span class="title"></span><span class="logo"></span></div>
+
+  <div id="header-content">Sage Argos 3.0</div>
+  <div id='welcome-content' style='display:none'><style type="text/css">
+.body-container
+{
+    width:80%;
+    padding:16px 0 0 10px;
+    position:relative;
+    float:left;
+}
+.splash-description > img
+{
+    position:absolute;
+    left: 10px;
+    top: 32px;
+}
+.splash-description 
+{
+    padding-left: 412px;
+    padding-top: 64px;
+    vertical-align:top;
+    height: 300px;
+}
+.splash-description > h3 
+{
+    font-size: 2em;
+    color: #007F64;
+    
+}
+.splash-description > p 
+{
+    font-size: 1.25em;
+}
+
+.panel-right
+{
+    width:19%;
+    margin-left:1%;
+    padding-right:10px;
+    position:relative;
+    float:left;
+}
+.panel-right > .panel
+{
+    margin-top: 16px;
+}
+.panel-right > .panel > h2
+{
+    border-radius: 11px 11px 0 0;
+    border: 1px solid #ababab;
+    background-color: #E6E6E6;
+    background-image: linear-gradient(top, #E6E6E6, #CCC);
+    background-image: -webkit-gradient(
+     linear,
+     left top,
+     left bottom,
+     color-stop(0, #E6E6E6),
+     color-stop(1, #CCC)
+     );
+    background-image: -moz-linear-gradient(top, #E6E6E6, #CCC);
+    color: black;
+    text-shadow: white 0px 1px 0px;
+    font-weight: bold;
+    -webkit-box-sizing: border-box;
+    height: 32px;
+    line-height: 32px;
+    margin: 0;
+    padding: 0 0 0 12px;
+    font-size: 1em;
+    z-index: 5;
+    position: relative;    
+}
+.panel-right > .panel > .panel-content
+{
+    padding: 6px;
+    background: #efefef;
+    border: 1px solid #ababab;
+    border-top-width: 0;
+    border-radius: 0 0 11px 11px;
+}
+.panel-right > .panel > .panel-content > ul
+{
+    margin: 3px 3px 3px 18px;
+    padding: 0;
+}
+.panel-right > .panel > .panel-content > ul > li
+{
+    list-style: disc;
+}
+.github-links 
+{
+    border-radius: 11px;
+    border: 1px solid #ababab;
+    background-color: #E6E6E6;
+    background-image: linear-gradient(top, #E6E6E6, #CCC);
+    background-image: -webkit-gradient(
+     linear,
+     left top,
+     left bottom,
+     color-stop(0, #E6E6E6),
+     color-stop(1, #CCC)
+     );
+    background-image: -moz-linear-gradient(top, #E6E6E6, #CCC);
+    color: black;
+    text-shadow: white 0px 1px 0px;
+    font-weight: bold;
+    -webkit-box-sizing: border-box;
+    padding: 3px;
+    width: 60%;
+    margin: 12px auto;
+}
+
+.github-links:before,
+.github-links:after {
+    content:"";
+    display:table;
+}
+.github-links:after {
+    clear:both;
+}
+
+.github-links > a
+{
+    width: 48%;
+    text-align:center;
+    position:relative;
+    float: left;
+    color: #000;
+    border-right: 1px solid white;
+    padding: 3px 0;
+}
+.github-links > a:last-child
+{
+    border-right:none;
+}
+.github-links > a:hover
+{
+    color: #007F64;
+}
+
+.sage-lines
+{
+position:absolute;
+bottom:0; right:0;
+z-index:1;
+width:400px;
+height:207px;
+background: url(resources/images/sage_lines_and_shapes_10.png) no-repeat 0 0;
+}
+.grid-3
+{
+    width: 30%;
+    margin-left:3%;
+    margin-top: 16px;
+    display: inline-block;
+    vertical-align: top;
+}
+.body-container > .grid-3 > h4
+{
+    font-size: 1.5em;
+    color: #E98300;
+}
+
+
+</style>
+<div class="body-container">
+    <div class="splash-description">
+        <img src="resources/images/splash-device.png">
+        <h3>Argos 3.0</h3>
+        <p>Argos is an <strong>HTML5</strong> mobile framework for enterprise data-driven applications.</p>
+        <div class="github-links">
+            <a href="https://github.com/Sage/argos-sdk/zipball" target="_blank">Download</a>
+            <a href="https://github.com/Sage/argos-sdk/" target="_blank">View Code</a>
+        </div>
+    </div>
+        
+    <div class="grid-3">
+    <h4>Cross-Platform</h4>
+    <p>Compatible with devices such as the iPhone&reg;, iPad&reg;, Android&trade;, BlackBerry&reg; or any HTML5 compatible browser.</p>
+    </div>
+    
+    <div class="grid-3">
+    <h4>Deploy Natively</h4>
+    <p>Works seamlessly with <a href="http://www.phonegap.com/" target="_blank">Phonegap</a> to provide native on-device solutions.</p>
+    </div>
+    
+    <div class="grid-3">
+    <h4>Feature Filled</h4>
+    <p>Enjoy many features from navigation history, localization, template engine, plugin framework and minification tools.</p>
+    </div>
+        
+</div>
+<div class="panel-right">
+
+    <div class="panel">
+        <h2>Recent Additions</h2>
+        <div class="panel-content">
+            <ul>
+            </ul>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Source Code</h2>
+        <div class="panel-content">
+            <ul>
+                <li><a href="https://github.com/Sage/argos-sdk" target="_blank">Argos-SDK</a></li>
+                <li><a href="https://github.com/Sage/SDataJavaScriptClientLib" target="_blank">SData JavaScript Client</a></li>
+                <li><a href="https://github.com/mmorton/simplate" target="_blank">Simplate</a></li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="sage-lines"></div></div>
+          <div id='categories-content' style='display:none'>
+            <div class='section'>
+<h1>Argos SDK</h1>
+<div class='left-column'>
+<h3>Core</h3>
+<div class='links'>
+<a href="#!/api/argos.Application" rel="argos.Application" class="docClass">argos.Application</a>
+<a href="#!/api/argos.ApplicationModule" rel="argos.ApplicationModule" class="docClass">argos.ApplicationModule</a>
+<a href="#!/api/argos._Component" rel="argos._Component" class="docClass">argos._Component</a>
+<a href="#!/api/argos._UiComponent" rel="argos._UiComponent" class="docClass">argos._UiComponent</a>
+<a href="#!/api/argos.Scene" rel="argos.Scene" class="docClass">argos.Scene</a>
+<a href="#!/api/argos.Message" rel="argos.Message" class="docClass">argos.Message</a>
+<a href="#!/api/argos.CustomizationSet" rel="argos.CustomizationSet" class="docClass">argos.CustomizationSet</a>
+<a href="#!/api/argos.SelectionModel" rel="argos.SelectionModel" class="docClass">argos.SelectionModel</a>
+<a href="#!/api/argos.ConfigurableSelectionModel" rel="argos.ConfigurableSelectionModel" class="docClass">argos.ConfigurableSelectionModel</a>
+<a href="#!/api/argos.Transition" rel="argos.Transition" class="docClass">argos.Transition</a>
+</div>
+<h3>Views</h3>
+<div class='links'>
+<a href="#!/api/argos.View" rel="argos.View" class="docClass">argos.View</a>
+<a href="#!/api/argos.List" rel="argos.List" class="docClass">argos.List</a>
+<a href="#!/api/argos.GroupedList" rel="argos.GroupedList" class="docClass">argos.GroupedList</a>
+<a href="#!/api/argos.Detail" rel="argos.Detail" class="docClass">argos.Detail</a>
+<a href="#!/api/argos.Edit" rel="argos.Edit" class="docClass">argos.Edit</a>
+<a href="#!/api/argos.Views.Calendar" rel="argos.Views.Calendar" class="docClass">argos.Views.Calendar</a>
+<a href="#!/api/argos.Views.Chart" rel="argos.Views.Chart" class="docClass">argos.Views.Chart</a>
+<a href="#!/api/argos.Views.DateTimePicker" rel="argos.Views.DateTimePicker" class="docClass">argos.Views.DateTimePicker</a>
+<a href="#!/api/argos.Views.Signature" rel="argos.Views.Signature" class="docClass">argos.Views.Signature</a>
+</div>
+</div>
+<div class='middle-column'>
+<h3>Mixins</h3>
+<div class='links'>
+<a href="#!/api/argos._CommandMixin" rel="argos._CommandMixin" class="docClass">argos._CommandMixin</a>
+<a href="#!/api/argos._EventMapMixin" rel="argos._EventMapMixin" class="docClass">argos._EventMapMixin</a>
+<a href="#!/api/argos._MessageMapMixin" rel="argos._MessageMapMixin" class="docClass">argos._MessageMapMixin</a>
+<a href="#!/api/argos._SDataDetailMixin" rel="argos._SDataDetailMixin" class="docClass">argos._SDataDetailMixin</a>
+<a href="#!/api/argos._SDataEditMixin" rel="argos._SDataEditMixin" class="docClass">argos._SDataEditMixin</a>
+<a href="#!/api/argos._SDataListMixin" rel="argos._SDataListMixin" class="docClass">argos._SDataListMixin</a>
+<a href="#!/api/argos._TemplatedContentMixin" rel="argos._TemplatedContentMixin" class="docClass">argos._TemplatedContentMixin</a>
+<a href="#!/api/argos._TemplatedWidgetMixin" rel="argos._TemplatedWidgetMixin" class="docClass">argos._TemplatedWidgetMixin</a>
+</div>
+<h3>Toolbars</h3>
+<div class='links'>
+<a href="#!/api/argos.Toolbar" rel="argos.Toolbar" class="docClass">argos.Toolbar</a>
+<a href="#!/api/argos.ToolbarButton" rel="argos.ToolbarButton" class="docClass">argos.ToolbarButton</a>
+<a href="#!/api/argos.TitleBar" rel="argos.TitleBar" class="docClass">argos.TitleBar</a>
+<a href="#!/api/argos.ActionBar" rel="argos.ActionBar" class="docClass">argos.ActionBar</a>
+</div>
+<h3>Components and Widgets</h3>
+<div class='links'>
+<a href="#!/api/argos.Control" rel="argos.Control" class="docClass">argos.Control</a>
+<a href="#!/api/argos.DomContentComponent" rel="argos.DomContentComponent" class="docClass">argos.DomContentComponent</a>
+<a href="#!/api/argos.Layout" rel="argos.Layout" class="docClass">argos.Layout</a>
+<a href="#!/api/argos.Pane" rel="argos.Pane" class="docClass">argos.Pane</a>
+<a href="#!/api/argos.CalendarWidget" rel="argos.CalendarWidget" class="docClass">argos.CalendarWidget</a>
+<a href="#!/api/argos.SearchWidget" rel="argos.SearchWidget" class="docClass">argos.SearchWidget</a>
+<a href="#!/api/argos.ScrollContainer" rel="argos.ScrollContainer" class="docClass">argos.ScrollContainer</a>
+</div>
+</div>
+<div class='right-column'>
+<h3>Fields</h3>
+<div class='links'>
+<a href="#!/api/argos.Fields.BooleanField" rel="argos.Fields.BooleanField" class="docClass">argos.Fields.BooleanField</a>
+<a href="#!/api/argos.Fields.CollectionEntryField" rel="argos.Fields.CollectionEntryField" class="docClass">argos.Fields.CollectionEntryField</a>
+<a href="#!/api/argos.Fields.DateField" rel="argos.Fields.DateField" class="docClass">argos.Fields.DateField</a>
+<a href="#!/api/argos.Fields.DecimalField" rel="argos.Fields.DecimalField" class="docClass">argos.Fields.DecimalField</a>
+<a href="#!/api/argos.Fields.DurationField" rel="argos.Fields.DurationField" class="docClass">argos.Fields.DurationField</a>
+<a href="#!/api/argos.Fields.EditorField" rel="argos.Fields.EditorField" class="docClass">argos.Fields.EditorField</a>
+<a href="#!/api/argos.Fields.HiddenField" rel="argos.Fields.HiddenField" class="docClass">argos.Fields.HiddenField</a>
+<a href="#!/api/argos.Fields.LookupField" rel="argos.Fields.LookupField" class="docClass">argos.Fields.LookupField</a>
+<a href="#!/api/argos.Fields.PhoneField" rel="argos.Fields.PhoneField" class="docClass">argos.Fields.PhoneField</a>
+<a href="#!/api/argos.Fields.SignatureField" rel="argos.Fields.SignatureField" class="docClass">argos.Fields.SignatureField</a>
+<a href="#!/api/argos.Fields.TextAreaField" rel="argos.Fields.TextAreaField" class="docClass">argos.Fields.TextAreaField</a>
+<a href="#!/api/argos.Fields.TextField" rel="argos.Fields.TextField" class="docClass">argos.Fields.TextField</a>
+<a href="#!/api/argos.Fields.ValueOnlyField" rel="argos.Fields.ValueOnlyField" class="docClass">argos.Fields.ValueOnlyField</a>
+<a href="#!/api/argos.Fields._CompositeMixin" rel="argos.Fields._CompositeMixin" class="docClass">argos.Fields._CompositeMixin</a>
+<a href="#!/api/argos.Fields._Field" rel="argos.Fields._Field" class="docClass">argos.Fields._Field</a>
+</div>
+<h3>Charts</h3>
+<div class='links'>
+<a href="#!/api/argos.Charts.AreaChart" rel="argos.Charts.AreaChart" class="docClass">argos.Charts.AreaChart</a>
+<a href="#!/api/argos.Charts.BarChart" rel="argos.Charts.BarChart" class="docClass">argos.Charts.BarChart</a>
+<a href="#!/api/argos.Charts.ColumnChart" rel="argos.Charts.ColumnChart" class="docClass">argos.Charts.ColumnChart</a>
+<a href="#!/api/argos.Charts.LineChart" rel="argos.Charts.LineChart" class="docClass">argos.Charts.LineChart</a>
+<a href="#!/api/argos.Charts.PieChart" rel="argos.Charts.PieChart" class="docClass">argos.Charts.PieChart</a>
+<a href="#!/api/argos.Charts._Chart" rel="argos.Charts._Chart" class="docClass">argos.Charts._Chart</a>
+</div>
+<h3>Utilities</h3>
+<div class='links'>
+<a href="#!/api/argos.convert" rel="argos.convert" class="docClass">argos.convert</a>
+<a href="#!/api/argos.ErrorManager" rel="argos.ErrorManager" class="docClass">argos.ErrorManager</a>
+<a href="#!/api/argos.format" rel="argos.format" class="docClass">argos.format</a>
+<a href="#!/api/argos.utility" rel="argos.utility" class="docClass">argos.utility</a>
+<a href="#!/api/argos.environment" rel="argos.environment" class="docClass">argos.environment</a>
+</div>
+</div>
+<div style='clear:both'></div>
+</div>
+<div class='section'>
+<h1>Libraries</h1>
+<div class='left-column'>
+<h3>Simplate</h3>
+<div class='links'>
+</div>
+</div>
+<div class='middle-column'>
+</div>
+<div class='right-column'>
+</div>
+<div style='clear:both'></div>
+</div>
+        </div>
+
+          <div id='guides-content' style='display:none'>
+            <h3>Appendix</h3>
+<ul>
+<li><a href='#!/guide/v2_appendix_amd'>AMD - Define and Declare</a></li>
+<li><a href='#!/guide/v2_appendix_browser_setup'>Browser Setup</a></li>
+</ul>
+        </div>
+
+  <div id='footer-content' style='display: none'>Argos is maintained by Sage</div>
+
+  
+
+</body>
+</html>

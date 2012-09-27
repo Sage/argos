@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='argos-Charts-PieChart'>/**
+</span> * PieChart
+ * @alternateClassName PieChart
+ * @extends _Chart
+ */
+define('argos/Charts/PieChart', [
+    'dojo/_base/declare',
+    'dojo/dom-geometry',
+    './_Chart',
+    'dojox/charting/plot2d/Pie',
+    'dojox/charting/axis2d/Default'
+], function(
+    declare,
+    domGeom,
+    _Chart,
+    PiePlot
+) {
+    return declare('argos.Charts.PieChart', [_Chart], {
+<span id='argos-Charts-PieChart-property-plotType'>        plotType: PiePlot,
+</span><span id='argos-Charts-PieChart-property-plotOptions'>        plotOptions: {
+</span>            labelStyle: 'columns',
+            labelWiring: '#ccc',
+            htmlLabels: true
+        },
+<span id='argos-Charts-PieChart-property-legend'>        legend: true,
+</span><span id='argos-Charts-PieChart-property-legendOptions'>        legendOptions: {
+</span>            horizontal: false
+        },
+<span id='argos-Charts-PieChart-method-_onResize'>        _onResize: function() {
+</span>            var radius = this.getRadius();
+            if (this.chart &amp;&amp; this.chart.stack)
+                this.chart.stack[0].opt.radius = radius;
+
+            this.inherited(arguments);
+        },
+<span id='argos-Charts-PieChart-method-setSize'>        setSize: function() {
+</span>            var radius = this.getRadius();
+            domGeom.setMarginBox(this.chartNode, {
+                h: radius * 3,
+                w: radius * 5
+            });
+        },
+<span id='argos-Charts-PieChart-method-getType'>        getType: function() {
+</span>            var type = this.inherited(arguments);
+            type['radius'] = this.getRadius();
+            return type;
+        },
+<span id='argos-Charts-PieChart-method-getRadius'>        getRadius: function() {
+</span>            var box = domGeom.getMarginBox(this.domNode),
+                width = box.w,
+                height = (box.h &gt; this.maxHeight) ? this.maxHeight : box.h;
+
+            return Math.floor((width &gt; height ? height : width) / 5);
+        },
+<span id='argos-Charts-PieChart-method-getAxes'>        getAxes: function() {
+</span>            return [];
+        }
+    });
+});</pre>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='argos-SearchWidget'>/**
+</span> * SearchWidget is a base widget that provides a search area and placeholder/watermark text. It also listens for
+ * keyboard enter/return and passes the search expression to {@link #onQuery onQuery} which should be connected to in
+ * the view.
+ *
+ * @alternateClassName SearchWidget
+ * @mixins _TemplatedWidgetMixin
+ */
+define('argos/SearchWidget', [
+    'dojo/_base/declare',
+    'dojo/_base/lang',
+    'dojo/_base/event',
+    'dojo/string',
+    'dojo/html',
+    'dojo/dom-class',
+    'dijit/_WidgetBase',
+    './_TemplatedWidgetMixin'
+], function(
+    declare,
+    lang,
+    event,
+    string,
+    html,
+    domClass,
+    _WidgetBase,
+    _TemplatedWidgetMixin
+) {
+    return declare('argos.SearchWidget', [_WidgetBase, _TemplatedWidgetMixin], {
+<span id='argos-SearchWidget-property-_setLabelAttr'>        _setLabelAttr: {node: 'labelNode', type: 'innerHTML'},
+</span><span id='argos-SearchWidget-property-_setQueryValueAttr'>        _setQueryValueAttr: { node: 'queryNode', type: 'attribute', attribute: 'value' },
+</span><span id='argos-SearchWidget-property-widgetTemplate'>        /**
+</span>         * @property {Simplate}
+         * Simple that defines the HTML Markup
+         */
+        widgetTemplate: new Simplate([
+            '&lt;div class=&quot;search-header&quot;&gt;',
+                '&lt;input type=&quot;text&quot; id=&quot;search-{%= $$.id %}&quot; name=&quot;query&quot; class=&quot;query&quot; autocorrect=&quot;off&quot; autocapitalize=&quot;off&quot; data-dojo-attach-point=&quot;queryNode&quot; data-dojo-attach-event=&quot;onfocus:_onFocus,onblur:_onBlur,onkeypress:_onKeyPress&quot; /&gt;',
+                '&lt;button class=&quot;search-clear&quot; data-dojo-attach-event=&quot;onclick: _onClearClick&quot;&gt;&lt;/button&gt;',
+                '&lt;button class=&quot;search-button sub-header-button&quot; data-dojo-attach-event=&quot;click: search&quot;&gt;&lt;span&gt;{%= $.searchText %}&lt;/span&gt;&lt;/button&gt;',
+                '&lt;label data-dojo-attach-point=&quot;labelNode&quot; for=&quot;search-{%= $$.id %}&quot;&gt;{%= $.searchText %}&lt;/label&gt;',
+            '&lt;/div&gt;'
+        ]),
+
+<span id='argos-SearchWidget-property-searchText'>        /**
+</span>         * @property {String}
+         * Text that is used when no value is in the search box - &quot;placeholder&quot; text.
+         */
+        searchText: 'Search',
+
+<span id='argos-SearchWidget-property-queryNode'>        queryNode: null,
+</span>
+<span id='argos-SearchWidget-method-clear'>        /**
+</span>         * Sets search text to empty and removes active styling
+         */
+        clear: function() {
+            domClass.remove(this.domNode, 'search-active');
+
+            this.set('queryValue', '');
+
+            this.onClear();
+        },
+<span id='argos-SearchWidget-method-search'>        /**
+</span>         * This function is invoked from the search button and it:
+         *
+         * * Gathers the inputted search text; and
+         * * Fires the {@link #onQuery onQuery} event which {@link List#_onSearchQuery List} listens to by default.
+         */
+        search: function() {
+            var query = this.queryNode.value;
+
+            this.onQuery(query);
+        },
+<span id='argos-SearchWidget-method-setLabel'>        /**
+</span>         * Sets the search placeholder/watermark text
+         * @param {String} text Text to be shown when no value is entered
+         */
+        setLabel: function(text) {
+            this.set('label', text);
+        },
+<span id='argos-SearchWidget-method-onQuery'>        /**
+</span>         * Event that is fired on search, a View should bind this function to a listener.
+         * @param {String} query Search text inputted
+         */
+        onQuery: function(query) {
+        },
+<span id='argos-SearchWidget-method-onClear'>        /**
+</span>         * Event that is fired on clear, a View may listen to this event.
+         */
+        onClear: function() {
+        },
+<span id='argos-SearchWidget-method-_onClearClick'>        /**
+</span>         * Clears the search input text and attempts to re-open the keyboard
+         * @param {Event} evt Click event
+         */
+        _onClearClick: function(evt){
+            event.stop(evt);
+            this.clear();
+            this.queryNode.focus();
+            this.queryNode.click();
+        },
+<span id='argos-SearchWidget-method-_onBlur'>        /**
+</span>         * Tests to see if the search input is empty and toggles the active styling
+         */
+        _onBlur: function() {
+            domClass.toggle(this.domNode, 'search-active', !!this.queryNode.value);
+        },
+<span id='argos-SearchWidget-method-_onFocus'>        /**
+</span>         * Adds the search active styling
+         */
+        _onFocus: function() {
+            domClass.add(this.domNode, 'search-active');
+        },
+<span id='argos-SearchWidget-method-_onKeyPress'>        /**
+</span>         * Detects the enter/return key and fires {@link #search search}
+         * @param {Event} evt Key press event
+         */
+        _onKeyPress: function(evt) {
+            if (evt.keyCode == 13 || evt.keyCode == 10)
+            {
+                event.stop(evt);
+                this.queryNode.blur();
+                this.search();
+            }
+        }
+    });
+});</pre>
+</body>
+</html>

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='argos-Fields-CollectionEntryField'>/**
+</span> * CollectionEntryField
+ * @alternateClassName CollectionEntryField
+ * @extends _Field
+ * @extends _UiComponent
+ * @mixins _EventMapMixin
+ * @mixins _CompositeMixin
+ */
+define('argos/Fields/CollectionEntryField', [
+    'dojo/_base/declare',
+    'dojo/_base/event',
+    'dojo/_base/lang',
+    'dojo/dom-construct',
+    'dojo/dom-class',
+    'dojo/dom-attr',
+    'dojo/query',
+    'dojo/NodeList-manipulate',
+    '../_UiComponent',
+    '../_EventMapMixin',
+    './_Field',
+    './_CompositeMixin'
+], function(
+    declare,
+    event,
+    lang,
+    domConstruct,
+    domClass,
+    domAttr,
+    query,
+    nodeListManipulate,
+    _UiComponent,
+    _EventMapMixin,
+    _Field,
+    _CompositeMixin
+) {
+
+    /*
+     CollectionEntryInlineField (each item is a form)
+     CollectionEntryField (list then form)
+     CollectionField (external list / editor)
+     */
+
+    /* todo: this will be importing a number of ideas from List/Edit; find a way to re-use */
+    return declare('argos.Fields.CollectionEntryField', [_Field, _UiComponent, _EventMapMixin, _CompositeMixin], {
+<span id='argos-Fields-CollectionEntryField-property-events'>        events: {
+</span>            'click': true
+        },
+<span id='argos-Fields-CollectionEntryField-property-components'>        components: [
+</span>            {name: 'collection', tag: 'ul', attrs: {'class': 'list-content'}, attachPoint: 'collectionNode'},
+            {name: 'content', tag: 'div', attrs: {'class': 'edit-content'}, attachPoint: 'contentNode'},
+            {name: 'actions', tag: 'div', attrs: {'class': 'edit-actions'}, components: [
+                {name: 'add', content: Simplate.make('&lt;button class=&quot;button {%= $.addButtonClass %}&quot; data-action=&quot;add&quot;&gt;{%: $.addItemText %}&lt;/button&gt;')}
+            ]}
+        ],
+<span id='argos-Fields-CollectionEntryField-property-baseClass'>        baseClass: 'field-collection-entry',
+</span><span id='argos-Fields-CollectionEntryField-property-containerClass'>        containerClass: 'row-collection-entry',
+</span><span id='argos-Fields-CollectionEntryField-property-addButtonClass'>        addButtonClass: '',
+</span><span id='argos-Fields-CollectionEntryField-property-collectionNode'>        collectionNode: null,
+</span><span id='argos-Fields-CollectionEntryField-property-contentNode'>        contentNode: null,
+</span><span id='argos-Fields-CollectionEntryField-property-emptyListNode'>        emptyListNode: null,
+</span>
+<span id='argos-Fields-CollectionEntryField-property-idProperty'>        /* todo: make generic */
+</span>        idProperty: '$key',
+<span id='argos-Fields-CollectionEntryField-property-itemsProperty'>        itemsProperty: '$resources',
+</span><span id='argos-Fields-CollectionEntryField-property-labelProperty'>        labelProperty: '$descriptor',
+</span>
+<span id='argos-Fields-CollectionEntryField-property-collectionRowTemplate'>        collectionRowTemplate: new Simplate([
+</span>            '&lt;li data-index=&quot;{%= $$.getIndex($) %}&quot;&gt;',
+            '{%! $$.collectionItemTemplate %}',
+            '&lt;/li&gt;'
+        ]),
+<span id='argos-Fields-CollectionEntryField-property-collectionItemTemplate'>        collectionItemTemplate: new Simplate([
+</span>            '&lt;h3&gt;{%: $$.getLabel($) %}&lt;/h3&gt;',
+            '&lt;h4&gt;{%: $$.getIdentity($) %}&lt;/h4&gt;'
+        ]),
+<span id='argos-Fields-CollectionEntryField-property-emptyListTemplate'>        emptyListTemplate: new Simplate([
+</span>            '&lt;li class=&quot;empty-list&quot;&gt;&lt;h4&gt;{%: $.emptyListText %}&lt;/h4&gt;&lt;/li&gt;'
+        ]),
+<span id='argos-Fields-CollectionEntryField-property-summaryRowTemplate'>        summaryRowTemplate: new Simplate([
+</span>        ]),
+
+<span id='argos-Fields-CollectionEntryField-property-deletedValue'>        deletedValue: null,
+</span><span id='argos-Fields-CollectionEntryField-property-currentIndex'>        currentIndex: null,
+</span>
+<span id='argos-Fields-CollectionEntryField-property-clearOnAdd'>        /**
+</span>         * Clears out selected values in the collection entry fields after an item is added if set to true
+         */
+        clearOnAdd: true,
+
+<span id='argos-Fields-CollectionEntryField-method-aggregate'>        /**
+</span>         * If an aggregate function is defined it use the result with the
+         * summaryRowTemplate and append the final HTML as the last row
+         * @param Array - an array of each collection entry fields getValue()
+         * @return Object - to be passed as $ to summaryRowTemplate
+         */
+        aggregate: null,
+
+<span id='argos-Fields-CollectionEntryField-property-displayEmptyList'>        /**
+</span>         * Determines whether to apply the emptyListTemplate to the collectionNode when no
+         * items are present. If false it will completely empty the node and will be completely non-visible
+         */
+        displayEmptyList: true,
+
+<span id='argos-Fields-CollectionEntryField-property-returnOnlyModified'>        /**
+</span>         * If `true`, only return modified values, otherwise return entire collection.
+         */
+        returnOnlyModified: false,
+
+<span id='argos-Fields-CollectionEntryField-property-validateForAdd'>        validateForAdd: true,
+</span><span id='argos-Fields-CollectionEntryField-property-validationResult'>        validationResult: false,
+</span>
+<span id='argos-Fields-CollectionEntryField-property-lookupLabelText'>        lookupLabelText: 'edit',
+</span><span id='argos-Fields-CollectionEntryField-property-lookupText'>        lookupText: '...',
+</span><span id='argos-Fields-CollectionEntryField-property-emptyText'>        emptyText: 'empty',
+</span><span id='argos-Fields-CollectionEntryField-property-completeText'>        completeText: 'Ok',
+</span><span id='argos-Fields-CollectionEntryField-property-addItemText'>        addItemText: 'Add',
+</span><span id='argos-Fields-CollectionEntryField-property-emptyListText'>        emptyListText: 'No items have been added.',
+</span>
+<span id='argos-Fields-CollectionEntryField-method-onStartup'>        onStartup: function() {
+</span>            this.inherited(arguments);
+
+            if (this.validateForAdd)
+            {
+                for (var name in this.fields)
+                {
+                    var field = this.fields[name];
+                    if (field.validator)
+                    {
+                        this.connect(field, 'onChange', this._onValidationFieldChange);
+                    }
+                }
+            }
+
+            this._onValidationFieldChange();
+        },
+<span id='argos-Fields-CollectionEntryField-method-_onValidationFieldChange'>        _onValidationFieldChange: function() {
+</span>            this.validationResult = this._validateComposite();
+
+            domClass.toggle(this.domNode, 'has-invalid-entry', this.validationResult !== false);
+        },
+<span id='argos-Fields-CollectionEntryField-method-getIndex'>        getIndex: function(item) {
+</span>            return this.currentIndex;
+        },
+<span id='argos-Fields-CollectionEntryField-method-getIdentity'>        getIdentity: function(item) {
+</span>            return item[this.identityProperty];
+        },
+<span id='argos-Fields-CollectionEntryField-method-getLabel'>        getLabel: function(item) {
+</span>            return item[this.labelProperty];
+        },
+<span id='argos-Fields-CollectionEntryField-method-_onComplete'>        _onComplete: function() {
+</span>            this.onChange(this.currentValue, this);
+        },
+<span id='argos-Fields-CollectionEntryField-method-setText'>        setText: function(text) {
+</span>            this.set('inputValue', text);
+        },
+<span id='argos-Fields-CollectionEntryField-method-isDirty'>        isDirty: function() {
+</span>            var original = this.originalValue,
+                current = this.currentValue;
+
+            if (current == original) return false;
+            if (current &amp;&amp; !original) return true;
+            if (current.length != original.length) return true;
+
+            for (var i = 0; i &lt; current.length; i++)
+            {
+                if (current[i] !== original[i]) return true;
+            }
+
+            return false;
+        },
+<span id='argos-Fields-CollectionEntryField-method-validate'>        validate: function(value) {
+</span>            return typeof value === 'undefined'
+                ? this.inherited(arguments, [this.validationValue])
+                : this.inherited(arguments);
+        },
+<span id='argos-Fields-CollectionEntryField-method-formatDeletedValue'>        /* todo: is this the appropriate naming? */
+</span>        formatDeletedValue: function(item) {
+            return null;
+        },
+<span id='argos-Fields-CollectionEntryField-method-getValue'>        getValue: function() {
+</span>            var original = this.originalValue,
+                current = this.currentValue,
+                deleted = this.deletedValue,
+                value = [],
+                previous, candidate, formatted, i;
+
+            if (current)
+            {
+                for (i = 0; i &lt; current.length; i++)
+                {
+                    previous = original[i];
+                    candidate = current[i];
+
+                    if (candidate)
+                    {
+                        if ((candidate !== previous) || !this.returnOnlyModified)
+                        {
+                            value.push(candidate);
+                        }
+                    }
+                }
+            }
+
+            if (deleted)
+            {
+                for (i = 0; i &lt; deleted.length &amp;&amp; i &lt; original.length; i++)
+                {
+                    candidate = deleted[i];
+
+                    if (candidate)
+                    {
+                        formatted = this.formatDeletedValue(candidate);
+                        if (formatted) value.push(formatted);
+                    }
+                }
+            }
+
+            return value;
+        },
+<span id='argos-Fields-CollectionEntryField-method-_processData'>        _processData: function(items) {
+</span>            var count = items.length;
+            if (count &gt; 0)
+            {
+                var output = [];
+
+                for (var i = 0; i &lt; count; i++)
+                {
+                    var item = items[i];
+                    if (item)
+                    {
+                        this.currentIndex = i;
+
+                        output.push(this.collectionRowTemplate.apply(item, this));
+                    }
+                }
+
+                if (output.length &gt; 0) domConstruct.place(output.join(''), this.collectionNode, 'only');
+
+                this._addSummaryRow();
+
+                domClass.add(this.domNode, 'has-items');
+
+                this._onComplete();
+            }
+            else
+            {
+                this.clearCollectionList();
+            }
+        },
+<span id='argos-Fields-CollectionEntryField-method-setValue'>        setValue: function(val, initial)
+</span>        {
+            this.currentIndex = -1;
+
+            if (val)
+            {
+                this.deletedValue = [];
+                this.currentValue = val.slice(0);
+
+                this.validationValue = val.slice(0);
+
+                if (initial) this.originalValue = val;
+
+                this._processData(val);
+            }
+            else
+            {
+                this.deletedValue = [];
+                this.currentValue = [];
+
+                this.validationValue = [];
+
+                if (initial) this.originalValue = [];
+
+                this.clearCollectionList();
+            }
+        },
+<span id='argos-Fields-CollectionEntryField-method-clearCollectionList'>        clearCollectionList: function() {
+</span>            if (this.displayEmptyList)
+            {
+                domClass.add(this.domNode, 'has-items');
+
+                this.emptyListNode = domConstruct.place(this.emptyListTemplate.apply(this), this.collectionNode, 'only');
+            }
+            else
+            {
+                domClass.remove(this.domNode, 'has-items');
+
+                domConstruct.empty(this.collectionNode);
+            }
+        },
+<span id='argos-Fields-CollectionEntryField-method-update'>        update: function(index, value) {
+</span>            if (value !== null)
+            {
+                this.currentValue[index] = value;
+
+                this.validationValue = this._compact(this.currentValue);
+
+                this._processData(this.currentValue);
+            }
+            else
+            {
+                this.remove(index);
+            }
+        },
+<span id='argos-Fields-CollectionEntryField-method-remove'>        remove: function(index) {
+</span>            this.deletedValue[index] = this.currentValue[index];
+            this.currentValue[index] = null;
+
+            this.validationValue = this._compact(this.currentValue);
+
+            this._processData(this.currentValue);
+        },
+<span id='argos-Fields-CollectionEntryField-method-clearValue'>        clearValue: function() {
+</span>            this.inherited(arguments);
+
+            this._clearCompositeValue();
+
+            this.setValue(null, true);
+        },
+<span id='argos-Fields-CollectionEntryField-method-add'>        add: function() {
+</span>            if (this.validateForAdd &amp;&amp; this.validationResult !== false) return;
+
+            var index = ++this.currentIndex,
+                item = this._getCompositeValue();
+
+            this.currentValue[index] = item;
+
+            this.validationValue = this._compact(this.currentValue);
+
+            if (this.emptyListNode)
+                domConstruct.destroy(this.emptyListNode);
+
+            domConstruct.place(this.collectionRowTemplate.apply(item, this), this.collectionNode, 'last');
+
+            this._addSummaryRow();
+
+            if (this.clearOnAdd)
+            {
+                this._clearCompositeValue();
+                this._onValidationFieldChange();
+            }
+
+            domClass.add(this.domNode, 'has-items');
+
+            this._onComplete();
+
+            if (this.owner) this.owner.resize();
+        },
+<span id='argos-Fields-CollectionEntryField-method-_compact'>        _compact: function(values) {
+</span>            var result = [];
+
+            if (values)
+            {
+                for (var i = 0; i &lt; values.length; i++)
+                {
+                    if (values[i]) result.push(values[i]);
+                }
+            }
+
+            return result;
+        },
+<span id='argos-Fields-CollectionEntryField-method-_addSummaryRow'>        _addSummaryRow: function() {
+</span>            if (this.summaryNode) domConstruct.destroy(this.summaryNode);
+
+            var aggregate = this.aggregate &amp;&amp; this.aggregate(this.validationValue);
+            if (aggregate)
+            {
+                this.summaryNode = domConstruct.place(this.summaryRowTemplate.apply(aggregate, this), this.collectionNode, 'last');
+            }
+        }
+    });
+});</pre>
+</body>
+</html>

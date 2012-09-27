@@ -90,10 +90,12 @@ define('Sage/Platform/Mobile/SearchWidget', [
          */
         widgetTemplate: new Simplate([
             '&lt;div class=&quot;search-widget&quot;&gt;',
-                '&lt;input type=&quot;text&quot; name=&quot;query&quot; class=&quot;query&quot; autocorrect=&quot;off&quot; autocapitalize=&quot;off&quot; data-dojo-attach-point=&quot;queryNode&quot; data-dojo-attach-event=&quot;onfocus:_onFocus,onblur:_onBlur,onkeypress:_onKeyPress&quot; /&gt;',
-                '&lt;button class=&quot;clear-button&quot; data-dojo-attach-event=&quot;onclick: _onClearClick&quot;&gt;&lt;/button&gt;',
-                '&lt;button class=&quot;subHeaderButton searchButton&quot; data-dojo-attach-event=&quot;click: search&quot;&gt;{%= $.searchText %}&lt;/button&gt;',
-                '&lt;label data-dojo-attach-point=&quot;labelNode&quot;&gt;{%= $.searchText %}&lt;/label&gt;',
+            '&lt;div class=&quot;table-layout&quot;&gt;',
+                '&lt;div&gt;&lt;input type=&quot;text&quot; name=&quot;query&quot; class=&quot;query&quot; autocorrect=&quot;off&quot; autocapitalize=&quot;off&quot; data-dojo-attach-point=&quot;queryNode&quot; data-dojo-attach-event=&quot;onfocus:_onFocus,onblur:_onBlur,onkeypress:_onKeyPress&quot; /&gt;&lt;/div&gt;',
+                '&lt;div class=&quot;hasButton&quot;&gt;&lt;button class=&quot;clear-button&quot; data-dojo-attach-event=&quot;onclick: _onClearClick&quot;&gt;&lt;/button&gt;&lt;/div&gt;',
+                '&lt;div class=&quot;hasButton&quot;&gt;&lt;button class=&quot;subHeaderButton searchButton&quot; data-dojo-attach-event=&quot;click: search&quot;&gt;{%= $.searchText %}&lt;/button&gt;&lt;/div&gt;',
+            '&lt;/div&gt;',
+            '&lt;label data-dojo-attach-point=&quot;labelNode&quot;&gt;{%= $.searchText %}&lt;/label&gt;',
             '&lt;/div&gt;'
         ]),
 

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='argos-Fields-DurationField'>/**
+</span> * The Duration field is a mashup of an auto-complete box and a {@link LookupField LookupField} for handling
+ * duration's of: minutes, hours, days, weeks or years. Meaning a user can type directly into the input area the
+ * amount of time or press the lookup button and choose from pre-determined list of times.
+ *
+ * When typing in a value directly, the Duration field only supports one &quot;measurement&quot; meaning if you wanted to
+ * have 1 hour and 30 minutes you would need to type in 90 minutes or 1.5 hours.
+ *
+ * The auto-complete happens on blur, so if a user types in 5m they would need to go to the next field (or press
+ * Save) and the field will auto-complete to 5 minute(s), letting the user know it accepted the value. If a value
+ * entered is not accepted, 5abc, it will default to the last known measurement, defaulting to minutes.
+ *
+ * Setting and getting the value is always in minutes as a Number.
+ *
+ * ###Example:
+ *     {
+ *         name: 'Duration',
+ *         property: 'Duration',
+ *         label: this.durationText,
+ *         type: 'duration',
+ *         view: 'durations_list'
+ *     }
+ *
+ * @alternateClassName DurationField
+ * @extends LookupField
+ */
+define('argos/Fields/DurationField', [
+    'dojo/_base/declare',
+    'dojo/string',
+    'dojo/dom-class',
+    '../Format',
+    './LookupField'
+], function(
+    declare,
+    string,
+    domClass,
+    format,
+    LookupField
+) {
+    return declare('argos.Fields.DurationField', [LookupField], {
+<span id='argos-Fields-DurationField-property-attributeMap'>        /**
+</span>         * Maps various attributes of nodes to setters.
+         */
+        attributeMap: {
+            inputValue: {
+                node: 'inputNode',
+                type: 'attribute',
+                attribute: 'value'
+            },
+            inputDisabled: {
+                node: 'inputNode',
+                type: 'attribute',
+                attribute: 'disabled'
+            },
+            autoCompleteContent: {
+                node: 'autoCompleteNode',
+                type: 'attribute',
+                attribute: 'innerHTML'
+            }
+        },
+
+<span id='argos-Fields-DurationField-property-widgetTemplate'>        /**
+</span>         * @property {Simplate}
+         * Simplate that defines the fields HTML Markup
+         *
+         * * `$` =&gt; Field instance
+         * * `$$` =&gt; Owner View instance
+         *
+         */
+        widgetTemplate: new Simplate([
+            '&lt;div class=&quot;autoComplete-watermark&quot; data-dojo-attach-point=&quot;autoCompleteNode&quot;&gt;&lt;/div&gt;',
+            '&lt;button class=&quot;button simpleSubHeaderButton&quot; data-dojo-attach-event=&quot;onclick:navigateToListView&quot; aria-label=&quot;{%: $.lookupLabelText %}&quot;&gt;&lt;span aria-hidden=&quot;true&quot;&gt;{%: $.lookupText %}&lt;/span&gt;&lt;/button&gt;',
+            '&lt;input data-dojo-attach-point=&quot;inputNode&quot; data-dojo-attach-event=&quot;onkeyup: _onKeyUp, onblur: _onBlur, onfocus: _onFocus&quot; class=&quot;text-input&quot; type=&quot;{%: $.inputType %}&quot; name=&quot;{%= $.name %}&quot; {% if ($.readonly) { %} readonly {% } %}&gt;'
+        ]),
+
+        // Localization
+<span id='argos-Fields-DurationField-property-emptyText'>        /**
+</span>         * @property {String}
+         * Text used when no value or null is set to the field
+         */
+        emptyText: '',
+
+<span id='argos-Fields-DurationField-property-invalidDurationErrorText'>        /**
+</span>         * @property {String}
+         * Text displayed when an invalid input is detected
+         */
+        invalidDurationErrorText: &quot;Field '${0}' is not a valid duration.&quot;,
+
+<span id='argos-Fields-DurationField-property-autoCompleteText'>        /**
+</span>         * @property {Object}
+         * The auto completed text and their corresponding values in minutes (SData is always minutes)
+         *
+         * Override ride this object to change the autocomplete units or their localization.
+         */
+        autoCompleteText: {
+            1 : 'minute(s)',
+            60 : 'hour(s)',
+            1440 : 'day(s)',
+            10080 : 'week(s)',
+            525960 : 'year(s)'
+        },
+
+<span id='argos-Fields-DurationField-property-valueKeyProperty'>        /**
+</span>         * @property {Boolean}
+         * Overrides the {@link LookupField LookupField} default to explicitly set it to false forcing
+         * the view to use the currentValue instead of a key/descriptor
+         */
+        valueKeyProperty: false,
+
+<span id='argos-Fields-DurationField-property-valueTextProperty'>        /**
+</span>         * @property {Boolean}
+         * Overrides the {@link LookupField LookupField} default to explicitly set it to false forcing
+         * the view to use the currentValue instead of a key/descriptor
+         */
+        valueTextProperty: false,
+
+<span id='argos-Fields-DurationField-property-currentKey'>        /**
+</span>         * @property {String}
+         * The current unit as detected by the parser
+         * @private
+         */
+        currentKey: null,
+
+<span id='argos-Fields-DurationField-property-currentValue'>        /**
+</span>         * @property {Number}
+         * The current value, expressed as minutes.
+         */
+        currentValue: 0,
+
+<span id='argos-Fields-DurationField-property-autoCompletePhraseRE'>        /**
+</span>         * @property {RegExp}
+         * Regular expression for capturing the phrase (text).
+         *
+         * The first capture group must be non-text part
+         * Second capture is the phrase to be used in auto complete
+         */
+        autoCompletePhraseRE: /^((?:\d+(?:\.\d*)?|\.\d+)\s*?)(\w+)/,
+
+<span id='argos-Fields-DurationField-property-autoCompleteValueRE'>        /**
+</span>         * @property {RegExp}
+         * Regular expression for capturing the value.
+         * Only one capture which should correlate to the value portion
+         */
+        autoCompleteValueRE: /^((?:\d+(?:\.\d*)?|\.\d+))/,
+
+<span id='argos-Fields-DurationField-method-startup'>        /**
+</span>         * Overrides the parent to skip the connections and alter the base capture RegExp's to account for localization
+         */
+        startup: function() {
+            var numberDecimalSeparator = Mobile.CultureInfo.numberFormat.numberDecimalSeparator;
+
+            this.autoCompletePhraseRE = new RegExp(
+                string.substitute('^((?:\\d+(?:\\${0}\\d*)?|\\${0}\\d+)\\s*?)(\\w+)', [numberDecimalSeparator])
+            );
+
+            this.autoCompleteValueRE = new RegExp(
+                string.substitute('^((?:\\d+(?:\\${0}\\d*)?|\\${0}\\d+))', [numberDecimalSeparator])
+            );
+        },
+
+<span id='argos-Fields-DurationField-method-_onKeyUp'>        /**
+</span>         * Handler for onkeyup on the input. The logic for comparing the matched value and phrase to the autocomplete
+         * is done here.
+         * @param {Event} evt onkeyup
+         * @private
+         */
+        _onKeyUp: function(evt) {
+            var val = this.inputNode.value.toString(),
+                match = this.autoCompletePhraseRE.exec(val);
+
+            if (!match || val.length &lt; 1)
+            {
+                this.hideAutoComplete();
+                return true;
+            }
+
+            for (var key in this.autoCompleteText)
+            {
+                if (this.isWordMatch(match[2], this.autoCompleteText[key]))
+                {
+                    this.currentKey = this.autoCompleteText[key];
+                    this.showAutoComplete(match[1] + this.autoCompleteText[key]);
+                    return true;
+                }
+            }
+
+            this.hideAutoComplete();
+        },
+
+<span id='argos-Fields-DurationField-method-isWordMatch'>        /**
+</span>         * Determines if the two provided values are the same word, ignoring capitalization and length:
+         *
+         * * h, hour(s) = true
+         * * hou, hour(s) = true
+         * * minn, minute(s) = false
+         * * year, year(s) = true
+         *
+         * @param {String} val First string to compare
+         * @param {String} word Second string to compare
+         * @return {Boolean} True if they are equal.
+         */
+        isWordMatch: function(val, word) {
+            if (val.length &gt; word.length)
+                val = val.slice(0, word.length);
+            else
+                word = word.slice(0, val.length);
+
+            return val.toUpperCase() === word.toUpperCase();
+        },
+
+<span id='argos-Fields-DurationField-method-showAutoComplete'>        /**
+</span>         * Shows the auto-complete version of the phrase
+         * @param {String} word Text to put in the autocomplete
+         */
+        showAutoComplete: function(word) {
+            this.set('autoCompleteContent', word);
+        },
+
+<span id='argos-Fields-DurationField-method-hideAutoComplete'>        /**
+</span>         * Clears the autocomplete input
+         */
+        hideAutoComplete: function() {
+            this.set('autoCompleteContent', '');
+        },
+
+<span id='argos-Fields-DurationField-method-_onBlur'>        /**
+</span>         * Inputs onblur handler, if an auto complete is matched it fills the text out the full text
+         * @param evt
+         * @return {Boolean}
+         * @private
+         */
+        _onBlur: function(evt) {
+            var val = this.inputNode.value.toString(),
+                match = this.autoCompleteValueRE.exec(val),
+                multiplier = this.getMultiplier(this.currentKey),
+                newValue = 0;
+
+            if (val.length &lt; 1) return true;
+            if (!match) return true;
+
+            newValue = parseFloat(match[0]) * multiplier;
+            this.setValue(newValue);
+        },
+
+<span id='argos-Fields-DurationField-method-getMultiplier'>        /**
+</span>         * Returns the corresponding value in minutes to the passed key (currentKey)
+         * @return {Number}
+         */
+        getMultiplier: function(key) {
+            var k;
+            for (k in this.autoCompleteText) {
+                if (this.autoCompleteText.hasOwnProperty(k) &amp;&amp; key == this.autoCompleteText[k])
+                    break;
+            }
+            return k;
+        },
+
+<span id='argos-Fields-DurationField-method-getValue'>        /**
+</span>         * Returns the current value in minutes
+         * @return {Number}
+         */
+        getValue: function(){
+            return this.currentValue;
+        },
+
+<span id='argos-Fields-DurationField-method-setValue'>        /**
+</span>         * Sets the currentValue to the passed value, but sets the displayed value after formatting with {@link #textFormat textFormat}.
+         * @param {Number} val Number of minutes
+         * @param init
+         */
+        setValue: function(val, init) {
+            this.currentValue = val;
+            this.set('inputValue', this.textFormat(val));
+            this.hideAutoComplete();
+        },
+
+<span id='argos-Fields-DurationField-method-setSelection'>        /**
+</span>         * If used as a Lookup, this is invoked with the value of the lookup item.
+         * @param val
+         * @param {String/Number} key Number of minutes (will be converted via parseFloat)
+         */
+        setSelection: function(val, key) {
+            this.setValue(parseFloat(key));
+        },
+
+<span id='argos-Fields-DurationField-method-textFormat'>        /**
+</span>         * Takes the number of minutes and converts it into a textual representation using the `autoCompleteText`
+         * collection as aguide
+         * @param {Number} val Number of minutes
+         * @return {String}
+         */
+        textFormat: function(val) {
+            var stepValue,
+                finalUnit = 1,
+                autoCompleteValues = this.autoCompleteText;
+
+            for (var key in autoCompleteValues)
+            {
+                stepValue = key;
+                if (val === 0 &amp;&amp; stepValue === 1)
+                {
+                    this.currentKey = autoCompleteValues[key];
+                    break;
+                }
+                if (val / stepValue &gt;= 1)
+                {
+                    finalUnit = stepValue;
+                    this.currentKey = autoCompleteValues[key];
+                }
+            }
+            return this.convertUnit(val, finalUnit) + ' ' +this.currentKey;
+        },
+
+<span id='argos-Fields-DurationField-method-convertUnit'>        /**
+</span>         * Divides two numbers and fixes the decimal point to two places.
+         * @param {Number} val
+         * @param {Number} to
+         * @return {Number}
+         */
+        convertUnit: function(val, to) {
+            return format.fixed(val/to, 2);
+        },
+
+<span id='argos-Fields-DurationField-method-createNavigationOptions'>        /**
+</span>         * Extends the {@link LookupField#createNavigationOptions parent implementation} to explicitly set hide search
+         * to true and data to `this.data`.
+         * @return {Object} Navigation options object to be passed
+         */
+        createNavigationOptions: function() {
+            var options = this.inherited(arguments);
+            options.hideSearch = true;
+            options.data = this.expandExpression(this.data);
+            return options;
+        },
+
+<span id='argos-Fields-DurationField-method-validate'>        /**
+</span>         * Validets the field by verifying it matches one of the auto complete text.
+         * @return {Boolean} False for no-errors, true for error.
+         */
+        validate: function() {
+            var val = this.inputNode.value.toString(),
+                phraseMatch = this.autoCompletePhraseRE.exec(val);
+
+            if (!phraseMatch)
+            {
+               domClass.add(this.containerNode, 'row-error');
+               return string.substitute(this.invalidDurationErrorText, [val]);
+            }
+            else
+            {
+               domClass.remove(this.containerNode, 'row-error');
+               return false;
+            }
+        }
+    });
+});</pre>
+</body>
+</html>

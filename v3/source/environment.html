@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='argos-environment'>/**
+</span> * Collection of outside handlers such as making calls, sending emails and opening maps.
+ * @alternateClassName environment
+ * @singleton
+ */
+define('argos/environment', [
+    'dojo/_base/lang',
+    'dojo/_base/window',
+    'dojo/has',
+    'dojo/string',
+    'dojo/dom-construct',
+    'dojo/_base/sniff'
+], function(
+    lang,
+    win,
+    has,
+    string,
+    domConstruct
+) {
+    return lang.setObject('argos.environment', {
+<span id='argos-environment-method-initiateCall'>        // todo: open a new browser window for these when on a mobile device?
+</span>        // on a mobile device, launching an external handler can impact a view transition, and cause issues, which the timeout takes care of.
+        // not the best way, perhaps a post-transition callback should be used for launching these? check transitioning, then queue if needed?
+        initiateCall: function(number) {
+            setTimeout(function() {
+                window.location.href = string.substitute(&quot;tel:${0}&quot;, [number]);
+            }, 50);
+        },
+<span id='argos-environment-method-initiateEmail'>        initiateEmail: function(email, subject, body) {
+</span>            setTimeout(function() {
+                var mailtoUri = (subject)
+                    ? string.substitute(&quot;mailto:${0}?subject=${1}&amp;body=${2}&quot;, [email, subject, body||''])
+                    : string.substitute(&quot;mailto:${0}&quot;, [email]);
+                window.location.href = mailtoUri;
+            }, 1000); // 1 sec delay for iPad iOS5 to actually save nav state to local storage
+        },
+<span id='argos-environment-method-showMapForAddress'>        showMapForAddress: function(address) {
+</span>            setTimeout(function() {
+                var eventFire = function(node, eventType){
+                    if (node.fireEvent)
+                    { // for IE
+                        node.fireEvent('on' + eventType);
+                        node[eventType]();
+                    }
+                    else
+                    {
+                        var event = document.createEvent('MouseEvents');
+                        event.initMouseEvent(eventType, true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+                        node.dispatchEvent(event);
+
+                        // FF 3.6-4 do not follow untrusted events, fixed in FF5+
+                        // https://bugzilla.mozilla.org/show_bug.cgi?id=666604
+                        if (has('ff') &lt; 5)
+                            window.open(node.href);
+                    }
+                };
+
+                var hiddenLink = domConstruct.create('a', {
+                    href: string.substitute(&quot;http://maps.google.com/maps?q=${0}&quot;, [address]),
+                    target: '_blank'
+                }, win.body(), 'last');
+
+                eventFire(hiddenLink, 'click');
+
+                domConstruct.destroy(hiddenLink);
+
+            }, 50);
+        }
+    });
+});</pre>
+</body>
+</html>

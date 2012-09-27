@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='argos-_MessageMapMixin'>/**
+</span> * _MessageMapMixin
+ * @alternateClassName _MessageMapMixin
+ * @requires Message
+ */
+define('argos/_MessageMapMixin', [
+    'dojo/_base/declare',
+    './Message'
+], function(
+    declare,
+    message
+) {
+<span id='argos-_MessageMapMixin-property-'>    /**
+</span>     * Allows a widget to map messages to actions by defining an message map.
+     */
+    return declare('argos._MessageMapMixin', null, {
+<span id='argos-_MessageMapMixin-property-messages'>        messages: null,
+</span>
+<span id='argos-_MessageMapMixin-method-startup'>        startup: function() {
+</span>            this.inherited(arguments);
+
+            message.claim(this.id, this);
+        },
+<span id='argos-_MessageMapMixin-method-uninitialize'>        uninitialize: function() {
+</span>            this.inherited(arguments);
+
+            message.revoke(this.id);
+        },
+<span id='argos-_MessageMapMixin-method-receive'>        receive: function(message, args) {
+</span>            var method = this.messages[message];
+            if (method &amp;&amp; this[method])
+            {
+                this[method].apply(this, args);
+            }
+        }
+    });
+});</pre>
+</body>
+</html>

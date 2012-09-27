@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='argos-_TemplatedWidgetMixin'>/**
+</span> * _TemplatedWidgetMixin
+ * @alternateClassName _TemplatedWidgetMixin
+ */
+define('argos/_TemplatedWidgetMixin', [
+    'dojo/_base/declare',
+    'dojo/dom-construct',
+    'dijit/_TemplatedMixin'
+], function(
+    declare,
+    domConstruct,
+    _TemplatedMixin
+) {
+    return declare('argos._TemplatedWidgetMixin', null, {
+<span id='argos-_TemplatedWidgetMixin-property-widgetTemplate'>        widgetTemplate: null,
+</span><span id='argos-_TemplatedWidgetMixin-method-constructor'>        constructor: function(){
+</span>            this._attachPoints = [];
+            this._attachEvents = [];
+        },
+<span id='argos-_TemplatedWidgetMixin-method-buildRendering'>        /**
+</span>         * Processes `this.widgetTemplate` or `this.contentTemplate`
+         */
+        buildRendering: function() {
+            var rendered = this.widgetTemplate.apply(this),
+                node = domConstruct.toDom(rendered);
+
+            if (node.nodeType === 11)
+                node = domConstruct.toDom('&lt;div&gt;' + rendered + '&lt;/div&gt;');
+
+            if (node.nodeType !== 1) throw new Error('Invalid template.');
+
+            this.domNode = node;
+
+            // Call down to _Widget.buildRendering() to get base classes assigned
+            // TODO: change the baseClass assignment to _setBaseClassAttr
+            this.inherited(arguments);
+
+            // recurse through the node, looking for, and attaching to, our
+            // attachment points and events, which should be defined on the template node.
+            this._attachTemplateNodes(node, function(n,p){ return n.getAttribute(p); });
+
+            this._beforeFillContent();		// hook for _WidgetsInTemplateMixin
+
+            this._fillContent(this.srcNodeRef);
+        },
+<span id='argos-_TemplatedWidgetMixin-property-_beforeFillContent'>        /**
+</span>         * Since there is no way to directly override only the template rendering in Dojo, include
+         * the necessary functions from `_TemplatedMixin` in order to minimize the amount of code that
+         * needs to be updated when Dojo itself is updated.
+         */
+        _beforeFillContent: _TemplatedMixin.prototype._beforeFillContent,
+<span id='argos-_TemplatedWidgetMixin-property-_fillContent'>        _fillContent: _TemplatedMixin.prototype._fillContent,
+</span><span id='argos-_TemplatedWidgetMixin-property-_attachTemplateNodes'>        _attachTemplateNodes: _TemplatedMixin.prototype._attachTemplateNodes,
+</span><span id='argos-_TemplatedWidgetMixin-property-destroyRendering'>        destroyRendering: _TemplatedMixin.prototype.destroyRendering
+</span>    });
+});</pre>
+</body>
+</html>

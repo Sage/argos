@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='argos-Charts-BarChart'>/**
+</span> * BarChart
+ * @alternateClassName BarChart
+ * @extends _Chart
+ */
+define('argos/Charts/BarChart', [
+    'dojo/_base/declare',
+    'dojo/window',
+    'dojo/dom-geometry',
+    './_Chart',
+    'dojox/charting/plot2d/Bars',
+    'dojox/charting/axis2d/Default'
+], function(
+    declare,
+    win,
+    domGeom,
+    _Chart,
+    Bars
+) {
+    return declare('argos.Charts.BarChart', [_Chart], {
+<span id='argos-Charts-BarChart-property-xAxis'>        xAxis: {
+</span>            fixLower: 'major',
+            fixUpper: 'major',
+            minorTicks: false
+        },
+<span id='argos-Charts-BarChart-property-yAxis'>        yAxis: {
+</span>            vertical: true,
+            fixLower: 'major',
+            fixUpper: 'none',
+            minorTicks: false
+        },
+<span id='argos-Charts-BarChart-property-plotType'>        plotType: Bars,
+</span><span id='argos-Charts-BarChart-property-plotOptions'>        plotOptions: {
+</span>            gap: 5
+        },
+
+<span id='argos-Charts-BarChart-method-getAxes'>        getAxes: function() {
+</span>            var axes = this.inherited(arguments);
+
+            if (this.feed)
+                axes[0].options.maxLabelSize = Math.floor(domGeom.getMarginBox(this.chartNode).w / (this.feed.length + 3.5));
+
+            return axes;
+        },
+<span id='argos-Charts-BarChart-method-setSize'>        setSize: function() {
+</span>            this.inherited(arguments);
+
+            if (this.chart &amp;&amp; this.chart.axes['x'] &amp;&amp; this.feed)
+            {
+                var axes = this.getAxes();
+                this.chart.addAxis(axes[0].axis, axes[0].options);
+            }
+        }
+    });
+});</pre>
+</body>
+</html>

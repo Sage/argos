@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='argos-Toolbar'>/**
+</span> * Toolbar is a base toolbar class that provides basic rendering of the bar, adding toolbar items and
+ * binding their invokacations.
+ *
+ * Inherits dijit _WidgetBase.
+ *
+ * @alternateClassName Toolbar
+ * @extends _UiComponent
+ * @mixins _CommandMixin
+ * @mixins _EventMapMixin
+ * @requires ToolbarButton
+ */
+define('argos/Toolbar', [
+    'dojo/_base/declare',
+    'dojo/_base/lang',
+    'dojo/_base/array',
+    'dojo/topic',
+    'dojo/dom-attr',
+    'dojo/dom-class',
+    'dijit/_WidgetBase',
+    './_EventMapMixin',
+    './_UiComponent',
+    './_CommandMixin',
+    './ToolbarButton'
+], function(
+    declare,
+    lang,
+    array,
+    topic,
+    domAttr,
+    domClass,
+    _WidgetBase,
+    _EventMapMixin,
+    _UiComponent,
+    _CommandSupportMixin,
+    ToolbarButton
+) {
+    return declare('argos.Toolbar', [_WidgetBase, _UiComponent, _CommandSupportMixin, _EventMapMixin], {
+<span id='argos-Toolbar-property-events'>        events: {
+</span>            'click': true
+        },
+<span id='argos-Toolbar-property-itemType'>        itemType: ToolbarButton,
+</span><span id='argos-Toolbar-property-baseClass'>        baseClass: 'toolbar',
+</span><span id='argos-Toolbar-property-position'>        position: 'top',
+</span><span id='argos-Toolbar-property-items'>        items: null,
+</span><span id='argos-Toolbar-property-context'>        context: null,
+</span><span id='argos-Toolbar-property-visible'>        visible: true,
+</span>
+<span id='argos-Toolbar-property-enabled'>        /**
+</span>         * @property {Boolean}
+         * Enabled state of toolbar
+         */
+        enabled: true,
+
+<span id='argos-Toolbar-property-_items'>        _items: null,
+</span><span id='argos-Toolbar-property-_itemsByName'>        _itemsByName: null,
+</span>
+<span id='argos-Toolbar-method-constructor'>        constructor: function() {
+</span>            this._items = [];
+            this._itemsByName = {};
+        },
+<span id='argos-Toolbar-method-_getContextAttr'>        _getContextAttr: function() {
+</span>            if (this.context) return this.context;
+
+            var parent = this.getParent();
+
+            return parent &amp;&amp; parent.active;
+        },
+<span id='argos-Toolbar-method-_setEnabledAttr'>        _setEnabledAttr: function(value) {
+</span>            this.enabled = value;
+        },
+<span id='argos-Toolbar-method-_getEnabledAttr'>        _getEnabledAttr: function() {
+</span>            return this.enabled;
+        },
+<span id='argos-Toolbar-method-_getPositionAttr'>        _getPositionAttr: function() {
+</span>            return this.position;
+        },
+<span id='argos-Toolbar-method-_setPositionAttr'>        _setPositionAttr: function(value) {
+</span>            var previous = this.position;
+
+            domClass.remove(this.domNode, 'toolbar-' + previous);
+            domClass.add(this.domNode, 'toolbar-' + value);
+
+            this.position = value;
+
+            this.onPositionChange(value, previous);
+        },
+<span id='argos-Toolbar-method-_setVisibleAttr'>        _setVisibleAttr: function(value) {
+</span>            this.visible = value;
+
+            domClass.toggle(this.domNode, 'is-hidden', !value);
+        },
+<span id='argos-Toolbar-method-_getVisibleAttr'>        _getVisibleAttr: function() {
+</span>            return this.visible;
+        },
+<span id='argos-Toolbar-method-onPositionChange'>        onPositionChange: function(position, previous) {
+</span>        },
+<span id='argos-Toolbar-method-onStartup'>        onStartup: function() {
+</span>            this.inherited(arguments);
+
+            this.subscribe('/app/toolbar/invoke', this._onToolbarInvoke);
+            this.subscribe('/app/toolbar/toggle', this._onToolbarToggle);
+            this.subscribe('/app/toolbar/update', this._onToolbarUpdate);
+
+            this.onPositionChange(this.position, null);
+        },
+<span id='argos-Toolbar-method-_onToolbarInvoke'>        _onToolbarInvoke: function(name) {
+</span>            this.invoke(name);
+        },
+<span id='argos-Toolbar-method-_onToolbarToggle'>        _onToolbarToggle: function(name, value) {
+</span>            if (this.position == name) this.set('enabled', value);
+        },
+<span id='argos-Toolbar-method-_onToolbarUpdate'>        _onToolbarUpdate: function(name) {
+</span>            this.update();
+        },
+<span id='argos-Toolbar-method-clear'>        clear: function() {
+</span>            if (this._items.length &gt; 0)
+            {
+                array.forEach(this._items, function(item) {
+                    this._remove(item);
+                }, this);
+
+                this.onContentChange();
+
+                this._items = [];
+                this._itemsByName = {};
+
+                this._commandsByName = {};
+            }
+        },
+<span id='argos-Toolbar-method-hide'>        hide: function() {
+</span>            this.set('visible', false);
+        },
+<span id='argos-Toolbar-method-show'>        show: function() {
+</span>            this.set('visible', true);
+        },
+<span id='argos-Toolbar-method-disable'>        disable: function() {
+</span>            this.set('enabled', false);
+        },
+<span id='argos-Toolbar-method-enable'>        enable: function() {
+</span>            this.set('enabled', true);
+        },
+<span id='argos-Toolbar-method-update'>        update: function() {
+</span>            var context = this.get('context');
+
+            array.forEach(this._items, function(item) {
+                this._update(item, context);
+            }, this);
+
+            this.onContentChange();
+        },
+<span id='argos-Toolbar-method-_remove'>        _remove: function(item) {
+</span>            item.remove();
+        },
+<span id='argos-Toolbar-method-_update'>        _update: function(item, context) {
+</span>            item.update(context);
+        },
+<span id='argos-Toolbar-method-_create'>        _create: function(props, key) {
+</span>            /* support old tool definitions */
+            props.name = props.name || props.id;
+
+            var ctor = props.type || this.itemType;
+
+            delete props.type;
+
+            return new ctor(props);
+        },
+<span id='argos-Toolbar-method-_place'>        _place: function(item) {
+</span>            item.placeAt(this.containerNode || this.domNode);
+        },
+<span id='argos-Toolbar-method-_setItemsAttr'>        _setItemsAttr: function(values, options) {
+</span>            /* todo: use options for animation, caching */
+            /* todo: cache items per key and exact source object */
+            if (typeof values == 'undefined') return;
+
+            this.clear();
+
+            var context = this.get('context'),
+                key = options &amp;&amp; options.key,
+                itemsByName = {},
+                items = array.map(values, function(value) {
+                    var item = this._create(value, key);
+
+                    this._update(item, context);
+                    this._place(item);
+
+                    itemsByName[item.get('name')] = item;
+
+                    return item;
+                }, this);
+
+            this._items = items;
+            this._itemsByName = itemsByName;
+
+            this._commandsByName = itemsByName;
+
+            this.onContentChange();
+        },
+<span id='argos-Toolbar-method-_getItemsAttr'>        _getItemsAttr: function() {
+</span>            return this._items;
+        },
+<span id='argos-Toolbar-method-onContentChange'>        onContentChange: function() {
+</span>        }
+    });
+});</pre>
+</body>
+</html>

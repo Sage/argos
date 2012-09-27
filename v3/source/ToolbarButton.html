@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+<span id='argos-ToolbarButton'>/**
+</span> * Defines a basic toolbar button control
+ * @alternateClassName ToolbarButton
+ * @extends Control
+ */
+define('argos/ToolbarButton', [
+    'dojo/_base/declare',
+    'dojo/_base/lang',
+    'dojo/dom-class',
+    'dojo/dom-attr',
+    './Control'
+], function(
+    declare,
+    lang,
+    domClass,
+    domAttr,
+    Control
+) {
+    return declare('argos.ToolbarButton', [Control], {
+<span id='argos-ToolbarButton-property-tag'>        tag: 'button',
+</span><span id='argos-ToolbarButton-property-attrs'>        attrs: {
+</span>            'data-action': 'invoke'
+        },
+<span id='argos-ToolbarButton-property-baseClass'>        baseClass: 'button tool-button',
+</span><span id='argos-ToolbarButton-property-components'>        components: [
+</span>            {content: Simplate.make([
+                '&lt;div&gt;',
+                '{% if ($.icon) { %}',
+                '&lt;img src=&quot;{%= $.icon %}&quot; alt=&quot;{%= $.name %}&quot; /&gt;',
+                '{% } %}',
+                '{% if ($.label) { %}',
+                '&lt;span&gt;{%: $.label %}&lt;/span&gt;',
+                '{% } %}',
+                '&lt;/div&gt;'
+            ])}
+        ],
+<span id='argos-ToolbarButton-property-enabled'>        enabled: true,
+</span><span id='argos-ToolbarButton-property-visible'>        visible: true,
+</span><span id='argos-ToolbarButton-property-place'>        place: null,
+</span><span id='argos-ToolbarButton-property-icon'>        icon: null,
+</span><span id='argos-ToolbarButton-property-name'>        name: null,
+</span><span id='argos-ToolbarButton-property-label'>        label: null,
+</span>
+<span id='argos-ToolbarButton-method-_setNameAttr'>        _setNameAttr: function(value) {
+</span>            this.name = value;
+
+            domAttr.set(this.domNode, 'data-command', value);
+
+            if (!this.get('label')) this.set('label', value);
+        },
+<span id='argos-ToolbarButton-method-_getNameAttr'>        _getNameAttr: function() {
+</span>            return this.name;
+        },
+<span id='argos-ToolbarButton-method-_setLabelAttr'>        _setLabelAttr: function(value) {
+</span>            this.label = value;
+
+            domAttr.set(this.domNode, 'aria-label', value);
+        },
+<span id='argos-ToolbarButton-method-_getLabelAttr'>        _getLabelAttr: function() {
+</span>            return this.label;
+        },
+<span id='argos-ToolbarButton-method-_setEnabledAttr'>        _setEnabledAttr: function(value) {
+</span>            this.enabled = value;
+
+            domClass.toggle(this.domNode, 'is-disabled', !value);
+        },
+<span id='argos-ToolbarButton-method-_getEnabledAttr'>        _getEnabledAttr: function() {
+</span>            return this.enabled;
+        },
+<span id='argos-ToolbarButton-method-_setVisibleAttr'>        _setVisibleAttr: function(value) {
+</span>            this.visible = value;
+
+            domClass.toggle(this.domNode, 'is-hidden', !value);
+        },
+<span id='argos-ToolbarButton-method-_getVisibleAttr'>        _getVisibleAttr: function() {
+</span>            return this.visible;
+        },
+<span id='argos-ToolbarButton-method-update'>        update: function(context) {
+</span>
+        }
+    });
+});</pre>
+</body>
+</html>

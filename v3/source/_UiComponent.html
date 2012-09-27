@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+define('argos/_UiComponent', [
+    'require',
+    'dojo/_base/declare',
+    'dojo/_base/array',
+    'dojo/_base/lang',
+    'dojo/_base/connect',
+    'dojo/dom-construct',
+    'dojo/dom-class',
+    'dojo/Stateful',
+    'dijit/_WidgetBase',
+    'dijit/_Container',
+    './_Component'
+], function(
+    require,
+    declare,
+    array,
+    lang,
+    connect,
+    domConstruct,
+    domClass,
+    Stateful,
+    _WidgetBase,
+    _Container,
+    _Component
+) {
+<span id='argos-_UiComponent'>    /**
+</span>     * _UiComponent
+     * @alternateClassName _UiComponent
+     * @extends _Component
+     */
+    var _UiComponent = declare('argos._UiComponent', [_Component], {
+<span id='argos-_UiComponent-method-_startupChildComponent'>        _startupChildComponent: function(instance) {
+</span>            if (instance.isInstanceOf(_WidgetBase) &amp;&amp; instance._started) return;
+
+            instance.startup();
+        },
+<span id='argos-_UiComponent-method-_destroyChildComponent'>        _destroyChildComponent: function(instance) {
+</span>            if (instance.isInstanceOf(_WidgetBase) &amp;&amp; instance._beingDestroyed) return;
+
+            instance.destroy();
+        },
+<span id='argos-_UiComponent-method-_instantiateComponent'>        _instantiateComponent: function(definition, root, owner) {
+</span>            if (definition.type) return this.inherited(arguments);
+            if (definition.domOnly !== false)
+            {
+                var node = definition.content
+                    ? domConstruct.toDom(
+                        lang.isFunction(definition.content)
+                            ? definition.content.call(this, root, owner, this)
+                            : definition.content
+                    )
+                    : domConstruct.create(definition.tag, definition.attrs);
+
+                return new DomContentComponent(lang.mixin({
+                    components: definition.components,
+                    _componentRoot: root,
+                    _componentOwner: owner,
+                    _componentSource: definition
+                }, definition.props), node);
+            }
+            else
+            {
+                return new Control(lang.mixin({
+                    components: definition.components,
+                    content: definition.content,
+                    attrs: definition.attrs,
+                    tag: definition.tag,
+                    _componentRoot: root,
+                    _componentOwner: owner,
+                    _componentSource: definition
+                }, definition.props));
+            }
+        },
+<span id='argos-_UiComponent-method-_attachComponent'>        _attachComponent: function(definition, instance, context, root, owner) {
+</span>            this.inherited(arguments);
+
+            this._attachUiComponent(instance, context, definition &amp;&amp; definition.position);
+        },
+<span id='argos-_UiComponent-method-_detachComponent'>        _detachComponent: function(instance, context, root, owner) {
+</span>            this.inherited(arguments);
+
+            this._detachUiComponent(instance, context);
+        },
+<span id='argos-_UiComponent-method-_attachUiComponent'>        _attachUiComponent: function(instance, context, position) {
+</span>            var referenceNode = this.containerNode || this.domNode;
+
+            if (instance.isInstanceOf(_WidgetBase))
+            {
+                if (this.isInstanceOf(_Container))
+                    this.addChild(instance, position);
+                else if (referenceNode)
+                    instance.placeAt(instance.domNode == referenceNode ? this.domNode : referenceNode, position);
+            }
+            else if (instance.domNode)
+            {
+                domConstruct.place(instance.domNode, instance.domNode == referenceNode ? this.domNode : referenceNode, position);
+            }
+        },
+<span id='argos-_UiComponent-method-_detachUiComponent'>        _detachUiComponent: function(instance, context) {
+</span>            if (instance.isInstanceOf(_WidgetBase))
+            {
+                if (this.isInstanceOf(_Container))
+                    this.removeChild(instance);
+                else if (instance.domNode &amp;&amp; instance.domNode.parentNode)
+                    instance.domNode.parentNode.removeChild(instance.domNode);
+            }
+            else if (instance.domNode &amp;&amp; instance.domNode.parentNode)
+            {
+                instance.domNode.parentNode.removeChild(instance.domNode);
+            }
+        }
+    });
+
+<span id='argos-DomContentComponent'>    /**
+</span>     * DomContentComponent
+     * @alternateClassName DomContentComponent
+     * @extends _UiComponent
+     */
+    var DomContentComponent = declare('argos.DomContentComponent', [_UiComponent], {
+<span id='argos-DomContentComponent-property-domNode'>        domNode: null,
+</span><span id='argos-DomContentComponent-method-constructor'>        constructor: function(props, node) {
+</span>            lang.mixin(this, props);
+
+            this.domNode = node;
+        },
+<span id='argos-DomContentComponent-method-destroy'>        destroy: function() {
+</span>            if (this.domNode)
+            {
+                if (this.domNode.parentNode)
+                    this.domNode.parentNode.removeChild(this.domNode);
+
+                this.domNode = null;
+            }
+
+            this.inherited(arguments);
+        },
+<span id='argos-DomContentComponent-method-getComponentValue'>        getComponentValue: function() {
+</span>            return this.domNode;
+        }
+    });
+
+<span id='argos-Control'>    /**
+</span>     * A lightweight widget-like component.
+     * @alertnateClassName Control
+     * @extends _UiComponent
+     */
+    var Control = declare('argos.Control', [Stateful, _UiComponent], {
+<span id='argos-Control-property-attributeMap'>        attributeMap: {},
+</span><span id='argos-Control-property-tag'>        tag: null,
+</span><span id='argos-Control-property-attrs'>        attrs: null,
+</span><span id='argos-Control-property-content'>        content: null,
+</span><span id='argos-Control-property-baseClass'>        baseClass: null,
+</span>
+<span id='argos-Control-method-constructor'>        constructor: function(props) {
+</span>            this.params = props;
+        },
+
+<span id='argos-Control-method-onCreate'>        onCreate: function() {
+</span>            this.inherited(arguments);
+            this.render();
+
+            if (this.domNode) this._applyAttributes();
+        },
+
+<span id='argos-Control-method-render'>        render: function() {
+</span>            if (this.domNode) return;
+
+            if (this.content)
+            {
+                this.domNode = domConstruct.toDom(
+                    lang.isFunction(this.content)
+                        ? this.content.call(this, this._componentRoot, this._componentOwner, this)
+                        : this.content
+                );
+            }
+            else
+            {
+                this.domNode = domConstruct.create(this.tag || 'div', this.attrs);
+            }
+
+            this.containerNode = this.domNode;
+
+            if (this.baseClass) domClass.add(this.domNode, this.baseClass);
+        },
+
+<span id='argos-Control-method-remove'>        remove: function() {
+</span>            if (this.domNode &amp;&amp; this.domNode.parentNode)
+                this.domNode.parentNode.removeChild(this.domNode);
+        },
+
+<span id='argos-Control-method-destroy'>        destroy: function() {
+</span>            this.inherited(arguments);
+
+            if (this.domNode &amp;&amp; this.domNode.parentNode)
+                this.domNode.parentNode.removeChild(this.domNode);
+
+            this.domNode = this.containerNode = null;
+        },
+
+<span id='argos-Control-property-placeAt'>        /* selective mixin from _WidgetBase */
+</span>        placeAt: _WidgetBase.prototype.placeAt,
+<span id='argos-Control-property-set'>        set: _WidgetBase.prototype.set,
+</span><span id='argos-Control-property-get'>        get: _WidgetBase.prototype.get,
+</span><span id='argos-Control-property-_set'>        _set: _WidgetBase.prototype._set,
+</span><span id='argos-Control-property-_attrToDom'>        _attrToDom: _WidgetBase.prototype._attrToDom,
+</span><span id='argos-Control-property-_getAttrNames'>        _getAttrNames: _WidgetBase.prototype._getAttrNames,
+</span><span id='argos-Control-property-_attrPairNames'>        _attrPairNames: _WidgetBase.prototype._attrPairNames,
+</span><span id='argos-Control-property-_applyAttributes'>        _applyAttributes: _WidgetBase.prototype._applyAttributes
+</span>    });
+
+    _UiComponent.DomContentComponent = DomContentComponent;
+    _UiComponent.Control = Control;
+
+    return _UiComponent;
+});</pre>
+</body>
+</html>

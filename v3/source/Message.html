@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='argos-Message'>/**
+</span> * Message service
+ * @alternateClassName Message
+ */
+define('argos/Message', [
+    'dojo/_base/lang',
+    'dojo/_base/array'
+], function(
+    lang,
+    array
+) {
+    /* async point to point messaging */
+    /* for everything else, use pub-sub */
+    return lang.setObject('argos.Message', {
+<span id='argos-Message-property-queues'>        queues: null,
+</span><span id='argos-Message-property-channels'>        channels: null,
+</span><span id='argos-Message-method-send'>        send: function(channel, message) {
+</span>            var channels = this.channels || (this.channels = {}),
+                queues = this.queues || (this.queues = {});
+
+            var target = channels[channel];
+            if (target &amp;&amp; target.receive)
+            {
+                target.receive(message, Array.prototype.slice.call(arguments, 2));
+            }
+            else
+            {
+                var queue = queues[channel] || (queues[channel] || []);
+
+                queue.push([message, Array.prototype.slice.call(arguments, 2)]);
+            }
+        },
+<span id='argos-Message-method-sendOrIgnore'>        sendOrIgnore: function(channel, message, arg0) {
+</span>            var channels = this.channels || (this.channels = {});
+
+            var target = channels[channel];
+            if (target &amp;&amp; target.receive)
+            {
+                target.receive(message, Array.prototype.slice.call(arguments, 2));
+            }
+        },
+<span id='argos-Message-method-discard'>        discard: function(channel) {
+</span>            var queues = this.queues || (this.queues = {});
+
+            delete queues[channel];
+        },
+<span id='argos-Message-method-claim'>        claim: function(channel, target) {
+</span>            var channels = this.channels || (this.channels = {}),
+                queues = this.queues || (this.queues = {});
+
+            channels[channel] = target;
+
+            var queue = queues[channel];
+            if (queue &amp;&amp; target.receive)
+            {
+                array.forEach(queue, function(message) {
+                    target.receive(message[0], message[1]);
+                });
+            }
+        },
+<span id='argos-Message-method-revoke'>        revoke: function(channel) {
+</span>            var slots = this.channels || (this.channels = {}),
+                queues = this.queues || (this.queues = {});
+
+            delete slots[channel];
+            delete queues[channel];
+        }
+    });
+});</pre>
+</body>
+</html>

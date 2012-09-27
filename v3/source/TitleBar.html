@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* Copyright (c) 2010, Sage Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<span id='argos-TitleBar'>/**
+</span> * TitleBar is designed to handle the top application bar with markup and logic to set
+ * a title and position toolbar items to the left or right
+ * @alternateClassName TitleBar
+ * @extends Toolbar
+ */
+define('argos/TitleBar', [
+    'dojo/_base/declare',
+    'dojo/_base/lang',
+    'dojo/query',
+    'dojo/NodeList-manipulate',
+    'dojo/topic',
+    'dojo/dom-construct',
+    'dojo/dom-style',
+    'dojo/dom-class',
+    'dojo/dom-attr',
+    './Toolbar'
+], function(
+    declare,
+    lang,
+    query,
+    nodeListManipulate,
+    topic,
+    domConstruct,
+    domStyle,
+    domClass,
+    domAttr,
+    Toolbar
+) {
+    return declare('argos.TitleBar', [Toolbar], {
+<span id='argos-TitleBar-property-position'>        position: 'top',
+</span><span id='argos-TitleBar-property-components'>        components: [
+</span>            {tag: 'h1', attrs: {'class':'toolbar-title'}, components: [
+                {tag: 'span', attachPoint: 'titleNode'}
+            ]}
+        ],
+<span id='argos-TitleBar-property-_setTitleAttr'>        _setTitleAttr: {node: 'titleNode', type: 'innerHTML'},
+</span>
+<span id='argos-TitleBar-property-_count'>        _count: null,
+</span><span id='argos-TitleBar-property-_size'>        /**
+</span>         * @property {Number}
+         * Current number of toolbar items set
+         */
+        _size: 0,
+<span id='argos-TitleBar-method-constructor'>        constructor: function() {
+</span>            this._count = {left: 0, right: 0};
+        },
+<span id='argos-TitleBar-method-onCreate'>        onCreate: function() {
+</span>            this.inherited(arguments);
+
+            domAttr.set(this.domNode, 'data-action', 'scroll');
+        },
+<span id='argos-TitleBar-method-clear'>        clear: function() {
+</span>            this._count = {left: 0, right: 0};
+
+            this.inherited(arguments);
+        },
+<span id='argos-TitleBar-method-scroll'>        scroll: function() {
+</span>            console.log('scroll!');
+        },
+<span id='argos-TitleBar-method-_update'>        _update: function(item, context) {
+</span>            this.inherited(arguments);
+
+            if (item.get('visible')) this._count[item.get('place')] += 1;
+        },
+<span id='argos-TitleBar-method-_create'>        _create: function(props) {
+</span>            props.place = props.place || 'right';
+
+            return this.inherited(arguments);
+        },
+<span id='argos-TitleBar-method-_place'>        _place: function(item) {
+</span>            domClass.add(item.domNode, 'on-' + item.get('place'));
+
+            this.inherited(arguments);
+        },
+<span id='argos-TitleBar-method-onContentChange'>        onContentChange: function() {
+</span>            var count = this._count,
+                size = Math.max(count['left'], count['right']);
+
+            domAttr.set(this.domNode, 'data-item-count', size);
+
+            this._size = size;
+
+            this.inherited(arguments);
+        }
+    });
+});</pre>
+</body>
+</html>
