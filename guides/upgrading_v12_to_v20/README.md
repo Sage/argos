@@ -1,5 +1,6 @@
 #Upgrading 1.2 to 2.0
-With the release of SLX Mobile 2.0 there have been many major changes in how the application works. This was done not only to align with SLX Web but to also bring faster performance, newer features and a more customize-able environment. These changes include:
+With the release of SLX Mobile 2.0 there have been many major changes in how the application works. This was done not only to align with SLX Web 
+but to also bring faster performance, newer features and a more customize-able environment. These changes include:
 
 * AMD script loading;
 * Removed the Ext framework and replaced it with Dojo 1.7.1;
@@ -19,7 +20,9 @@ With the release of SLX Mobile 2.0 there have been many major changes in how the
 
 
 ##AMD Script Loading
-AMD stands for Asynchronous Module Definition which means that instead of declaring globals in every script file you use the `define()` function to setup a module. In the definition you also declare what dependencies (requires) that module needs. The AMD loader will load all files asynch, then define each module in the correct order passing in references to each dependency.
+AMD stands for Asynchronous Module Definition which means that instead of declaring globals in every script file you use 
+the `define()` function to setup a module. In the definition you also declare what dependencies (requires) that module needs. 
+The AMD loader will load all files asynch, then define each module in the correct order passing in references to each dependency.
 
 What this means for upgrading is that you go from:
 
@@ -80,16 +83,17 @@ To break down the define statement we have:
 
 #####Path/To/My/Script
 This is the path to the script minus the extension. In the `index` file you can setup shortcuts (namespaces) and in this case `Mobile/SalesLogix` links to `argos-saleslogix/src`, so the final path for Month View is:
-`argos-saleslogix/src/Views/Calendar/MonthView.js`.
+`argos-saleslogix/src/Views/Calendar/MonthView.js`, which translates to: `Mobile.SalesLogix.Views.Calendar.MonthView`.
 
 #####[dependencies]
 This is an array of other script paths that this module needs to run, again using the shortcuts defined in the `index` file.
 
 #####function(references)
-This function will recieve an instance of each dependency required. The reason each dependency and reference is on its own line in the code above is to quickly make sure there is a one-for-one match as it needs to go in the same order.
+This function will recieve an instance of each dependency required. The reason each dependency and reference is on its own line in the code 
+above is to quickly make sure there is a one-for-one match as it needs to go in the same order.
 
 #####/*private space/*
-The code inside here will only be ran once when defined, the returned object will what actually defines the module meaning anything before the return space is private unless exposed in your returned object.
+The code inside here will only be ran once when defined, the returned object will be what actually defines the module meaning anything before the return space is private unless exposed in your returned object.
 
 #####declare()
 This is the Ext equivalent of `Ext.extend`, as it sets up a constructor (factory) to be later used with the new keyword to create instances.
@@ -101,7 +105,7 @@ The name of the module, for our purposes this will match the path used to elimin
 An array of objects that this new module should inherit from - in Dojo terms these are called `mixins`.
 
 
-##Notes
+###Notes
 As seen in the first example you will no longer reference global variables as you have a local variable instance as a reference. Notice in the old Ext code we had:
 
 `Sage.Platform.Mobile.List`   
@@ -122,7 +126,7 @@ When viewing the Dojo documentation you will want to look for the `Dojo 1.7+` ex
 Ext has been removed completely, all references to `Ext.*` and any of it's extended functions such as String.format will need to be replaced with Dojo 1.7.1 equivalents. The following is a short list of typical Ext code used in SLX Mobile and it's Dojo translation:
 
 Ext: `Ext.namespace('my.object')`   
-Dojo: No longer required for views. Otherwise, require "dojo/_base/lang" and use `lang.setObject('my.object', {})`
+Dojo: No longer required when defining views. For singletons, require "dojo/_base/lang" and use `lang.setObject('my.object', {})`
 
 Ext: `Ext.extend()`   
 Dojo: Require "dojo/_base/declare" and use `declare()`
@@ -171,7 +175,7 @@ to:
 `Sage.Platform.Mobile.Fields.BooleanField`
 
 
-The following modules have been from from `argos-sdk/src/Controls` to `argos-saleslogix/src/Fields`:
+The following modules have been moved from `argos-sdk/src/Controls` to `argos-saleslogix/src/Fields`:
 
 * AddressField
 * NameField
@@ -201,7 +205,7 @@ Notes: This template sets up the markup for an item within a row (within rowTemp
 
 1.2: Detail/Edit createLayout children fields. `name` is used for SData binding   
 2.0: Detail/Edit createLayout children fields. `name` is now the unique identifer, `property` is for SData binding   
-Note: This is backward compatible, if `property` does not exist it will use `name` for identification and SData binding
+Notes: This is backward compatible, if `property` does not exist it will use `name` for identification and SData binding
 
 ##Function Changes
 
@@ -211,7 +215,7 @@ Notes: The function has been removed and replaced with normal get/set.
 
 1.2: View.isActive()   
 2.0: App.isViewActive(view)   
-Notes: The View no longer has the function it is globally available in the App namespace.
+Notes: Views no longer have the function it is globally available in the App namespace.
 
 1.2: App.getActiveView()   
 2.0: App.getPrimaryActiveView()   
@@ -221,7 +225,8 @@ Notes: Renamed
 ##Additional Properties
 
 ###Detail/Edit createLayout
-All objects within layout now have a `name` property as a unique identifier. This includes sections, quick actions, fields, controls and related views. The purpose of this so in `registerCustomization` the `at: function(row)` part can now use `row.name` to target any piece of the layout.
+All objects within layout now have a `name` property as a unique identifier. This includes sections, quick actions, fields, controls and related views. 
+The purpose of this so in `registerCustomization` the `at: function(row)` part can now use `row.name` to target any piece of the layout.
 
 ###Hash Tag Customization
 Hash Tags now use the same customization engine as detail/edit views, enabling ease of modifying, inserting or removing hash tags.
@@ -259,7 +264,8 @@ Toolbars now use the same customization engine as detail/edit views (and hash ta
     });
 
 ###Multiple Insert Customizations
-Before the registerCustomization engine would only insert one value at a time, causing multiple calls to insert items at the same place. Now you can pass an array for the `value` key and it will insert each object sequentially at that point.
+Before the registerCustomization engine would only insert one value at a time, causing multiple calls to insert items at the same place. Now you 
+may pass an array for the `value` key and it will insert each object sequentially at that point. Note this only works when `type` is `insert`.
 
     this.registerCustomization('detail/tools', 'account_detail', {
         at: function(tool){ return tool.id === 'edit'; },
@@ -313,4 +319,7 @@ and user Barb has these:
 When Lee logs in, his Home page will NOT have Tickets and he will not be able to navigate to Tickets in anyway. Even if Account Detail has a "related Tickets" shortcut it will not function.
 Whereas Barb will have it on her Home page (but not Contacts).
 
-For SalesLogix 7.5.4 and below since it does not reply with a users secured actions it will set the `userSecurity` to `null` and grant full access just as before.
+For SalesLogix 7.5.4 and below since it does not reply with a users secured actions it will set the `userSecurity` to `null` and grant full access just as 
+before.
+
+
