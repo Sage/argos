@@ -4,10 +4,11 @@ Argos-SDK uses Dojo's AMD loader system for defining modules, declaring "classes
 AMD stands for Asynchronous Module Definition which means that you define all your parts into separate files and when your page loads it loads asynchronously only the modules it needs to display that page.
 
 Concretely you get:
-Automatic dependent components being loaded first, no more "Oh, you to include this script before that script..."
-Faster loading as the loader runs asynch and handles all the tricky queuing and waiting
-Away from giant objects like `dojo` or `$` that contain a myriad of functions
-Easier to locate usage, with explicit dependencies you can quickly call up what modules use
+
+* Automatic dependent components being loaded first, no more "Oh, you need to include this script before that script...";
+* Faster loading as the loader runs asynch and handles all the tricky queuing and waiting;
+* Away from giant objects like `dojo` or `$` that contain a myriad of functions; and
+* Easier to locate usage, with explicit dependencies you can quickly call up what modules are in use.
 
 ##Define
 All modules will be wrapped in a `define()` statement. For the purposes of argos-template it will always use the following skeleton:
