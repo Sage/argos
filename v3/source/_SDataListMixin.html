@@ -31,7 +31,10 @@
  */
 
 <span id='argos-_SDataListMixin'>/**
-</span> * _SDataListMixin
+</span> * _SDataListMixin enables SData for the List view.
+ *
+ * Adds the SData store to the view and exposes the needed properties for creating a Feed request.
+ *
  * @alternateClassName _SDataListMixin
  * @requires SData
  * @requires utility
@@ -45,45 +48,41 @@ define('argos/_SDataListMixin', [
     SData,
     utility
 ) {
-<span id='argos-_SDataListMixin-property-'>    /**
-</span>     * SData enablement for the List view.
-     */
     return declare('argos._SDataListMixin', null, {
-<span id='argos-_SDataListMixin-property-resourceKind'>        /**
+<span id='argos-_SDataListMixin-cfg-resourceKind'>        /**
 </span>         * @cfg {String} resourceKind
          * The SData resource kind the view is responsible for.  This will be used as the default resource kind
          * for all SData requests.
-         * @type {String}
          */
         resourceKind: '',
-<span id='argos-_SDataListMixin-property-querySelect'>        /**
-</span>         * A list of fields to be selected in an SData request.
-         * @type {Array.&lt;String&gt;}
+<span id='argos-_SDataListMixin-cfg-querySelect'>        /**
+</span>         * @cfg {String[]}
+         * A list of fields to be selected in an SData request.
          */
         querySelect: null,
-<span id='argos-_SDataListMixin-property-queryInclude'>        /**
-</span>         * A list of child properties to be included in an SData request.
-         * @type {Array.&lt;String&gt;}
+<span id='argos-_SDataListMixin-cfg-queryInclude'>        /**
+</span>         * @cfg {String[]?}
+         * A list of child properties to be included in an SData request.
          */
         queryInclude: null,
-<span id='argos-_SDataListMixin-property-queryOrderBy'>        /**
-</span>         * The default order by expression for an SData request.
-         * @type {String}
+<span id='argos-_SDataListMixin-cfg-queryOrderBy'>        /**
+</span>         * @cfg {String}
+         * The default order by expression for an SData request.
          */
         queryOrderBy: null,
-<span id='argos-_SDataListMixin-property-queryWhere'>        /**
-</span>         * The default where expression for an SData request.
-         * @type {String|Function}
+<span id='argos-_SDataListMixin-cfg-queryWhere'>        /**
+</span>         * @cfg {String/Function}
+         * The default where expression for an SData request.
          */
         queryWhere: null,
-<span id='argos-_SDataListMixin-property-resourceProperty'>        /**
-</span>         * The default resource property for an SData request.
-         * @type {String|Function}
+<span id='argos-_SDataListMixin-cfg-resourceProperty'>        /**
+</span>         * @cfg {String?/Function?}
+         * The default resource property for an SData request.
          */
         resourceProperty: null,
-<span id='argos-_SDataListMixin-property-resourcePredicate'>        /**
-</span>         * The default resource predicate for an SData request.
-         * @type {String|Function}
+<span id='argos-_SDataListMixin-cfg-resourcePredicate'>        /**
+</span>         * @cfg {String?/Function?}
+         * The default resource predicate for an SData request.
          */
         resourcePredicate: null,
 <span id='argos-_SDataListMixin-property-keyProperty'>        keyProperty: '$key',

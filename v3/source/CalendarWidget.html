@@ -32,7 +32,7 @@
 
 <span id='argos-CalendarWidget'>/**
 </span> * CalendarWidget
- * @alternateClassName CalendarWidet
+ * @alternateClassName CalendarWidget
  * @extends _UiComponent
  * @mixins _CommandMixin
  * @mixins _EventMapMixin
@@ -86,7 +86,7 @@ define('argos/CalendarWidget', [
             yearContent: {node: 'yearHeader', type: 'attribute', attribute: 'innerHTML'},
             calendarContent: {node: 'contentNode', type: 'attribute', attribute: 'innerHTML'}
         },
-<span id='argos-CalendarWidget-property-components'>        components: [
+<span id='argos-CalendarWidget-cfg-components'>        components: [
 </span>            {name: 'dateHeader', tag: 'div', attrs:{'class': 'date-header'}, attachEvent:'onclick:pickDate', components: [
                 {name: 'prev', content: '&lt;button class=&quot;button prev&quot; data-action=&quot;prevMonth&quot;&gt;&lt;span&gt;&amp;lt;&lt;/span&gt;&lt;/button&gt;'},
                 {name: 'next', content: '&lt;button class=&quot;button next&quot; data-action=&quot;nextMonth&quot;&gt;&lt;span&gt;&amp;gt;&lt;/span&gt;&lt;/button&gt;'},

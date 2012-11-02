@@ -33,7 +33,7 @@
 <span id='argos-Detail'>/**
 </span> * A Detail View represents a single record and should display all the info the user may need about the entry.
  *
- * A Detail entry is identified by its key ($key) which is how it requests the data via the SData endpoint.
+ * A Detail entry is identified by its key (default: `$key`) which is how it requests the entry.
  *
  * @alternateClassName Detail
  * @extends View
@@ -94,19 +94,32 @@ define('argos/Detail', [
         };
 
     return declare('argos.Detail', [View], {
-<span id='argos-Detail-property-events'>        events: {
-</span>            'click': true
+<span id='argos-Detail-property-events'>        /**
+</span>         * @property {Object}
+         * Event map, see {@link _EventMapMixin#events _EventMapMixin.events}.
+         */
+        events: {
+            'click': true
         },
-<span id='argos-Detail-property-components'>        components: [
-</span>            {name: 'fix', content: '&lt;a href=&quot;#&quot; class=&quot;android-6059-fix&quot;&gt;fix for android issue #6059&lt;/a&gt;'},
+<span id='argos-Detail-property-components'>        /**
+</span>         * @property {Object[]}
+         * Definition of the view and it's child components, see {@link _Component#components _Component.components} for examples
+         * of the various component definition properties.
+         */
+        components: [
+            {name: 'fix', content: '&lt;a href=&quot;#&quot; class=&quot;android-6059-fix&quot;&gt;fix for android issue #6059&lt;/a&gt;'},
             {name: 'scroller', type: ScrollContainer, subscribeEvent: 'onContentChange:onContentChange', components: [
                 {name: 'scroll', tag: 'div', components: [
                     {name: 'content', tag: 'div', attrs: {'class': 'detail-content'}, attachPoint: 'contentNode'}
                 ]}
             ]}
         ],
-<span id='argos-Detail-property-baseClass'>        baseClass: 'view detail',
-</span><span id='argos-Detail-property-_setDetailContentAttr'>        _setDetailContentAttr: {node: 'contentNode', type: 'innerHTML'},
+<span id='argos-Detail-property-baseClass'>        /**
+</span>         * @property {String}
+         * Root level CSS classes
+         */
+        baseClass: 'view detail',
+<span id='argos-Detail-property-_setDetailContentAttr'>        _setDetailContentAttr: {node: 'contentNode', type: 'innerHTML'},
 </span><span id='argos-Detail-property-emptyTemplate'>        /**
 </span>         * @property {Simplate}
          * HTML shown when no data is available.
@@ -228,9 +241,17 @@ define('argos/Detail', [
         notAvailableTemplate: new Simplate([
             '&lt;div class=&quot;not-available&quot;&gt;{%: $.notAvailableText %}&lt;/div&gt;'
         ]),
-<span id='argos-Detail-property-tier'>        tier: 1,
-</span><span id='argos-Detail-property-store'>        store: null,
-</span><span id='argos-Detail-property-layout'>        /**
+<span id='argos-Detail-property-tier'>        /**
+</span>         * @property {Number/Boolean}
+         * Identifies which pane this view should be placed into and tracked with.
+         */
+        tier: 1,
+<span id='argos-Detail-property-store'>        /**
+</span>         * @property {Object}
+         * The dojo store this view will use for data exchange.
+         */
+        store: null,
+<span id='argos-Detail-property-layout'>        /**
 </span>         * @property {Object}
          * The layout definition that constructs the detail view with sections and rows
          */
@@ -327,8 +348,9 @@ define('argos/Detail', [
             });
         },
 <span id='argos-Detail-method-_onRefresh'>        /**
-</span>         * Handler for the global `/app/refresh` event. Sets `refreshRequired` to true if the key matches.
-         * @param {Object} options The object published by the event.
+</span>         * Handler for the global `/app/refresh` event. Sets `refr
+         * eshRequired` to true if the key matches.
+         * @param {Object} o The object published by the event.
          * @private
          */
         _onRefresh: function(o) {
@@ -390,16 +412,36 @@ define('argos/Detail', [
 
             scene().showView(view, options);
         },
-<span id='argos-Detail-method-createStore'>        createStore: function() {
-</span>            return null;
+<span id='argos-Detail-method-createStore'>        /**
+</span>         * CreateStore is the core of the data handling for Detail Views. By default it is empty but it should return
+         * a dojo store of your choosing. There are {@link _SDataDetailMixin Mixins} available for SData.
+         * @return {*}
+         */
+        createStore: function() {
+            return null;
         },
-<span id='argos-Detail-method-onContentChange'>        onContentChange: function() {
-</span>        },
-<span id='argos-Detail-method-_processItem'>        _processItem: function(item) {
-</span>            return item;
+<span id='argos-Detail-method-onContentChange'>        /**
+</span>         * Required for binding to ScrollContainer which utilizes iScroll that requires to be refreshed when the
+         * content (therefor scrollable area) changes.
+         */
+        onContentChange: function() {
         },
-<span id='argos-Detail-method-_processData'>        _processData: function(item) {
-</span>            var customizationSet = customizations(),
+<span id='argos-Detail-method-_processItem'>        /**
+</span>         * @template
+         * Optional processing of the returned entry before it gets processed into layout.
+         * @param {Object} item Entry from data store
+         * @return {Object} By default does not do any processing
+         */
+        _processItem: function(item) {
+            return item;
+        },
+<span id='argos-Detail-method-_processData'>        /**
+</span>         * Takes the entry from the data store, applies customization, applies any custom item process and then
+         * passes it to process layout.
+         * @param {Object} item Entry from data store
+         */
+        _processData: function(item) {
+            var customizationSet = customizations(),
                 layout = customizationSet.apply(customizationSet.toPath(this.customizationSet, null, this.id), this.createLayout());
 
             this.item = this._processItem(item);

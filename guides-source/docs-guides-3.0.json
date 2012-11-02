@@ -1,5 +1,20 @@
  [
       {
+        "title": "Concepts",
+        "items": [
+               {
+                  "name": "v3_scene_layout_pane",
+                  "title": "Scene, Layout and Panes",
+                  "description": "Covers how views are put onto the screen and managed."
+               },
+               {
+                  "name": "v3_stores",
+                  "title": "Data Stores",
+                  "description": "Goes into detail how views handle data exchanges in 3.0."
+               }
+        ]
+      },
+      {
         "title": "Appendix",
         "items": [
                {

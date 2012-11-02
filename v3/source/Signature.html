@@ -46,7 +46,7 @@ define('argos/Views/Signature', [
     'dojo/query',
     'dojo/dom-geometry',
     'dojo/window',
-    '../Format',
+    '../format',
     '../ScrollContainer',
     '../View'
 ], function(
@@ -70,7 +70,7 @@ define('argos/Views/Signature', [
 </span>        events: {
             'click': true
         },
-<span id='argos-Views-Signature-property-components'>        components: [
+<span id='argos-Views-Signature-cfg-components'>        components: [
 </span>            {name: 'fix', content: '&lt;a href=&quot;#&quot; class=&quot;android-6059-fix&quot;&gt;fix for android issue #6059&lt;/a&gt;'},
             {name: 'scroller', type: ScrollContainer, subscribeEvent: 'onContentChange:onContentChange', components: [
                 {name: 'scroll', tag: 'div', components: [

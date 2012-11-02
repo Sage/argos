@@ -56,7 +56,37 @@ define('argos/_UiComponent', [
     _Component
 ) {
 <span id='argos-_UiComponent'>    /**
-</span>     * _UiComponent
+</span>     * A specialized Component that provides:
+     *
+     * 1. Adds the resulting content as HTML and is appended to the DOM during the `render()` stage.
+     * 2. Adds the following component definition properties:
+     *
+     *     {
+     *         tag: 'string',
+     *         attrs: {Object},
+     *         content: 'string',
+     *         domOnly: boolean
+     *     }
+     *
+     * *tag*: makes this component a container node (using the node tag provided)
+     *
+     * *attrs*: adds the given attributes to the tag node
+     *
+     * *content*: instead of child components you can bypass it and do a straight string
+     * HTML markup for the content
+     *
+     * *domOnly*: If true/undefined denotes that this should be treated as merely markup. If
+     * false it will be treated as a Control/Widget with all the supporting features.
+     *
+     *
+     * Note that if `type` is present then it will be considered a normal `_Component`.
+     *
+     * Examples of _UiComponent:
+     *
+     *     { name: 'content', tag: 'ul', attrs: {'class': 'list-content'}, attachPoint: 'contentNode' }
+     *
+     *     { name: 'more', content: Simplate.make('&lt;button data-action=&quot;more&quot;&gt;$.moreText&lt;/button&gt;')}
+     *
      * @alternateClassName _UiComponent
      * @extends _Component
      */
@@ -144,13 +174,19 @@ define('argos/_UiComponent', [
     });
 
 <span id='argos-DomContentComponent'>    /**
-</span>     * DomContentComponent
+</span>     * DomContentComponent is a component that is just a holder for a DOM Node. When retrieving
+     * the value, it merely returns the assigned node.
+     *
      * @alternateClassName DomContentComponent
      * @extends _UiComponent
      */
     var DomContentComponent = declare('argos.DomContentComponent', [_UiComponent], {
-<span id='argos-DomContentComponent-property-domNode'>        domNode: null,
-</span><span id='argos-DomContentComponent-method-constructor'>        constructor: function(props, node) {
+<span id='argos-DomContentComponent-property-domNode'>        /**
+</span>         * @property {HTMLElement}
+         * The assigned node of this component
+         */
+        domNode: null,
+<span id='argos-DomContentComponent-method-constructor'>        constructor: function(props, node) {
 </span>            lang.mixin(this, props);
 
             this.domNode = node;
@@ -166,13 +202,20 @@ define('argos/_UiComponent', [
 
             this.inherited(arguments);
         },
-<span id='argos-DomContentComponent-method-getComponentValue'>        getComponentValue: function() {
-</span>            return this.domNode;
+<span id='argos-DomContentComponent-method-getComponentValue'>        /**
+</span>         * Returns the assigned dom node.
+         * @return {HTMLElement}
+         */
+        getComponentValue: function() {
+            return this.domNode;
         }
     });
 
 <span id='argos-Control'>    /**
-</span>     * A lightweight widget-like component.
+</span>     * A lightweight widget-like component that incorporates [dojo/Stateful](http://dojotoolkit.org/reference-guide/1.8/dojo/Stateful.html)
+     *
+     * It also selectively adds functionality from dijit/_WidgetBase, namely get/set and placeAt.
+     *
      * @alertnateClassName Control
      * @extends _UiComponent
      */

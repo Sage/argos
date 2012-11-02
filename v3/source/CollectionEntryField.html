@@ -209,6 +209,9 @@ define('argos/Fields/CollectionEntryField', [
 </span>        formatDeletedValue: function(item) {
             return null;
         },
+<span id='argos-Fields-CollectionEntryField-method-formatAddedValue'>        formatAddedValue: function(item) {
+</span>            return item;
+        },
 <span id='argos-Fields-CollectionEntryField-method-getValue'>        getValue: function() {
 </span>            var original = this.originalValue,
                 current = this.currentValue,
@@ -353,7 +356,7 @@ define('argos/Fields/CollectionEntryField', [
 </span>            if (this.validateForAdd &amp;&amp; this.validationResult !== false) return;
 
             var index = ++this.currentIndex,
-                item = this._getCompositeValue();
+                item = this.formatAddedValue(this._getCompositeValue());
 
             this.currentValue[index] = item;
 

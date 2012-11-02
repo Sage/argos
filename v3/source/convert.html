@@ -54,8 +54,13 @@ define('argos/convert', [
         toBoolean: function(value) {
             return trueRE.test(value);
         },
-<span id='argos-convert-method-isDate'>        isDate: function(value) {
-</span>            return value instanceof Date;
+<span id='argos-convert-method-isDate'>        /**
+</span>         * Determines if the value is a javascript Date object.
+         * @param value
+         * @return {Boolean}
+         */
+        isDate: function(value) {
+            return value instanceof Date;
         },
 <span id='argos-convert-method-isDateString'>        /**
 </span>         * Takes a string and checks to see if it is an ISO formatted date or a JSON-string date

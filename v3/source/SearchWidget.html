@@ -68,7 +68,7 @@ define('argos/SearchWidget', [
             '&lt;div class=&quot;search-header&quot;&gt;',
                 '&lt;input type=&quot;text&quot; id=&quot;search-{%= $$.id %}&quot; name=&quot;query&quot; class=&quot;query&quot; autocorrect=&quot;off&quot; autocapitalize=&quot;off&quot; data-dojo-attach-point=&quot;queryNode&quot; data-dojo-attach-event=&quot;onfocus:_onFocus,onblur:_onBlur,onkeypress:_onKeyPress&quot; /&gt;',
                 '&lt;button class=&quot;search-clear&quot; data-dojo-attach-event=&quot;onclick: _onClearClick&quot;&gt;&lt;/button&gt;',
-                '&lt;button class=&quot;search-button sub-header-button&quot; data-dojo-attach-event=&quot;click: search&quot;&gt;&lt;span&gt;{%= $.searchText %}&lt;/span&gt;&lt;/button&gt;',
+                '&lt;button class=&quot;search-button sub-header-button&quot; data-dojo-attach-event=&quot;click: search&quot;&gt;&lt;div&gt;&lt;span&gt;{%= $.searchText %}&lt;/span&gt;&lt;/div&gt;&lt;/button&gt;',
                 '&lt;label data-dojo-attach-point=&quot;labelNode&quot; for=&quot;search-{%= $$.id %}&quot;&gt;{%= $.searchText %}&lt;/label&gt;',
             '&lt;/div&gt;'
         ]),

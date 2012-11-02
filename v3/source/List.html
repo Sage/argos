@@ -304,7 +304,7 @@ define('argos/List', [
 <span id='argos-List-property-events'>        events: {
 </span>            'click': true
         },
-<span id='argos-List-property-components'>        components: [
+<span id='argos-List-cfg-components'>        components: [
 </span>            {name: 'search', type: SearchWidget, attachEvent: 'onQuery:_onSearchQuery,onClear:_onSearchClear'},
             {name: 'fix', content: '&lt;a href=&quot;#&quot; class=&quot;android-6059-fix&quot;&gt;fix for android issue #6059&lt;/a&gt;'},
             {name: 'scroller', type: ScrollContainer, subscribeEvent: 'onContentChange:onContentChange', components: [
@@ -621,7 +621,7 @@ define('argos/List', [
             }
         },
 <span id='argos-List-method-_getSelectionModelAttr'>        /**
-</span>         * Getter nmethod for the selection model
+</span>         * Getter method for the selection model
          * @return {SelectionModel}
          */
         _getSelectionModelAttr: function() {
@@ -645,7 +645,7 @@ define('argos/List', [
                 this.$.search.setLabel(this.searchText);
 
             var customizationSet = customizations();
-            this.createActions(customizationSet.apply(customizationSet.toPath('actions', null, this.id), this.createActionLayout()));
+            this.createActions(customizationSet.apply(customizationSet.toPath(this.customizationSet, 'actions', this.id), this.createActionLayout()));
 
             this.clear(true);
         },
@@ -1045,6 +1045,12 @@ define('argos/List', [
             if (whereQueryFmt &amp;&amp; selection)
                 options['where'] = string.substitute(whereQueryFmt, [selection.data['$key']]);
 
+            this.setSource({
+                entry: selection.data,
+                descriptor: selection.data['$descriptor'],
+                key: selection.data['$key']
+            });
+
             scene().showView(viewId, options);
         },
 <span id='argos-List-method-navigateToDetailView'>        /**
@@ -1072,7 +1078,6 @@ define('argos/List', [
 <span id='argos-List-method-navigateToInsertView'>        /**
 </span>         * Navigates to the defined `this.insertView`, or `this.editView` passing the current views id as the `returnTo`
          * option and setting `insert` to true.
-         * @param {HTMLElement} el Node that initiated the event.
          */
         navigateToInsertView: function() {
             scene().showView(this.insertView || this.editView, {
@@ -1203,8 +1208,7 @@ define('argos/List', [
             /// &lt;/summary&gt;
             this._selectionModel.clear();
 
-            if (App.bars['tbar'])
-                App.bars['tbar'].invokeTool({tool: this.options.singleSelectAction}); // invoke action of tool
+            topic.publish('/app/toolbar/invoke', this.options.singleSelectAction);
         },
 <span id='argos-List-method-refreshRequiredFor'>        /**
 </span>         * Determines if the view should be refresh by inspecting and comparing the passed navigation options with current values.

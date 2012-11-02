@@ -31,7 +31,18 @@
  */
 
 <span id='argos-Pane'>/**
-</span> * Pane
+</span> * Panes are containers. You can think of them as iframes, or windows, or blocks but it all comes down
+ * to being a container.
+ *
+ * Panes, in this implementation, have two components:
+ *
+ * * toolbar - The top bar across the top of a Pane; and
+ * * container - Where a view gets put into.
+ *
+ * Abstractly, the app is controlled by:
+ *
+ * Scene (views) -&gt; Layout (organizes them together) &lt;- Panes (containers)
+ *
  * @alternateClassName Pane
  * @extends _UiComponent
  * @requires ToolBar
@@ -68,16 +79,18 @@ define('argos/Pane', [
     transition
 ) {
     return declare('argos.Pane', [FixedSplitterPane, _UiComponent], {
-<span id='argos-Pane-property-components'>        components: [
+<span id='argos-Pane-cfg-components'>        components: [
 </span>            {name: 'top', type: TitleBar, attachEvent: 'onPositionChange:_onToolbarPositionChange', props: {managed: true, visible: false}},
             {name: 'container', tag: 'div', attrs: {'class': 'view-container'}, attachPoint: 'viewContainerNode'}
         ],
 <span id='argos-Pane-property-viewContainerNode'>        viewContainerNode: null,
 </span><span id='argos-Pane-property-active'>        active: null,
 </span><span id='argos-Pane-property-toolbars'>        toolbars: null,
+</span><span id='argos-Pane-property-_signals'>        _signals: null,
 </span>
 <span id='argos-Pane-method-constructor'>        constructor: function() {
 </span>            this.toolbars = {};
+            this._signals = [];
         },
 <span id='argos-Pane-method-_onToolbarPositionChange'>        _onToolbarPositionChange: function(position, previous) {
 </span>            if (previous) domClass.remove(this.domNode, 'has-toolbar-' + previous);
@@ -87,9 +100,18 @@ define('argos/Pane', [
 <span id='argos-Pane-method-onStartup'>        onStartup: function() {
 </span>            this.inherited(arguments);
 
-            /* todo: use the same method as the view in order to discover toolbars */
-            array.forEach(this.getComponents(), function(component) {
-                if (component.isInstanceOf(Toolbar)) this.toolbars[component.getComponentName()] = component;
+            this._signals.push(topic.subscribe('/app/layout/change', this.onPaneChange.bindDelegate(this)));
+            this._locateToolbars(this.getComponents());
+        },
+<span id='argos-Pane-method-_locateToolbars'>        _locateToolbars: function(components) {
+</span>            /* todo: use the same method as the view in order to discover toolbars */
+            array.forEach(components, function(component) {
+                if (component.isInstanceOf(Toolbar))
+                    this.toolbars[component.getComponentName()] = component;
+
+                var childComponents = component.getComponents();
+                if (childComponents)
+                    this._locateToolbars(childComponents);
             }, this);
         },
 <span id='argos-Pane-method-show'>        show: function(view, transitionOptions) {
@@ -216,7 +238,7 @@ define('argos/Pane', [
                 lang.hitch(this, this._progress, view, viewOptions, active)
             );
 
-            var fx = transition.findByName(transitionOptions.transition);
+            var fx = transition.findByName(transitionOptions &amp;&amp; transitionOptions.transition);
 
             return fx(this.viewContainerNode || this.domNode, view, active === view ? null : active, transitionOptions, deferred);
         },
@@ -261,6 +283,17 @@ define('argos/Pane', [
 
             return deferred;
             */
+        },
+<span id='argos-Pane-method-onPaneChange'>        onPaneChange: function(o) {
+</span>        },
+<span id='argos-Pane-method-onDestroy'>        onDestroy: function() {
+</span>            this.inherited(arguments);
+
+            array.forEach(this._signals, function(signal) {
+                signal.remove();
+            });
+
+            delete this._signals;
         },
 <span id='argos-Pane-method-resize'>        resize: function() {
 </span>            // do not call base implementation (FixedSplitterPane)
