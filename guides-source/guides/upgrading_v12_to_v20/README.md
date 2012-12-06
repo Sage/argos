@@ -96,7 +96,7 @@ above is to quickly make sure there is a one-for-one match as it needs to go in 
 The code inside here will only be ran once when defined, the returned object will be what actually defines the module meaning anything before the return space is private unless exposed in your returned object.
 
 #####declare()
-This is the Ext equivalent of `Ext.extend`, as it sets up a constructor (factory) to be later used with the new keyword to create instances.
+This is the dojo equivalent of Ext's `Ext.extend`, as it sets up a constructor (factory) to be later used with the new keyword to create instances.
 
 #####'My.Module.Name'
 The name of the module, for our purposes this will match the path used to eliminate confusion.
